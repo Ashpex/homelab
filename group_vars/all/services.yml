@@ -36,8 +36,8 @@ services:
   copyparty:
     enabled: false 
     port: 3923
-    data_path: "{{ base_data_path }}/copyparty"
     config_path: "{{ base_data_path }}/copyparty/config"
+    share_path: "{{ root_path }}"
     username: "{{ vault_copyparty_username }}"
     password: "{{ vault_copyparty_password }}"
     
