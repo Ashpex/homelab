@@ -138,17 +138,6 @@
         - lookup('fileglob', '../templates/services/' + item.key + '.yml.j2')
       register: service_templates
 
-    - name: Create config directories for services with config_path
-      file:
-        path: "{{ item.value.config_path }}"
-        state: directory
-        mode: '0755'
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
-        - item.value.config_path is defined
-
     - name: Process config files for each service
       include_tasks: process_service_configs.yml
       loop: "{{ services | dict2items }}"
