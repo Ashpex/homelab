@@ -3,7 +3,6 @@
 # item.key = service name (e.g., "copyparty")
 # item.value = service configuration
 
-
 - name: "Find .j2 template files for {{ item.key }}"
   find:
     paths: "../configs/{{ item.key }}"

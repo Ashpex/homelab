@@ -7,6 +7,63 @@
     - ../group_vars/all/services.yml
     - ../group_vars/all/vault.yml
 
+  vars:
+    # Build services list 
+    enabled_services_list: >-
+      {{ services | dict2items
+                 | selectattr('value.enabled', 'defined')
+                 | selectattr('value.enabled') | list }}
+    target_services: >-
+      {{ (services | dict2items | selectattr('key', 'equalto', single_service) | list)
+          if (single_service is defined)
+          else enabled_services_list }}
+
+    service_directories_raw:
+      # AdGuard
+      - "{{ services.adguard.data_path | default(None) }}"
+      # Alist
+      - "{{ services.alist.data_path | default(None) }}"
+      # Arr Suite
+      - "{{ services.arr.data_path | default(None) ~ '/sonarr' if services.arr.data_path is defined else None }}"
+      - "{{ services.arr.data_path | default(None) ~ '/radarr' if services.arr.data_path is defined else None }}"
+      - "{{ services.arr.data_path | default(None) ~ '/prowlarr' if services.arr.data_path is defined else None }}"
+      # Audiobookshelf
+      - "{{ services.audiobookshelf.config_path | default(None) }}"
+      - "{{ services.audiobookshelf.metadata_path | default(None) }}"
+      # Backrest
+      - "{{ services.backrest.data_path | default(None) }}"
+      - "{{ services.backrest.config_path | default(None) }}"
+      - "{{ services.backrest.cache_path | default(None) }}"
+      # Copyparty
+      - "{{ services.copyparty.data_path | default(None) }}"
+      - "{{ services.copyparty.config_path | default(None) }}"
+      # Frigate
+      - "{{ services.frigate.config_path | default(None) }}"
+      - "{{ services.frigate.data_path | default(None) }}"
+      # Glance
+      - "{{ services.glance.config_path | default(None) }}"
+      # Gotify
+      - "{{ services.gotify.data_path | default(None) }}"
+      # Immich
+      - "{{ services.immich.upload_path | default(None) }}"
+      - "{{ services.immich.data_path ~ '/postgres' if services.immich.data_path is defined else None }}"
+      # Jellyfin
+      - "{{ services.jellyfin.config_path | default(None) }}"
+      - "{{ services.jellyfin.cache_path | default(None) }}"
+      # qBittorrent
+      - "{{ services.qbittorrent.config_path | default(None) }}"
+      # RomM
+      - "{{ services.romm.library_path | default(None) }}"
+      - "{{ (services.romm.library_path ~ '/roms') if services.romm.library_path is defined else None }}"
+      - "{{ (services.romm.library_path ~ '/bios') if services.romm.library_path is defined else None }}"
+      - "{{ services.romm.assets_path | default(None) }}"
+      - "{{ services.romm.config_path | default(None) }}"
+      # Owncast
+      - "{{ services.owncast.data_path | default(None) }}"
+      # Waline
+      - "{{ services.waline.data_path | default(None) }}"
+    service_directories: "{{ service_directories_raw | reject('equalto', None) | list }}"
+
   pre_tasks:
     - name: Check if docker is installed
       command: docker --version
@@ -54,52 +111,6 @@
         group: "{{ group_id }}"
       loop: "{{ service_directories }}"
       become: yes
-      when: item is defined
-      vars:
-        service_directories:
-          # AdGuard
-          - "{{ services.adguard.data_path }}"
-          # Alist
-          - "{{ services.alist.data_path }}"
-          # Arr Suite
-          - "{{ services.arr.data_path }}/sonarr"
-          - "{{ services.arr.data_path }}/radarr"
-          - "{{ services.arr.data_path }}/prowlarr"
-          # Audiobookshelf
-          - "{{ services.audiobookshelf.config_path }}"
-          - "{{ services.audiobookshelf.metadata_path }}"
-          # Backrest
-          - "{{ services.backrest.data_path }}"
-          - "{{ services.backrest.config_path }}"
-          - "{{ services.backrest.cache_path }}"
-          # Copyparty
-          - "{{ services.copyparty.data_path }}"
-          - "{{ services.copyparty.config_path }}"
-          # Frigate
-          - "{{ services.frigate.config_path }}"
-          - "{{ services.frigate.data_path }}"
-          # Glance
-          - "{{ services.glance.config_path }}"
-          # Gotify
-          - "{{ services.gotify.data_path }}"
-          # Immich
-          - "{{ services.immich.upload_path }}"
-          - "{{ services.immich.data_path }}/postgres"
-          # Jellyfin
-          - "{{ services.jellyfin.config_path }}"
-          - "{{ services.jellyfin.cache_path }}"
-          # qBittorrent
-          - "{{ services.qbittorrent.config_path }}"
-          # RomM
-          - "{{ services.romm.library_path }}"
-          - "{{ services.romm.library_path }}/roms"
-          - "{{ services.romm.library_path }}/bios"
-          - "{{ services.romm.assets_path }}"
-          - "{{ services.romm.config_path }}"
-          # Owncast
-          - "{{ services.owncast.data_path }}"
-          # Waline
-          - "{{ services.waline.data_path }}"
 
     - name: Create Docker network
       docker_network:
@@ -120,10 +131,9 @@
         path: "../build/services/{{ item.key }}"
         state: directory
         mode: '0755'
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
+      loop: "{{ target_services }}"
+      loop_control:
+        label: "{{ item.key }}"
 
     - name: Generate individual service compose files
       template:
@@ -131,40 +141,36 @@
         dest: "../build/services/{{ item.key }}/docker-compose.yml"
         backup: yes
         mode: '0644'
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
-        - lookup('fileglob', '../templates/services/' + item.key + '.yml.j2')
+      loop: "{{ target_services }}"
+      loop_control:
+        label: "{{ item.key }}"
+      when: lookup('fileglob', '../templates/services/' + item.key + '.yml.j2')
       register: service_templates
 
     - name: Process config files for each service
       include_tasks: process_service_configs.yml
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
-        - item.value.config_path is defined
+      loop: "{{ target_services }}"
+      loop_control:
+        label: "{{ item.key }}"
+      when: item.value.config_path is defined
 
     - name: Pull latest images for enabled services
       command: docker compose pull
       args:
         chdir: "../build/services/{{ item.key }}"
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
-        - force_pull | default(false)
+      loop: "{{ target_services }}"
+      loop_control:
+        label: "{{ item.key }}"
+      when: force_pull | default(false)
       ignore_errors: yes
 
     - name: Deploy enabled services
       command: docker compose up -d
       args:
         chdir: "../build/services/{{ item.key }}"
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
+      loop: "{{ target_services }}"
+      loop_control:
+        label: "{{ item.key }}"
       register: service_deployments
 
     - name: Wait for services to be healthy
@@ -172,10 +178,10 @@
         url: "http://localhost:{{ item.value.port | default(item.value.web_port) }}"
         method: GET
         status_code: [200, 301, 302, 401, 403]
-      loop: "{{ services | dict2items }}"
-      when: 
-        - single_service is not defined or item.key == single_service
-        - single_service is defined or item.value.enabled | default(false)
+      loop: "{{ target_services }}"
+      loop_control:
+        label: "{{ item.key }}"
+      when:
         - item.value.port is defined or item.value.web_port is defined
         - item.key not in ['jellyfin', 'frigate', 'watchtower']  # Skip services with special networking
       retries: 30
