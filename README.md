@@ -36,6 +36,7 @@ make setup
 1. **Configure your paths** in `inventory/hosts.yml`:
    ```yaml
    # Customize these paths for your setup
+   root_path: "/mnt/hdd1/"
    base_data_path: "/mnt/hdd1/infra-data"  # Main data storage
    media_path: "/mnt/hdd1/media"           # Media files
    downloads_path: "/mnt/ssd/downloads"    # Download location
