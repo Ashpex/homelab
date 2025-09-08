@@ -54,6 +54,7 @@ services:
   glance:
     enabled: true
     port: 80
+    config_path: "{{ base_data_path }}/glance/config"
     
   gotify:
     enabled: false 
