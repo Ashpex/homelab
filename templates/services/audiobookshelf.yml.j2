@@ -1,0 +1,19 @@
+services:
+  audiobookshelf:
+    container_name: audiobookshelf
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    ports:
+      - "{{ services.audiobookshelf.port }}:80"
+    volumes:
+      - "{{ services.audiobookshelf.audiobooks_path }}:/library"
+      - "{{ services.audiobookshelf.config_path }}:/config"
+      - "{{ services.audiobookshelf.metadata_path }}:/metadata"
+    environment:
+      - TZ={{ timezone }}
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

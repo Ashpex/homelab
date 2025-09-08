@@ -1,0 +1,6 @@
+.env
+snac2
+.vault_pass
+.vault_password
+*.backup
+build/

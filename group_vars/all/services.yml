@@ -1,0 +1,124 @@
+---
+# Service configurations with ports and settings
+services:
+  adguard:
+    enabled: false 
+    web_port: 3000
+    dns_port: 53
+    data_path: "{{ base_data_path }}/adguard"
+    
+  alist:
+    enabled: false 
+    port: 8083  # External port mapping
+    data_path: "{{ base_data_path }}/alist"
+    
+  arr:
+    enabled: false
+    data_path: "{{ base_data_path }}/arr"
+    sonarr_port: 8989
+    radarr_port: 7878
+    prowlarr_port: 9696
+    
+  audiobookshelf:
+    enabled: true 
+    port: 13378
+    config_path: "{{ base_data_path }}/audiobookshelf/config"
+    metadata_path: "{{ base_data_path }}/audiobookshelf/metadata"
+    audiobooks_path: "{{ media_path }}/library"
+    
+  backrest:
+    enabled: false 
+    port: 9898
+    data_path: "{{ base_data_path }}/backrest/data"
+    config_path: "{{ base_data_path }}/backrest/config"
+    cache_path: "{{ base_data_path }}/backrest/cache"
+    
+  copyparty:
+    enabled: false 
+    port: 3923
+    data_path: "{{ base_data_path }}/copyparty"
+    
+  frigate:
+    enabled: false 
+    web_port: 8971
+    rtsp_port: 8554
+    webrtc_tcp_port: 8555
+    webrtc_udp_port: 8555
+    config_path: "{{ base_data_path }}/frigate"
+    data_path: "{{ nvr_path }}/frigate"
+    shm_size: "100mb"
+    
+  glance:
+    enabled: true
+    port: 80
+    
+  gotify:
+    enabled: false 
+    port: 8080
+    data_path: "{{ base_data_path }}/gotify"
+    
+  immich:
+    enabled: false 
+    port: 2283
+    upload_path: "{{ media_path }}/immich"
+    data_path: "{{ base_data_path }}/immich"
+    db_password: "{{ vault_immich_db_password | default('changeme') }}"
+    db_username: "immich"
+    db_name: "immich"
+    version: "release"
+    
+  jellyfin:
+    enabled: false 
+    network_mode: "host"
+    memory_limit: "1g"
+    config_path: "{{ base_data_path }}/jellyfin/config"
+    cache_path: "{{ base_data_path }}/jellyfin/cache"
+    media_path: "{{ media_path }}"
+    
+  qbittorrent:
+    enabled: false 
+    web_port: 8084
+    torrent_port: 6881
+    config_path: "{{ base_data_path }}/qbittorrent"
+    downloads_path: "{{ downloads_path }}"
+    
+  romm:
+    enabled: true 
+    web_port: 8086
+    library_path: "{{ media_path }}/games"    # ROM library structure: /roms/{platform}/ and /bios/{platform}/
+    assets_path: "{{ base_data_path }}/romm/assets"     # Saves, states, etc.
+    config_path: "{{ base_data_path }}/romm/config"     # config.yml location  
+    db_name: "romm"
+    db_user: "romm-user"
+    # Sensitive data in vault.yml:
+    # romm_db_password, romm_db_root_password, romm_auth_secret_key
+    # romm_igdb_client_id, romm_igdb_client_secret
+    
+  samba:
+    enabled: false 
+    port: 445
+    username: "{{ vault_samba_username | default('user') }}"
+    password: "{{ vault_samba_password | default('changeme') }}"
+    # Main storage configuration
+    storage_path: "/mnt/hdd1"                            # External filesystem path
+    main_share_name: "hdd1"                              # Network share name: \\server\hdd1
+    main_internal_path: "/hdd1"                          # Internal container path
+    # Additional storage configuration (optional)
+    additional_storage_path: "/mnt/ssd"                  # External filesystem path
+    additional_share_name: "ssd"                         # Network share name: \\server\ssd
+    additional_internal_path: "/ssd"                     # Internal container path
+    
+  waline:
+    enabled: false 
+    port: 8360
+    data_path: "{{ base_data_path }}/waline"
+    
+  owncast:
+    enabled: false
+    web_port: 8085
+    rtmp_port: 1935  
+    data_path: "{{ base_data_path }}/owncast"
+    
+  watchtower:
+    enabled: false 
+    web_port: 8082  # Optional web interface

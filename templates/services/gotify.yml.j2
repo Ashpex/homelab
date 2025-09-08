@@ -1,0 +1,17 @@
+services:
+  gotify:
+    container_name: gotify
+    image: gotify/server
+    ports:
+      - "{{ services.gotify.port }}:80"
+    environment:
+      GOTIFY_DEFAULTUSER_PASS: "{{ vault_gotify_password | default('admin') }}"
+    volumes:
+      - "{{ services.gotify.data_path }}:/app/data"
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

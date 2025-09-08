@@ -1,0 +1,26 @@
+services:
+  frigate:
+    container_name: frigate
+    privileged: true
+    restart: unless-stopped
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "{{ services.frigate.shm_size }}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ services.frigate.config_path }}:/config"
+      - "{{ services.frigate.data_path }}:/media/frigate"
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 250000000
+    ports:
+      - "{{ services.frigate.web_port }}:8971"
+      - "{{ services.frigate.rtsp_port }}:8554"
+      - "{{ services.frigate.webrtc_tcp_port }}:8555/tcp"
+      - "{{ services.frigate.webrtc_udp_port }}:8555/udp"
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

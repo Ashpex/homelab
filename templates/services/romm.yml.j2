@@ -1,0 +1,70 @@
+services:
+  romm:
+    container_name: romm
+    image: rommapp/romm:latest
+    restart: unless-stopped
+    environment:
+      - DB_HOST=romm-db
+      - DB_NAME={{ services.romm.db_name }}
+      - DB_USER={{ services.romm.db_user }}
+      - DB_PASSWD={{ vault_romm_db_password }}
+      - ROMM_AUTH_SECRET_KEY={{ vault_romm_auth_secret_key }}
+      # Metadata providers - "The Twitch Fanboy" setup: IGDB + PlayMatch + Retroachievements
+      - IGDB_CLIENT_ID={{ vault_romm_igdb_client_id }}
+      - IGDB_CLIENT_SECRET={{ vault_romm_igdb_client_secret }}
+      - PLAYMATCH_API_ENABLED=true
+      - RETROACHIEVEMENTS_API_KEY={{ vault_romm_retroachievements_api_key }}
+      # Scheduled automation tasks
+      - ENABLE_SCHEDULED_RESCAN=true
+      - SCHEDULED_RESCAN_CRON=0 3 * * *  # 3 AM daily
+      - ENABLE_SCHEDULED_UPDATE_SWITCH_TITLEDB=true
+      - SCHEDULED_UPDATE_SWITCH_TITLEDB_CRON=0 4 * * *  # 4 AM daily
+      # Filesystem watcher for real-time scanning
+      - ENABLE_RESCAN_ON_FILESYSTEM_CHANGE=true
+      - RESCAN_ON_FILESYSTEM_CHANGE_DELAY=5  # 5 minutes delay
+    volumes:
+      - romm_resources:/romm/resources
+      - romm_redis_data:/redis-data
+      - "{{ services.romm.library_path }}:/romm/library"
+      - "{{ services.romm.assets_path }}:/romm/assets"
+      - "{{ services.romm.config_path }}:/romm/config"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "{{ services.romm.web_port }}:8080"
+    depends_on:
+      romm-db:
+        condition: service_healthy
+        restart: true
+    networks:
+      - {{ docker_network }}
+
+  romm-db:
+    container_name: romm-db
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD={{ vault_romm_db_root_password }}
+      - MARIADB_DATABASE={{ services.romm.db_name }}
+      - MARIADB_USER={{ services.romm.db_user }}
+      - MARIADB_PASSWORD={{ vault_romm_db_password }}
+    volumes:
+      - romm_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      start_interval: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - {{ docker_network }}
+
+volumes:
+  romm_mysql_data:
+  romm_resources:
+  romm_redis_data:
+
+networks:
+  {{ docker_network }}:
+    external: true

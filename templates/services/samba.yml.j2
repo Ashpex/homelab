@@ -1,0 +1,27 @@
+services:
+  samba:
+    image: ghcr.io/servercontainers/samba:latest
+    container_name: samba
+    restart: unless-stopped
+    environment:
+      ACCOUNT_{{ services.samba.username }}: {{ services.samba.password }}
+      UID_{{ services.samba.username }}: {{ user_id }}
+      SAMBA_VOLUME_CONFIG_main: "[{{ services.samba.main_share_name }}]; path={{ services.samba.main_internal_path }}; available = yes; browsable = yes; writable = yes; public = yes"
+{% if services.samba.additional_storage_path is defined %}
+      SAMBA_VOLUME_CONFIG_additional: "[{{ services.samba.additional_share_name }}]; path={{ services.samba.additional_internal_path }}; available = yes; browsable = yes; writable = yes; public = yes"
+{% endif %}
+    volumes:
+      - "{{ services.samba.storage_path }}:{{ services.samba.main_internal_path }}"
+{% if services.samba.additional_storage_path is defined %}
+      - "{{ services.samba.additional_storage_path }}:{{ services.samba.additional_internal_path }}"
+{% endif %}
+    ports:
+      - "{{ services.samba.port }}:445"
+    cap_add:
+      - CAP_NET_ADMIN
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

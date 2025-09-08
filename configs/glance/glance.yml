@@ -1,0 +1,286 @@
+branding:
+  custom-footer: |
+    <p>Powered by 100% capitalism income.</p>
+  logo-text: A
+  logo-url: https://ashpex.net/favicon.svg
+  favicon-url: https://ashpex.net/favicon.svg
+theme:
+  background-color: 0 0 16
+  primary-color: 43 59 81
+  positive-color: 61 66 44
+  negative-color: 6 96 59
+pages:
+  - name: Start
+    #width: slim
+    hide-desktop-navigation: false 
+    center-vertically: true
+    columns:
+      - size: full
+        widgets:
+          - type: search
+            autofocus: true
+          - type: server-stats
+            servers:
+              - type: local
+                name: NAS 
+                # optionally override the sensor used to determine CPU temperature
+                # cpu-temp-sensor: thermal_zone0
+
+                # optionally hide swap
+                # hide-swap: true
+
+                # mountpoints:
+                #   "/boot/efi":
+                #     hide: true
+                #     name: EFI
+
+          - type: monitor
+            cache: 1m
+            title: Services
+            sites:
+              - title: Jellyfin 
+                url: https://media.ashpex.net/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyfin.svg
+              - title: qBittorrent # only for Linux ISOs, of course
+                url: http://server.ashpex.net:8084 
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/qbittorrent.svg
+              - title: Immich
+                url: http://server.ashpex.net:2283/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/immich.svg
+              - title: Audiobookshelf
+                url: http://server.ashpex.net:13378/ 
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/audiobookshelf.svg
+              - title: Romm
+                url: http://server.ashpex.net:8086/
+                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/webp/romm.webp
+
+              - title: Fediverse 
+                url: https://social.ashpex.net
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/mastodon.svg
+              - title: Owncast
+                url: https://live.ashpex.net
+                icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/owncast.svg 
+
+              - title: AdGuard Home
+                url: http://server.ashpex.net:8081/ 
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/adguard-home.svg
+              - title: Frigate
+                url: http://server.ashpex.net:8971/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/frigate-light.svg
+              - title: Gotify
+                url: http://server.ashpex.net:8888/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/gotify.svg
+              - title: Portainer 
+                url: http://server.ashpex.net:9000/
+                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/webp/portainer-pink.webp
+
+              - title: Cockpit
+                url: http://server.ashpex.net:9090/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/cockpit-light.svg
+              - title: FileBrowser
+                url: http://server.ashpex.net:3923/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/filebrowser.svg
+              - title: Archive
+                url: https://files.ashpex.net
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/files.svg
+              - title: Backrest 
+                url: http://server.ashpex.net:9898
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
+
+              - title: Sonarr
+                url: http://server.ashpex.net:8989
+                check-url: server.ashpex.net:8989/health
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sonarr.svg
+              - title: Radarr
+                url: http:server.ashpex.net:7878
+                check-url: http://server.ashpex.net:7878/health
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/radarr.svg
+                
+          - type: bookmarks
+            groups:
+              - title: General
+                links:
+                  - title: Gmail
+                    url: https://mail.google.com/mail/u/0/
+                  - title: Amazon
+                    url: https://www.amazon.com/
+                  - title: Github
+                    url: https://github.com/
+              - title: Entertainment
+                links:
+                  - title: YouTube
+                    url: https://www.youtube.com/
+                  - title: Prime Video
+                    url: https://www.primevideo.com/
+                  - title: Disney+
+                    url: https://www.disneyplus.com/
+              - title: Social
+                links:
+                  - title: Reddit
+                    url: https://www.reddit.com/
+                  - title: Twitter
+                    url: https://twitter.com/
+                  - title: Instagram
+                    url: https://www.instagram.com/
+  - name: Home
+    columns:
+      - size: small
+        widgets:
+          - type: calendar
+
+          - type: rss
+            limit: 10
+            collapse-after: 3
+            cache: 1h
+            feeds:
+              - url: https://feeds.arstechnica.com/arstechnica/index
+                title: arstechnica
+              - url: https://ashpex.net/index.xml
+                title: ~/ashpex
+              - url: https://www.joshwcomeau.com/rss.xml
+                title: Josh Comeau
+              - url: https://samwho.dev/rss.xml
+              - url: https://awesomekling.github.io/feed.xml
+              - url: https://ishadeed.com/feed.xml
+                title: Ahmad Shadeed
+
+          - type: twitch-channels
+            channels:
+              - theprimeagen
+              - cohhcarnage
+              - christitustech
+              - blurbs
+              - asmongold
+              - jembawls
+
+      - size: full
+        widgets:
+          - type: hacker-news
+
+          - type: videos
+            channels:
+              - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
+
+          - type: lobsters
+            sort-by: hot
+            tags:
+              - go
+              - security
+              - linux
+              - android
+              - privacy
+
+      - size: small
+        widgets:
+          - type: weather
+            location: Ho Chi Minh City, Vietnam
+
+          - type: markets
+            markets:
+              - symbol: BTC-USD
+                name: Bitcoin
+              - symbol: NVDA
+                name: NVIDIA
+              - symbol: AAPL
+                name: Apple
+              - symbol: MSFT
+                name: Microsoft
+              - symbol: GOOGL
+                name: Google
+              - symbol: AMD
+                name: AMD
+          - type: dns-stats
+            service: adguard
+            url: http://server.ashpex.net:8081/
+            username: ashpex
+            password: rioken
+  - name: Homelab
+    columns:
+
+      - size: full
+        widgets:
+          - type: group
+            widgets:
+              - type: reddit
+                show-thumbnails: true
+                show-flairs: true
+                subreddit: selfhosted 
+              - type: reddit
+                subreddit: homelab 
+                show-thumbnails: true
+                show-flairs: true
+
+          - type: videos
+            style: grid-cards
+            collapse-after-rows: 3
+            channels:
+              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
+              - UCv6J_jJa8GJqFwQNgNrMuww # ServeTheHome
+              - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
+              - UCZNhwA1B5YqiY1nLzmM0ZRg # Christian Lempa
+              - UCp3yVOm6A55nx65STpm3tXQ # Craft Computing
+              - UCsnGwSIHyoYN0kiINAGUKxg # wolfgang
+              - UCjSEJkpGbcZhvo0lr-44X_w # techhut
+              - UCVS6ejD9NLZvjsvhcbiDzjw # crosstalk
+              - UCVy16RS5eEDh8anP8j94G2A # DbTech
+      - size: small
+        widgets:
+          - type: rss
+            title: RSS feed 
+            style: vertical-list 
+            feeds:
+              - url: https://noted.lol/rss/ 
+                title: noted.lol
+          - type: releases
+            show-source-icon: true
+            repositories:
+            - jellyfin/jellyfin
+            - glanceapp/glance
+            - immich-app/immich
+            - advplyr/audiobookshelf
+            - AdguardTeam/AdGuardHome
+            - portainer/portainer
+            - haiwen/seafile
+            - restic/restic
+
+
+
+  - name: Gaming
+    columns:
+      - size: small
+        widgets:
+          - type: twitch-top-games
+            limit: 20
+            collapse-after: 13
+            exclude:
+              - just-chatting
+              - pools-hot-tubs-and-beaches
+              - music
+              - art
+              - asmr
+
+      - size: full
+        widgets:
+          - type: group
+            widgets:
+              - type: reddit
+                show-thumbnails: true
+                subreddit: pcgaming
+              - type: reddit
+                subreddit: games
+
+          - type: videos
+            style: grid-cards
+            collapse-after-rows: 3
+            channels:
+              - UCNvzD7Z-g64bPXxGzaQaa4g # gameranx
+              - UCZ7AeeVbyslLM_8-nVy2B8Q # Skill Up
+              - UCHDxYLv8iovIbhrfl16CNyg # GameLinked
+              - UC9PBzalIcEQCsiIkq36PyUA # Digital Foundry
+
+      - size: small
+        widgets:
+          - type: reddit
+            subreddit: gamingnews
+            limit: 7
+            style: vertical-cards

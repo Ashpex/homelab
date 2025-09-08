@@ -1,0 +1,23 @@
+services:
+  waline:
+    container_name: waline
+    image: lizheming/waline:latest
+    restart: always
+    ports:
+      - "{{ services.waline.port }}:8360"
+    volumes:
+      - "{{ services.waline.data_path }}:/app/data"
+    environment:
+      TZ: "{{ timezone }}"
+      SQLITE_PATH: '/app/data'
+      JWT_TOKEN: "{{ vault_waline_jwt_token | default('changeme') }}"
+      SITE_NAME: "{{ vault_waline_site_name | default('My Site') }}"
+      SITE_URL: "{{ vault_waline_site_url | default('https://example.com') }}"
+      SECURE_DOMAINS: "{{ vault_waline_secure_domains | default('example.com') }}"
+      AUTHOR_EMAIL: "{{ vault_waline_author_email | default('admin@example.com') }}"
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

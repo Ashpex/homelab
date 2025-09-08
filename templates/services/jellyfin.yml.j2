@@ -1,0 +1,35 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    deploy:
+      resources:
+        limits:
+          memory: {{ services.jellyfin.memory_limit }}
+    user: "{{ user_id }}:{{ group_id }}"
+{% if services.jellyfin.network_mode == 'host' %}
+    network_mode: 'host'
+{% else %}
+    ports:
+      - "8096:8096"
+{% endif %}
+    volumes:
+      - "{{ services.jellyfin.config_path }}:/config"
+      - "{{ services.jellyfin.cache_path }}:/cache"
+      - type: bind
+        source: "{{ services.jellyfin.media_path }}"
+        target: /media
+        read_only: true
+    environment:
+      - TZ={{ timezone }}
+    restart: 'unless-stopped'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+{% if services.jellyfin.network_mode != 'host' %}
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true
+{% endif %}
