@@ -2,13 +2,13 @@
 # Service configurations with ports and settings
 services:
   adguard:
-    enabled: false 
-    web_port: 3000
+    enabled: true 
+    web_port: 8081 
     dns_port: 53
     data_path: "{{ base_data_path }}/adguard"
     
   alist:
-    enabled: false 
+    enabled: true 
     port: 8083  # External port mapping
     data_path: "{{ base_data_path }}/alist"
     
@@ -24,7 +24,7 @@ services:
     port: 13378
     config_path: "{{ base_data_path }}/audiobookshelf/config"
     metadata_path: "{{ base_data_path }}/audiobookshelf/metadata"
-    audiobooks_path: "{{ media_path }}/library"
+    data_path: "{{ media_path }}/library"
     
   backrest:
     enabled: false 
@@ -34,7 +34,7 @@ services:
     cache_path: "{{ base_data_path }}/backrest/cache"
     
   copyparty:
-    enabled: false 
+    enabled: true 
     port: 3923
     config_path: "{{ base_data_path }}/copyparty/config"
     share_path: "{{ root_path }}"
@@ -57,8 +57,8 @@ services:
     config_path: "{{ base_data_path }}/glance/config"
     
   gotify:
-    enabled: false 
-    port: 8080
+    enabled: true 
+    port: 8888
     data_path: "{{ base_data_path }}/gotify"
     
   immich:
@@ -72,7 +72,7 @@ services:
     version: "release"
     
   jellyfin:
-    enabled: false 
+    enabled: true 
     network_mode: "host"
     memory_limit: "1g"
     config_path: "{{ base_data_path }}/jellyfin/config"
@@ -80,7 +80,7 @@ services:
     media_path: "{{ media_path }}"
     
   qbittorrent:
-    enabled: false 
+    enabled: true 
     web_port: 8084
     torrent_port: 6881
     config_path: "{{ base_data_path }}/qbittorrent"
