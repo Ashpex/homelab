@@ -5,7 +5,7 @@ services:
     ports:
       - "{{ services.audiobookshelf.port }}:80"
     volumes:
-      - "{{ services.audiobookshelf.audiobooks_path }}:/library"
+      - "{{ services.audiobookshelf.data_path }}:/library"
       - "{{ services.audiobookshelf.config_path }}:/config"
       - "{{ services.audiobookshelf.metadata_path }}:/metadata"
     environment:

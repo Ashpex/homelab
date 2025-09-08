@@ -5,7 +5,7 @@ services:
     container_name: alist
     volumes:
       - "{{ services.alist.data_path }}:/opt/alist/data"
-      - "{{ media_path }}/archive:/archive"
+      - "{{ root_path }}/archive:/archive"
       - "{{ media_path }}/library:/library"
     ports:
       - "{{ services.alist.port }}:5244"
