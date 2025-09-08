@@ -77,9 +77,9 @@ pages:
               - title: Cockpit
                 url: http://server.ashpex.net:9090/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/cockpit-light.svg
-              - title: FileBrowser
+              - title: CopyParty 
                 url: http://server.ashpex.net:3923/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/filebrowser.svg
+                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/copyparty.svg 
               - title: Archive
                 url: https://files.ashpex.net
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/files.svg

@@ -35,7 +35,6 @@
       - "{{ services.backrest.config_path | default(None) }}"
       - "{{ services.backrest.cache_path | default(None) }}"
       # Copyparty
-      - "{{ services.copyparty.data_path | default(None) }}"
       - "{{ services.copyparty.config_path | default(None) }}"
       # Frigate
       - "{{ services.frigate.config_path | default(None) }}"

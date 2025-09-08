@@ -6,10 +6,8 @@ services:
     ports:
       - "{{ services.copyparty.port }}:3923"
     volumes:
-      - "{{ services.copyparty.data_path }}:/cfg:z"
-      - "{{ services.copyparty.config_path }}/copyparty.conf:/copyparty.conf:ro,z"
-      - "{{ root_path }}:/w:z"
-    command: ["-c", "/copyparty.conf"]
+      - "{{ services.copyparty.config_path}}:/cfg:z"
+      - "{{ services.copyparty.share_path }}:/w:z"
     stop_grace_period: 15s
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
