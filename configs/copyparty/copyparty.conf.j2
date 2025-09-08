@@ -1,0 +1,17 @@
+# Copyparty configuration file with authentication
+# This ensures only authenticated users can access the file server
+
+[global]
+  e2dsa  # enable file indexing and filesystem scanning
+  e2ts   # enable multimedia indexing
+  ansi   # enable colors in log messages
+  grid   # show thumbnails/grid-view by default
+  name: "Homelab File Server"  # server name displayed in browser
+
+[accounts]
+  {{ services.copyparty.username }}: {{ services.copyparty.password }}
+
+[/]            # create a volume at "/" (the webroot), which will
+  /w           # share /w (the docker data volume)
+  accs:
+    rwmda: {{ services.copyparty.username }}  # full admin access for authenticated user
