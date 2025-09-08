@@ -3,11 +3,6 @@
 # item.key = service name (e.g., "copyparty")
 # item.value = service configuration
 
-- name: "Create config directory for {{ item.key }}"
-  file:
-    path: "{{ item.value.config_path }}"
-    state: directory
-    mode: '0755'
 
 - name: "Find .j2 template files for {{ item.key }}"
   find:

@@ -74,6 +74,7 @@
           - "{{ services.backrest.cache_path }}"
           # Copyparty
           - "{{ services.copyparty.data_path }}"
+          - "{{ services.copyparty.config_path }}"
           # Frigate
           - "{{ services.frigate.config_path }}"
           - "{{ services.frigate.data_path }}"
