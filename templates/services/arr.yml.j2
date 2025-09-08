@@ -1,0 +1,53 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID={{ user_id }}
+      - PGID={{ group_id }}
+      - TZ={{ timezone }}
+    volumes:
+      - "{{ services.arr.data_path }}/sonarr:/config"
+      - "{{ media_path }}/tv:/tv"
+      - "{{ downloads_path }}:/downloads"
+    ports:
+      - "{{ services.arr.sonarr_port }}:8989"
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID={{ user_id }}
+      - PGID={{ group_id }}
+      - TZ={{ timezone }}
+    volumes:
+      - "{{ services.arr.data_path }}/radarr:/config"
+      - "{{ media_path }}/movies:/movies"
+      - "{{ downloads_path }}:/downloads"
+    ports:
+      - "{{ services.arr.radarr_port }}:7878"
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    ports:
+      - "{{ services.arr.prowlarr_port }}:9696"
+    volumes:
+      - "{{ services.arr.data_path }}/prowlarr:/config"
+    environment:
+      - PUID={{ user_id }}
+      - PGID={{ group_id }}
+      - TZ={{ timezone }}
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

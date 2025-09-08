@@ -1,0 +1,27 @@
+services:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: backrest
+    hostname: backrest
+    user: "{{ user_id }}:{{ group_id }}"
+    volumes:
+      - "{{ services.backrest.data_path }}:/data"
+      - "{{ services.backrest.config_path }}:/config"
+      - "{{ services.backrest.cache_path }}:/cache"
+      - "/mnt/hdd1:/hdd1"
+      - "/mnt/ssd:/mnt/ssd"
+      - "~/.config/rclone/:/root/.config/rclone"
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TZ={{ timezone }}
+    restart: unless-stopped
+    ports:
+      - "{{ services.backrest.port }}:9898"
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

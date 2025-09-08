@@ -1,0 +1,24 @@
+services:
+  copyparty:
+    image: copyparty/ac:latest
+    container_name: copyparty
+    user: "{{ user_id }}:{{ group_id }}"
+    ports:
+      - "{{ services.copyparty.port }}:3923"
+    volumes:
+      - "{{ services.copyparty.data_path }}:/cfg:z"
+      - "/mnt/hdd1:/w:z"
+    stop_grace_period: 15s
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true

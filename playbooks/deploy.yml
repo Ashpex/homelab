@@ -1,0 +1,246 @@
+---
+- name: Deploy Homeserver Services
+  hosts: homeserver
+  gather_facts: yes
+  become: no
+  vars_files:
+    - ../group_vars/all/services.yml
+    - ../group_vars/all/vault.yml 
+
+  pre_tasks:
+    - name: Check if docker is installed
+      command: docker --version
+      register: docker_check
+      failed_when: false
+      changed_when: false
+
+    - name: Check if docker-compose is available
+      command: docker compose version
+      register: docker_compose_check  
+      failed_when: false
+      changed_when: false
+
+    - name: Fail if Docker is not available
+      fail:
+        msg: "Docker is not installed or not in PATH"
+      when: docker_check.rc != 0
+
+    - name: Fail if Docker Compose is not available
+      fail:
+        msg: "Docker Compose is not available. Please install Docker Compose v2"
+      when: docker_compose_check.rc != 0
+
+  tasks:
+    - name: Create base directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ user_id }}"
+        group: "{{ group_id }}"
+      loop:
+        - "{{ base_data_path }}"
+        - "{{ media_path }}"
+        - "{{ downloads_path }}"
+        - "{{ nvr_path }}"
+      become: yes
+
+    - name: Create service-specific directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ user_id }}"
+        group: "{{ group_id }}"
+      loop: "{{ service_directories }}"
+      become: yes
+      when: item is defined
+      vars:
+        service_directories:
+          # AdGuard
+          - "{{ services.adguard.data_path }}"
+          # Alist
+          - "{{ services.alist.data_path }}"
+          # Arr Suite
+          - "{{ services.arr.data_path }}/sonarr"
+          - "{{ services.arr.data_path }}/radarr"
+          - "{{ services.arr.data_path }}/prowlarr"
+          # Audiobookshelf
+          - "{{ services.audiobookshelf.config_path }}"
+          - "{{ services.audiobookshelf.metadata_path }}"
+          # Backrest
+          - "{{ services.backrest.data_path }}"
+          - "{{ services.backrest.config_path }}"
+          - "{{ services.backrest.cache_path }}"
+          # Copyparty
+          - "{{ services.copyparty.data_path }}"
+          # Frigate
+          - "{{ services.frigate.config_path }}"
+          - "{{ services.frigate.data_path }}"
+          # Gotify
+          - "{{ services.gotify.data_path }}"
+          # Immich
+          - "{{ services.immich.upload_path }}"
+          - "{{ services.immich.data_path }}/postgres"
+          # Jellyfin
+          - "{{ services.jellyfin.config_path }}"
+          - "{{ services.jellyfin.cache_path }}"
+          # qBittorrent
+          - "{{ services.qbittorrent.config_path }}"
+          # RomM
+          - "{{ services.romm.library_path }}"
+          - "{{ services.romm.library_path }}/roms"
+          - "{{ services.romm.library_path }}/bios"
+          - "{{ services.romm.assets_path }}"
+          - "{{ services.romm.config_path }}"
+          # Owncast
+          - "{{ services.owncast.data_path }}"
+          # Waline
+          - "{{ services.waline.data_path }}"
+
+    - name: Create Docker network
+      docker_network:
+        name: "{{ docker_network }}"
+        state: present
+
+    - name: Create build directory
+      file:
+        path: "../build"
+        state: directory
+        mode: '0755'
+
+    - name: Create services build directory
+      file:
+        path: "../build/services"
+        state: directory
+        mode: '0755'
+
+    - name: Create service directories for enabled services
+      file:
+        path: "../build/services/{{ item.key }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ services | dict2items }}"
+      when: 
+        - single_service is not defined or item.key == single_service
+        - single_service is defined or item.value.enabled | default(false)
+
+    - name: Generate individual service compose files
+      template:
+        src: "../templates/services/{{ item.key }}.yml.j2"
+        dest: "../build/services/{{ item.key }}/docker-compose.yml"
+        backup: yes
+        mode: '0644'
+      loop: "{{ services | dict2items }}"
+      when: 
+        - single_service is not defined or item.key == single_service
+        - single_service is defined or item.value.enabled | default(false)
+        - lookup('fileglob', '../templates/services/' + item.key + '.yml.j2')
+      register: service_templates
+
+    - name: Copy configuration files for services
+      copy:
+        src: "../configs/{{ item.key }}/"
+        dest: "{{ item.value.config_path | default('../build/services/' + item.key + '/config') }}/"
+        mode: '0644'
+      loop: "{{ services | dict2items }}"
+      when: 
+        - single_service is not defined or item.key == single_service
+        - single_service is defined or item.value.enabled | default(false)
+        - lookup('fileglob', '../configs/' + item.key + '/*') | length > 0
+
+    - name: Pull latest images for enabled services
+      command: docker compose pull
+      args:
+        chdir: "../build/services/{{ item.key }}"
+      loop: "{{ services | dict2items }}"
+      when: 
+        - single_service is not defined or item.key == single_service
+        - single_service is defined or item.value.enabled | default(false)
+        - force_pull | default(false)
+      ignore_errors: yes
+
+    - name: Deploy enabled services
+      command: docker compose up -d
+      args:
+        chdir: "../build/services/{{ item.key }}"
+      loop: "{{ services | dict2items }}"
+      when: 
+        - single_service is not defined or item.key == single_service
+        - single_service is defined or item.value.enabled | default(false)
+      register: service_deployments
+
+    - name: Wait for services to be healthy
+      uri:
+        url: "http://localhost:{{ item.value.port | default(item.value.web_port) }}"
+        method: GET
+        status_code: [200, 301, 302, 401, 403]
+      loop: "{{ services | dict2items }}"
+      when: 
+        - single_service is not defined or item.key == single_service
+        - single_service is defined or item.value.enabled | default(false)
+        - item.value.port is defined or item.value.web_port is defined
+        - item.key not in ['jellyfin', 'frigate', 'watchtower']  # Skip services with special networking
+      retries: 30
+      delay: 10
+      ignore_errors: yes
+
+    - name: Display service URLs
+      debug:
+        msg: |
+          ✅ {% if single_service is defined %}Service '{{ single_service }}' deployed successfully!{% else %}Services deployed successfully!{% endif %}
+
+
+          📋 Access your services at:
+          {% if services.adguard.enabled %}
+          - AdGuard Home: http://{{ ansible_host }}:{{ services.adguard.web_port }}
+          {% endif %}
+          {% if services.alist.enabled %}
+          - Alist: http://{{ ansible_host }}:{{ services.alist.port }}
+          {% endif %}
+          {% if services.arr.enabled %}
+          - Sonarr: http://{{ ansible_host }}:{{ services.arr.sonarr_port }}
+          - Radarr: http://{{ ansible_host }}:{{ services.arr.radarr_port }}
+          - Prowlarr: http://{{ ansible_host }}:{{ services.arr.prowlarr_port }}
+          {% endif %}
+          {% if services.audiobookshelf.enabled %}
+          - Audiobookshelf: http://{{ ansible_host }}:{{ services.audiobookshelf.port }}
+          {% endif %}
+          {% if services.backrest.enabled %}
+          - Backrest: http://{{ ansible_host }}:{{ services.backrest.port }}
+          {% endif %}
+          {% if services.copyparty.enabled %}
+          - Copyparty: http://{{ ansible_host }}:{{ services.copyparty.port }}
+          {% endif %}
+          {% if services.frigate.enabled %}
+          - Frigate: http://{{ ansible_host }}:{{ services.frigate.web_port }}
+          {% endif %}
+          {% if services.glance.enabled %}
+          - Glance: http://{{ ansible_host }}:{{ services.glance.port }}
+          {% endif %}
+          {% if services.gotify.enabled %}
+          - Gotify: http://{{ ansible_host }}:{{ services.gotify.port }}
+          {% endif %}
+          {% if services.immich.enabled %}
+          - Immich: http://{{ ansible_host }}:{{ services.immich.port }}
+          {% endif %}
+          {% if services.jellyfin.enabled %}
+          - Jellyfin: http://{{ ansible_host }}:8096
+          {% endif %}
+           {% if services.qbittorrent.enabled %}
+           - qBittorrent: http://{{ ansible_host }}:{{ services.qbittorrent.web_port }}
+           {% endif %}
+           {% if services.romm.enabled %}
+           - RomM: http://{{ ansible_host }}:{{ services.romm.web_port }}
+           {% endif %}
+           {% if services.owncast.enabled %}
+           - Owncast: http://{{ ansible_host }}:{{ services.owncast.web_port }}
+           {% endif %}
+          {% if services.waline.enabled %}
+          - Waline: http://{{ ansible_host }}:{{ services.waline.port }}
+          {% endif %}
+          {% if services.watchtower.enabled and services.watchtower.web_port is defined %}
+          - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.web_port }}
+          {% endif %}
+          
+          📁 Note: Samba file sharing is accessible via network shares (not web interface)

@@ -1,0 +1,5 @@
+/mnt/hdd1/media/movies/
+/mnt/hdd1/media/tv/
+/mnt/hdd1/stacks/adguard/work
+/mnt/hdd1/stacks/adguard/config
+/mnt/hdd1/nvr/frigate/recordings

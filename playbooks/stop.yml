@@ -1,0 +1,23 @@
+---
+- name: Stop Homeserver Services
+  hosts: homeserver
+  gather_facts: no
+
+  tasks:
+    - name: Find enabled service directories
+      find:
+        paths: "../build/services"
+        file_type: directory
+      register: service_dirs
+
+    - name: Stop all services
+      command: docker compose down
+      args:
+        chdir: "{{ item.path }}"
+      loop: "{{ service_dirs.files }}"
+      ignore_errors: yes
+      register: stop_results
+
+    - name: Display stop status
+      debug:
+        msg: "🛑 All services have been stopped successfully."

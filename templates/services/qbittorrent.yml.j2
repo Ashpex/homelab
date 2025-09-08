@@ -1,0 +1,24 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID={{ user_id }}
+      - PGID={{ group_id }}
+      - TZ={{ timezone }}
+      - WEBUI_PORT={{ services.qbittorrent.web_port }}
+      - TORRENTING_PORT={{ services.qbittorrent.torrent_port }}
+    volumes:
+      - "{{ services.qbittorrent.config_path }}:/config"
+      - "{{ services.qbittorrent.downloads_path }}:/downloads"
+    ports:
+      - "{{ services.qbittorrent.web_port }}:{{ services.qbittorrent.web_port }}"
+      - "{{ services.qbittorrent.torrent_port }}:{{ services.qbittorrent.torrent_port }}"
+      - "{{ services.qbittorrent.torrent_port }}:{{ services.qbittorrent.torrent_port }}/udp"
+    restart: unless-stopped
+    networks:
+      - {{ docker_network }}
+
+networks:
+  {{ docker_network }}:
+    external: true
