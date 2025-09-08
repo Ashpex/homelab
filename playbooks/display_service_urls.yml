@@ -1,0 +1,61 @@
+---
+# Display service URLs after deployment
+- name: Display service URLs
+  debug:
+    msg: |
+      ✅ {% if single_service is defined %}Service '{{ single_service }}' deployed successfully!{% else %}Services deployed successfully!{% endif %}
+
+
+      📋 Access your services at:
+      {% if services.adguard.enabled %}
+      - AdGuard Home: http://{{ ansible_host }}:{{ services.adguard.web_port }}
+      {% endif %}
+      {% if services.alist.enabled %}
+      - Alist: http://{{ ansible_host }}:{{ services.alist.port }}
+      {% endif %}
+      {% if services.arr.enabled %}
+      - Sonarr: http://{{ ansible_host }}:{{ services.arr.sonarr_port }}
+      - Radarr: http://{{ ansible_host }}:{{ services.arr.radarr_port }}
+      - Prowlarr: http://{{ ansible_host }}:{{ services.arr.prowlarr_port }}
+      {% endif %}
+      {% if services.audiobookshelf.enabled %}
+      - Audiobookshelf: http://{{ ansible_host }}:{{ services.audiobookshelf.port }}
+      {% endif %}
+      {% if services.backrest.enabled %}
+      - Backrest: http://{{ ansible_host }}:{{ services.backrest.port }}
+      {% endif %}
+      {% if services.copyparty.enabled %}
+      - Copyparty: http://{{ ansible_host }}:{{ services.copyparty.port }}
+      {% endif %}
+      {% if services.frigate.enabled %}
+      - Frigate: http://{{ ansible_host }}:{{ services.frigate.web_port }}
+      {% endif %}
+      {% if services.glance.enabled %}
+      - Glance: http://{{ ansible_host }}:{{ services.glance.port }}
+      {% endif %}
+      {% if services.gotify.enabled %}
+      - Gotify: http://{{ ansible_host }}:{{ services.gotify.port }}
+      {% endif %}
+      {% if services.immich.enabled %}
+      - Immich: http://{{ ansible_host }}:{{ services.immich.port }}
+      {% endif %}
+      {% if services.jellyfin.enabled %}
+      - Jellyfin: http://{{ ansible_host }}:8096
+      {% endif %}
+       {% if services.qbittorrent.enabled %}
+       - qBittorrent: http://{{ ansible_host }}:{{ services.qbittorrent.web_port }}
+       {% endif %}
+       {% if services.romm.enabled %}
+       - RomM: http://{{ ansible_host }}:{{ services.romm.web_port }}
+       {% endif %}
+       {% if services.owncast.enabled %}
+       - Owncast: http://{{ ansible_host }}:{{ services.owncast.web_port }}
+       {% endif %}
+      {% if services.waline.enabled %}
+      - Waline: http://{{ ansible_host }}:{{ services.waline.port }}
+      {% endif %}
+      {% if services.watchtower.enabled and services.watchtower.web_port is defined %}
+      - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.web_port }}
+      {% endif %}
+      
+      📁 Note: Samba file sharing is accessible via network shares (not web interface)

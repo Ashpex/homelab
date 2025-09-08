@@ -3,7 +3,7 @@ services:
     container_name: glance
     image: glanceapp/glance
     volumes:
-      - "./config:/app/config"
+      - "{{ services.glance.config_path }}:/app/config"
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
