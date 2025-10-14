@@ -58,4 +58,3 @@
       - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.web_port }}
       {% endif %}
       
-      📁 Note: Samba file sharing is accessible via network shares (not web interface)

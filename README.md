@@ -107,7 +107,6 @@ Currently supported services:
 | **Owncast** | Live streaming server | 8085 | ✅ |
 | **qBittorrent** | BitTorrent client | 8084 | ✅ |
 | **RomM** | ROM management with metadata | 8086 | ✅ |
-| **Samba** | File sharing | 445 | ✅ |
 | **Waline** | Comment system | 8360 | ✅ |
 | **Watchtower** | Auto-update containers | N/A | ✅ |
 
@@ -157,8 +156,6 @@ vault_romm_auth_secret_key: "your_secret_key"
 vault_romm_igdb_client_id: "your_igdb_client_id"
 vault_romm_igdb_client_secret: "your_igdb_client_secret"
 vault_romm_retroachievements_api_key: "your_retroachievements_api_key"
-vault_samba_username: "your_username"  
-vault_samba_password: "your_secure_password"
 ```
 
 ## Advanced Usage
