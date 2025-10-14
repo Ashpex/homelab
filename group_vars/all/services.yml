@@ -98,20 +98,6 @@ services:
     # romm_db_password, romm_db_root_password, romm_auth_secret_key
     # romm_igdb_client_id, romm_igdb_client_secret
     
-  samba:
-    enabled: false 
-    port: 445
-    username: "{{ vault_samba_username | default('user') }}"
-    password: "{{ vault_samba_password | default('changeme') }}"
-    # Main storage configuration
-    storage_path: "/mnt/hdd1"                            # External filesystem path
-    main_share_name: "hdd1"                              # Network share name: \\server\hdd1
-    main_internal_path: "/hdd1"                          # Internal container path
-    # Additional storage configuration (optional)
-    additional_storage_path: "/mnt/ssd"                  # External filesystem path
-    additional_share_name: "ssd"                         # Network share name: \\server\ssd
-    additional_internal_path: "/ssd"                     # Internal container path
-    
   waline:
     enabled: false 
     port: 8360
