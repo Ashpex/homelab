@@ -11,13 +11,14 @@ api:
 entryPoints:
   web:
     address: ":80"
-    # Redirect all HTTP to HTTPS
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
+    # HTTP->HTTPS redirect disabled for Cloudflare Tunnel (Cloudflare handles HTTPS)
+    # Uncomment below if you need direct HTTPS without Cloudflare Tunnel
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+    #       scheme: https
+    #       permanent: true
     # Trust Cloudflare proxy headers (if behind Cloudflare)
     forwardedHeaders:
       trustedIPs:
