@@ -3,7 +3,6 @@
 ###############################################################
 
 theme: {{ services.authelia.theme }}
-default_redirection_url: {{ services.authelia.default_redirect_url }}
 
 # Reset password token signing secret (replaces deprecated jwt_secret)
 identity_validation:
@@ -24,6 +23,8 @@ session:
   cookies:
     - name: authelia_session
       domain: ashpex.net
+      authelia_url: https://{{ services.authelia.domain }}
+      default_redirection_url: {{ services.authelia.default_redirect_url }}
 
 storage:
   encryption_key: {{ services.authelia.storage_encryption_key }}
