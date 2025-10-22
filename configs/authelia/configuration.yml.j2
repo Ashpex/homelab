@@ -1,0 +1,46 @@
+###############################################################
+# Authelia Configuration (rendered by Ansible)
+###############################################################
+
+theme: {{ services.authelia.theme }}
+default_redirection_url: {{ services.authelia.default_redirect_url }}
+
+jwt_secret: {{ services.authelia.jwt_secret }}
+
+server:
+  address: '0.0.0.0'
+  port: 9091
+
+log:
+  level: info
+
+session:
+  name: authelia_session
+  secret: {{ services.authelia.session_secret }}
+  same_site: lax
+  expiration: 1h
+  inactivity: 30m
+  domain: ashpex.net
+
+storage:
+  encryption_key: {{ services.authelia.storage_encryption_key }}
+  local:
+    path: /data/db.sqlite3
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+
+access_control:
+  default_policy: one_factor
+  rules:
+    - domain: '*.ashpex.net'
+      policy: one_factor
+
+notifier:
+  filesystem:
+    filename: /data/notification.txt
+
+

@@ -117,6 +117,18 @@ services:
     data_path: "{{ base_data_path }}/waline"
     domain: "comments.ashpex.net"
     
+  authelia:
+    enabled: false
+    web_port: 9091
+    domain: "auth.ashpex.net"
+    data_path: "{{ base_data_path }}/authelia"
+    config_path: "{{ base_data_path }}/authelia/config"
+    jwt_secret: "{{ vault_authelia_jwt_secret }}"
+    session_secret: "{{ vault_authelia_session_secret }}"
+    storage_encryption_key: "{{ vault_authelia_storage_key }}"
+    default_redirect_url: "https://hub.ashpex.net"
+    theme: "dark"
+    
   watchtower:
     enabled: false 
     web_port: 8085  # Optional web interface

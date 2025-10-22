@@ -1,0 +1,27 @@
+services:
+  authelia:
+    container_name: authelia
+    image: authelia/authelia:latest
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+    volumes:
+      - "{{ services.authelia.config_path }}:/config"
+      - "{{ services.authelia.data_path }}:/data"
+    ports:
+      - "{{ services.authelia.web_port }}:9091"
+    networks:
+      - {{ docker_network }}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authelia.rule=Host(`{{ services.authelia.domain }}`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.routers.authelia.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.authelia.middlewares=secure-chain@file"
+      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+
+networks:
+  {{ docker_network }}:
+    external: true
+
+

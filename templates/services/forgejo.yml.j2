@@ -34,7 +34,7 @@ services:
       - "traefik.http.routers.forgejo.tls.certresolver=letsencrypt"
       
       # Use secure middleware chain (compression + security headers)
-      - "traefik.http.routers.forgejo.middlewares=secure-chain@file"
+      - "traefik.http.routers.forgejo.middlewares=secure-chain@file,authelia-forwardauth@file"
       
       # Service definition
       - "traefik.http.services.forgejo.loadbalancer.server.port=3000"

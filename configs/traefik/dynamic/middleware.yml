@@ -27,6 +27,17 @@ http:
           X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex"
           server: ""  # Hide server header
           X-Powered-By: ""  # Hide framework info
+
+    # Authelia ForwardAuth (protect routes via SSO)
+    authelia-forwardauth:
+      forwardAuth:
+        address: "http://authelia:9091/api/authz/forwardauth?rd=https://{{ services.authelia.domain }}"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - Remote-User
+          - Remote-Groups
+          - Remote-Name
+          - Remote-Email
     
     # ============ Rate Limiting ============
     
