@@ -13,7 +13,7 @@ services:
       - {{ docker_network }}
     labels:
       # Traefik configuration
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       - "traefik.http.routers.gotify.rule=Host(`{{ services.gotify.domain }}`)"
       - "traefik.http.routers.gotify.entrypoints=websecure"
       - "traefik.http.routers.gotify.tls.certresolver=letsencrypt"
