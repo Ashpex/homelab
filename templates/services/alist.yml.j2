@@ -1,4 +1,3 @@
-version: '3.3'
 services:
   alist:
     image: 'xhofe/alist:latest'
@@ -16,6 +15,14 @@ services:
     restart: unless-stopped
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.alist.rule=Host(`{{ services.alist.domain }}`)"
+      - "traefik.http.routers.alist.entrypoints=websecure"
+      - "traefik.http.routers.alist.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.alist.middlewares=secure-chain@file"
+      - "traefik.http.services.alist.loadbalancer.server.port=5244"
 
 networks:
   {{ docker_network }}:

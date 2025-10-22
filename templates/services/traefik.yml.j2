@@ -1,0 +1,45 @@
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v3.2
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "{{ services.traefik.web_port }}:80"           # HTTP
+      - "{{ services.traefik.websecure_port }}:443"    # HTTPS
+      - "{{ services.traefik.dashboard_port }}:8080"   # Dashboard
+      - "{{ services.traefik.health_port }}:8082"      # Health check
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker socket (read-only)
+      - "{{ services.traefik.data_path }}/acme.json:/acme.json"  # SSL certificates
+      - "{{ services.traefik.config_path }}/traefik.yml:/traefik.yml:ro"  # Static config
+      - "{{ services.traefik.config_path }}/dynamic:/dynamic:ro"  # Dynamic config
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ docker_network }}
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    labels:
+      # Enable Traefik for this container
+      - "traefik.enable=true"
+      
+      # Dashboard (with secure headers)
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`{{ services.traefik.dashboard_domain }}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=secure-headers@file"
+      
+      # HTTP->HTTPS redirect handled by entrypoint config (no labels needed)
+
+networks:
+  {{ docker_network }}:
+    external: true
+

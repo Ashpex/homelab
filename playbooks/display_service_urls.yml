@@ -27,6 +27,9 @@
       {% if services.copyparty.enabled %}
       - Copyparty: http://{{ ansible_host }}:{{ services.copyparty.port }}
       {% endif %}
+      {% if services.forgejo.enabled %}
+      - Forgejo: http://{{ ansible_host }}:{{ services.forgejo.web_port }}
+      {% endif %}
       {% if services.frigate.enabled %}
       - Frigate: http://{{ ansible_host }}:{{ services.frigate.web_port }}
       {% endif %}
@@ -48,13 +51,13 @@
        {% if services.romm.enabled %}
        - RomM: http://{{ ansible_host }}:{{ services.romm.web_port }}
        {% endif %}
-       {% if services.owncast.enabled %}
-       - Owncast: http://{{ ansible_host }}:{{ services.owncast.web_port }}
-       {% endif %}
       {% if services.waline.enabled %}
       - Waline: http://{{ ansible_host }}:{{ services.waline.port }}
       {% endif %}
       {% if services.watchtower.enabled and services.watchtower.web_port is defined %}
       - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.web_port }}
+      {% endif %}
+      {% if services.traefik.enabled %}
+      - Traefik Dashboard: http://{{ ansible_host }}:{{ services.traefik.dashboard_port }}
       {% endif %}
       

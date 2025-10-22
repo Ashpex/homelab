@@ -1,0 +1,155 @@
+---
+# Shared Traefik Middleware Configuration
+# Based on best practices from https://doc.traefik.io/traefik/middlewares/overview/
+# Reference in labels: traefik.http.routers.service.middlewares=middleware-name@file
+
+http:
+  middlewares:
+    # ============ Security Middleware ============
+    
+    # Security Headers (OWASP recommendations)
+    secure-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        frameDeny: false
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+        contentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+        customResponseHeaders:
+          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex"
+          server: ""  # Hide server header
+          X-Powered-By: ""  # Hide framework info
+    
+    # ============ Rate Limiting ============
+    
+    # Rate Limiting - Moderate (general use)
+    rate-limit-moderate:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1m
+    
+    # Rate Limiting - Strict (sensitive endpoints)
+    rate-limit-strict:
+      rateLimit:
+        average: 30
+        burst: 10
+        period: 1m
+    
+    # Rate Limiting - API (higher limits)
+    rate-limit-api:
+      rateLimit:
+        average: 300
+        burst: 100
+        period: 1m
+    
+    # ============ Performance Middleware ============
+    
+    # Compress Responses (gzip)
+    compress:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
+    
+    # Buffering (for slow clients)
+    buffering:
+      buffering:
+        maxRequestBodyBytes: 10485760  # 10MB
+        memRequestBodyBytes: 2097152   # 2MB
+        maxResponseBodyBytes: 10485760 # 10MB
+        memResponseBodyBytes: 2097152  # 2MB
+        retryExpression: "IsNetworkError() && Attempts() < 2"
+    
+    # ============ Resilience Middleware ============
+    
+    # Retry on network errors
+    retry:
+      retry:
+        attempts: 3
+        initialInterval: "100ms"
+    
+    # Circuit Breaker (prevent cascading failures)
+    circuit-breaker:
+      circuitBreaker:
+        expression: "NetworkErrorRatio() > 0.30 || ResponseCodeRatio(500, 600, 0, 600) > 0.25"
+        checkPeriod: "10s"
+        fallbackDuration: "30s"
+        recoveryDuration: "10s"
+    
+    # In-Flight Request Limit
+    inflight-limit:
+      inFlightReq:
+        amount: 100
+    
+    # ============ Authentication Middleware ============
+    
+    # Basic Auth (generate with: htpasswd -nb username password)
+    # Uncomment and add your credentials
+    # basic-auth:
+    #   basicAuth:
+    #     users:
+    #       - "admin:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"  # admin:admin
+    #     removeHeader: true  # Don't pass Authorization header to backend
+    
+    # IP Whitelist - Local networks only
+    # local-only:
+    #   ipAllowList:
+    #     sourceRange:
+    #       - "127.0.0.1/32"
+    #       - "192.168.0.0/16"
+    #       - "10.0.0.0/8"
+    #       - "172.16.0.0/12"
+    
+    # IP Whitelist - Cloudflare only
+    # cloudflare-only:
+    #   ipAllowList:
+    #     sourceRange:
+    #       - "173.245.48.0/20"
+    #       - "103.21.244.0/22"
+    #       - "103.22.200.0/22"
+    #       - "103.31.4.0/22"
+    #       - "141.101.64.0/18"
+    #       - "108.162.192.0/18"
+    #       - "190.93.240.0/20"
+    #       - "188.114.96.0/20"
+    #       - "197.234.240.0/22"
+    #       - "198.41.128.0/17"
+    #       - "162.158.0.0/15"
+    #       - "104.16.0.0/13"
+    #       - "104.24.0.0/14"
+    #       - "172.64.0.0/13"
+    #       - "131.0.72.0/22"
+    
+    # ============ Middleware Chains ============
+    
+    # Standard chain for most services
+    secure-chain:
+      chain:
+        middlewares:
+          - compress
+          - secure-headers
+    
+    # Resilient chain (with retry and circuit breaker)
+    resilient-chain:
+      chain:
+        middlewares:
+          - compress
+          - secure-headers
+          - retry
+          - circuit-breaker
+    
+    # API chain (higher rate limits)
+    api-chain:
+      chain:
+        middlewares:
+          - compress
+          - secure-headers
+          - rate-limit-api
+          - retry
+

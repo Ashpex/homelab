@@ -1,0 +1,62 @@
+---
+# Traefik Dynamic Configuration Example
+# Copy this file to your data_path/traefik/config/dynamic/ directory
+# and remove the .example extension to activate
+
+http:
+  # Routers
+  routers:
+    # Example: Route to an external service
+    example-service:
+      rule: "Host(`example.ashpex.net`)"
+      entryPoints:
+        - websecure
+      service: example-service
+      tls:
+        certResolver: letsencrypt
+  
+  # Services
+  services:
+    # Example: External service endpoint
+    example-service:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.100:8080"
+  
+  # Middlewares
+  middlewares:
+    # Basic Auth example
+    basic-auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"  # admin:admin
+    
+    # Rate limiting
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+    
+    # IP whitelist
+    ip-whitelist:
+      ipWhiteList:
+        sourceRange:
+          - "127.0.0.1/32"
+          - "192.168.1.0/24"
+
+# TCP Routers (for non-HTTP services)
+tcp:
+  routers:
+    # Example: SSH service
+    ssh-router:
+      rule: "HostSNI(`*`)"
+      entryPoints:
+        - ssh
+      service: ssh-service
+  
+  services:
+    ssh-service:
+      loadBalancer:
+        servers:
+          - address: "192.168.1.100:22"
+

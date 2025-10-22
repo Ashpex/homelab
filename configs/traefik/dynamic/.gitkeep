@@ -1,0 +1,4 @@
+# Place dynamic Traefik configuration files here
+# These files are loaded automatically and watched for changes
+# See dynamic.yml.example in parent directory for examples
+

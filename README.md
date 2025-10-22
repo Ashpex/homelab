@@ -99,12 +99,13 @@ Currently supported services:
 | **Audiobookshelf** | Audiobook and podcast server | 13378 | ✅ |
 | **Backrest** | Backup solution with restic | 9898 | ✅ |
 | **Copyparty** | File sharing server | 3923 | ✅ |
+| **Forgejo** | Self-hosted Git service | 8087 | ✅ |
 | **Frigate** | NVR for security cameras | 8971 | ✅ |
 | **Glance** | Dashboard and monitoring | 8083 | ✅ |
 | **Gotify** | Push notification server | 8080 | ✅ |
 | **Immich** | Photo management (Google Photos alternative) | 2283 | ✅ |
 | **Jellyfin** | Media server | 8096 | ✅ |
-| **Owncast** | Live streaming server | 8085 | ✅ |
+| **Traefik** | Reverse proxy with automatic HTTPS | 80/443/8080 | ✅ |
 | **qBittorrent** | BitTorrent client | 8084 | ✅ |
 | **RomM** | ROM management with metadata | 8086 | ✅ |
 | **Waline** | Comment system | 8360 | ✅ |
@@ -317,11 +318,14 @@ make clean
 
 ### Adding New Services
 
-1. Add service configuration to `group_vars/all/services.yml`
+For detailed instructions on adding new services, see [Adding Services Guide](docs/ADDING-SERVICES.md).
+
+Quick overview:
+1. Add configuration to `group_vars/all/services.yml`
 2. Create Docker Compose template in `templates/services/servicename.yml.j2`
-3. Add any required vault variables to `group_vars/all/vault.yml`
-4. Update service directories list in `playbooks/deploy.yml` if needed
-5. Test: `make deploy-service servicename`
+3. Add secrets to `group_vars/all/vault.yml` (if needed)
+4. Create config files in `configs/servicename/` (if needed)
+5. Test deployment: `make deploy-service servicename`
 6. Update this README
 
 ### Database Backups
@@ -336,12 +340,36 @@ For services with databases, use the interactive tasks menu (`make tasks`) or ru
 ./scripts/restore-romm.sh backup-file.sql
 ```
 
+## Traefik Reverse Proxy
+
+This setup includes Traefik as a reverse proxy with automatic HTTPS via Let's Encrypt.
+
+**Features:**
+- Automatic HTTPS certificates for all services
+- Security headers and compression
+- Rate limiting and circuit breaker patterns
+- Cloudflare integration support
+
+**Configuration:**
+- Static config: `configs/traefik/traefik.yml`
+- Dynamic middleware: `configs/traefik/dynamic/middleware.yml`
+- Service domains: Configured in `group_vars/all/services.yml`
+
+**Documentation:**
+- [Traefik Integration Guide](docs/TRAEFIK-INTEGRATION.md)
+- [Traefik Best Practices](docs/TRAEFIK-BEST-PRACTICES.md)
+
+**Access:**
+- Dashboard: `http://localhost:8080` (local only)
+- Services: `https://service.ashpex.net` (via domain)
+
 ## Security Considerations
 
 - **Vault encryption**: All sensitive data is encrypted with Ansible Vault
 - **Network isolation**: Services communicate through a dedicated Docker network
 - **User permissions**: Most services run as your user, not root (except where required)
-- **Reverse proxy**: Consider adding Traefik or Nginx Proxy Manager for HTTPS
+- **HTTPS everywhere**: Traefik provides automatic SSL/TLS for all services
+- **Security headers**: OWASP-recommended headers applied via Traefik middleware
 - **Firewall**: Configure your firewall to restrict external access as needed
 
 ## Performance Tips

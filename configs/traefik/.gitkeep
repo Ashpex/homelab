@@ -1,0 +1,4 @@
+# This directory contains Traefik configuration files
+# Static config: traefik.yml (rendered as template)
+# Dynamic configs: Place in dynamic/ subdirectory when needed
+

@@ -38,6 +38,14 @@ services:
         restart: true
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.romm.rule=Host(`{{ services.romm.domain }}`)"
+      - "traefik.http.routers.romm.entrypoints=websecure"
+      - "traefik.http.routers.romm.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.romm.middlewares=secure-chain@file"
+      - "traefik.http.services.romm.loadbalancer.server.port=8080"
 
   romm-db:
     container_name: romm-db

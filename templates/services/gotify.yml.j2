@@ -11,6 +11,14 @@ services:
     restart: unless-stopped
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.gotify.rule=Host(`{{ services.gotify.domain }}`)"
+      - "traefik.http.routers.gotify.entrypoints=websecure"
+      - "traefik.http.routers.gotify.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gotify.middlewares=secure-chain@file"
+      - "traefik.http.services.gotify.loadbalancer.server.port=80"
 
 networks:
   {{ docker_network }}:

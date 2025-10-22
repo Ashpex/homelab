@@ -11,7 +11,7 @@ services:
     network_mode: 'host'
 {% else %}
     ports:
-      - "8096:8096"
+      - "{{ services.jellyfin.web_port }}:8096"
 {% endif %}
     volumes:
       - "{{ services.jellyfin.config_path }}:/config"
@@ -28,6 +28,14 @@ services:
 {% if services.jellyfin.network_mode != 'host' %}
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`{{ services.jellyfin.domain }}`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.jellyfin.middlewares=resilient-chain@file"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
 
 networks:
   {{ docker_network }}:
