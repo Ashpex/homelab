@@ -20,7 +20,7 @@ services:
       - {{ docker_network }}
     labels:
       # Traefik configuration
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       - "traefik.http.routers.copyparty.rule=Host(`{{ services.copyparty.domain }}`)"
       - "traefik.http.routers.copyparty.entrypoints=websecure"
       - "traefik.http.routers.copyparty.tls.certresolver=letsencrypt"

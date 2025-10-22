@@ -24,7 +24,7 @@ services:
       - {{ docker_network }}
     labels:
       # Traefik configuration (for web UI)
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       - "traefik.http.routers.immich.rule=Host(`{{ services.immich.domain }}`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
       - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
