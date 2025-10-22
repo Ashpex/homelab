@@ -20,24 +20,22 @@ services:
     networks:
       - {{ docker_network }}
     healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8082/ping"]
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 10s
-    labels:
-      # Enable Traefik for this container
-      - "traefik.enable=true"
-      
-      # Dashboard (with secure headers)
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`{{ services.traefik.dashboard_domain }}`)"
-      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.traefik-dashboard.tls=true"
-      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.middlewares=secure-headers@file"
-      
-      # HTTP->HTTPS redirect handled by entrypoint config (no labels needed)
+    # Note: With insecure: true, dashboard is accessible at http://server:8080
+    # No labels needed for direct port access
+    # For production, set insecure: false and uncomment labels below for domain access
+    
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.traefik-dashboard.rule=Host(`{{ services.traefik.dashboard_domain }}`)"
+    #   - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+    #   - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+    #   - "traefik.http.routers.traefik-dashboard.service=api@internal"
+    #   - "traefik.http.routers.traefik-dashboard.middlewares=secure-headers@file"
 
 networks:
   {{ docker_network }}:
