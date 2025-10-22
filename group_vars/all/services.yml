@@ -119,7 +119,7 @@ services:
     
   watchtower:
     enabled: false 
-    web_port: 8082  # Optional web interface
+    web_port: 8085  # Optional web interface
     
   forgejo:
     enabled: true
