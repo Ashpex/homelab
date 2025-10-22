@@ -22,7 +22,7 @@ services:
       - {{ docker_network }}
     labels:
       # Traefik configuration (for web UI only)
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       - "traefik.http.routers.frigate.rule=Host(`{{ services.frigate.domain }}`)"
       - "traefik.http.routers.frigate.entrypoints=websecure"
       - "traefik.http.routers.frigate.tls.certresolver=letsencrypt"
