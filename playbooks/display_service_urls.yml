@@ -60,7 +60,7 @@
       {% if services.traefik.enabled %}
       - Traefik Dashboard: http://{{ ansible_host }}:{{ services.traefik.dashboard_port }}
       {% endif %}
-{% if services.authelia.enabled %}
-- Authelia: https://{{ services.authelia.domain }} (or http://{{ ansible_host }}:{{ services.authelia.web_port }})
-{% endif %}
+      {% if services.authelia.enabled %}
+      - Authelia: https://{{ services.authelia.domain }} (or http://{{ ansible_host }}:{{ services.authelia.web_port }})
+      {% endif %}
       
