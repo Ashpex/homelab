@@ -20,7 +20,9 @@ http:
         customFrameOptionsValue: "SAMEORIGIN"
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
-        contentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+        # CSP disabled - too restrictive for modern web apps with inline styles/scripts and data URIs
+        # Uncomment and customize per-service if needed:
+        # contentSecurityPolicy: "default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:"
         customResponseHeaders:
           X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex"
           server: ""  # Hide server header
