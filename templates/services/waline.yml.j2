@@ -17,6 +17,14 @@ services:
       AUTHOR_EMAIL: "{{ vault_waline_author_email | default('admin@example.com') }}"
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.waline.rule=Host(`{{ services.waline.domain }}`)"
+      - "traefik.http.routers.waline.entrypoints=websecure"
+      - "traefik.http.routers.waline.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.waline.middlewares=secure-chain@file"
+      - "traefik.http.services.waline.loadbalancer.server.port=8360"
 
 networks:
   {{ docker_network }}:

@@ -57,10 +57,14 @@
       - "{{ (services.romm.library_path ~ '/bios') if services.romm.library_path is defined else None }}"
       - "{{ services.romm.assets_path | default(None) }}"
       - "{{ services.romm.config_path | default(None) }}"
-      # Owncast
-      - "{{ services.owncast.data_path | default(None) }}"
       # Waline
       - "{{ services.waline.data_path | default(None) }}"
+      # Forgejo
+      - "{{ services.forgejo.data_path | default(None) }}"
+      # Traefik
+      - "{{ services.traefik.data_path | default(None) }}"
+      - "{{ services.traefik.config_path | default(None) }}"
+      - "{{ services.traefik.config_path | default(None) ~ '/dynamic' if services.traefik.config_path is defined else None }}"
     service_directories: "{{ service_directories_raw | reject('equalto', None) | list }}"
 
   pre_tasks:

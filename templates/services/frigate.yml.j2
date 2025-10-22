@@ -15,11 +15,19 @@ services:
           size: 250000000
     ports:
       - "{{ services.frigate.web_port }}:8971"
-      - "{{ services.frigate.rtsp_port }}:8554"
-      - "{{ services.frigate.webrtc_tcp_port }}:8555/tcp"
-      - "{{ services.frigate.webrtc_udp_port }}:8555/udp"
+      - "{{ services.frigate.rtsp_port }}:8554"  # RTSP streams (direct access)
+      - "{{ services.frigate.webrtc_tcp_port }}:8555/tcp"  # WebRTC (direct access)
+      - "{{ services.frigate.webrtc_udp_port }}:8555/udp"  # WebRTC (direct access)
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration (for web UI only)
+      - "traefik.enable=true"
+      - "traefik.http.routers.frigate.rule=Host(`{{ services.frigate.domain }}`)"
+      - "traefik.http.routers.frigate.entrypoints=websecure"
+      - "traefik.http.routers.frigate.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frigate.middlewares=secure-chain@file"
+      - "traefik.http.services.frigate.loadbalancer.server.port=8971"
 
 networks:
   {{ docker_network }}:

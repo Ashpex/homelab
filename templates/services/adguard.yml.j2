@@ -9,25 +9,29 @@ services:
       - "{{ services.adguard.data_path }}/work:/opt/adguardhome/work"
       - "{{ services.adguard.data_path }}/config:/opt/adguardhome/conf"
     ports:
-      # Plain DNS
       - '{{ services.adguard.dns_port }}:53/tcp'
       - '{{ services.adguard.dns_port }}:53/udp'
-      # AdGuard Home Admin Panel as well as DNS-over-HTTPS
       - '{{ services.adguard.web_port }}:80/tcp'
+      # DNS-over-HTTPS/TLS/QUIC (direct access required)
       - '443:443/tcp'
       - '443:443/udp'
       - '3000:3000/tcp'
-      # DNS-over-TLS
       - '853:853/tcp'
-      # DNS-over-QUIC
       - '784:784/udp'
       - '853:853/udp'
       - '8853:8853/udp'
-      # DNSCrypt
       - '5443:5443/tcp'
       - '5443:5443/udp'
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration (for web UI only)
+      - "traefik.enable=true"
+      - "traefik.http.routers.adguard.rule=Host(`{{ services.adguard.domain }}`)"
+      - "traefik.http.routers.adguard.entrypoints=websecure"
+      - "traefik.http.routers.adguard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adguard.middlewares=secure-chain@file"
+      - "traefik.http.services.adguard.loadbalancer.server.port=80"
 
 networks:
   {{ docker_network }}:

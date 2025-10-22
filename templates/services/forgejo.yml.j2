@@ -1,0 +1,44 @@
+services:
+  forgejo:
+    container_name: forgejo
+    image: codeberg.org/forgejo/forgejo:13
+    volumes:
+      - "{{ services.forgejo.data_path }}:/data"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    # Direct port access (for local testing or when Traefik is disabled)
+    # Comment out when using Traefik
+    ports:
+      - "{{ services.forgejo.web_port }}:3000"
+    restart: always
+    environment:
+      - USER_UID={{ user_id }}
+      - USER_GID={{ group_id }}
+      - TZ={{ timezone }}
+      - FORGEJO____APP_NAME=Ashpex's Git Server
+      - FORGEJO__server__DOMAIN={{ services.forgejo.domain }}
+      - FORGEJO__server__HTTP_PORT=3000
+      - FORGEJO__server__ROOT_URL=https://{{ services.forgejo.domain }}/
+      - FORGEJO__server__DISABLE_SSH=true
+      - FORGEJO__database__DB_TYPE=sqlite3
+      - FORGEJO__database__PATH=/data/forgejo/forgejo.db
+    networks:
+      - {{ docker_network }}
+    labels:
+      - "traefik.enable=true"
+      
+      # HTTP Router
+      - "traefik.http.routers.forgejo.rule=Host(`{{ services.forgejo.domain }}`)"
+      - "traefik.http.routers.forgejo.entrypoints=websecure"
+      - "traefik.http.routers.forgejo.tls=true"
+      - "traefik.http.routers.forgejo.tls.certresolver=letsencrypt"
+      
+      # Use secure middleware chain (compression + security headers)
+      - "traefik.http.routers.forgejo.middlewares=secure-chain@file"
+      
+      # Service definition
+      - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
+
+networks:
+  {{ docker_network }}:
+    external: true

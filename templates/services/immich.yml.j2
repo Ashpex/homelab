@@ -22,6 +22,14 @@ services:
     restart: always
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration (for web UI)
+      - "traefik.enable=true"
+      - "traefik.http.routers.immich.rule=Host(`{{ services.immich.domain }}`)"
+      - "traefik.http.routers.immich.entrypoints=websecure"
+      - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.immich.middlewares=secure-chain@file"
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
   immich-machine-learning:
     container_name: immich_machine_learning

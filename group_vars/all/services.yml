@@ -6,11 +6,13 @@ services:
     web_port: 8081 
     dns_port: 53
     data_path: "{{ base_data_path }}/adguard"
+    domain: "adguard.ashpex.net"
     
   alist:
     enabled: true 
     port: 8083  # External port mapping
     data_path: "{{ base_data_path }}/alist"
+    domain: "files.ashpex.net"
     
   arr:
     enabled: false
@@ -25,6 +27,7 @@ services:
     config_path: "{{ base_data_path }}/audiobookshelf/config"
     metadata_path: "{{ base_data_path }}/audiobookshelf/metadata"
     data_path: "{{ media_path }}/library"
+    domain: "library.ashpex.net"
     
   backrest:
     enabled: false 
@@ -40,6 +43,7 @@ services:
     share_path: "{{ root_path }}"
     username: "{{ vault_copyparty_username }}"
     password: "{{ vault_copyparty_password }}"
+    domain: "share.ashpex.net"
     
   frigate:
     enabled: false 
@@ -50,16 +54,19 @@ services:
     config_path: "{{ base_data_path }}/frigate"
     data_path: "{{ nvr_path }}/frigate"
     shm_size: "100mb"
+    domain: "camera.ashpex.net"
     
   glance:
     enabled: true
-    port: 80
+    port: 8090  # Changed from 80 to avoid conflict with Traefik
     config_path: "{{ base_data_path }}/glance/config"
+    domain: "glance.ashpex.net"
     
   gotify:
     enabled: true 
     port: 8888
     data_path: "{{ base_data_path }}/gotify"
+    domain: "gotify.ashpex.net"
     
   immich:
     enabled: false 
@@ -70,14 +77,17 @@ services:
     db_username: "immich"
     db_name: "immich"
     version: "release"
+    domain: "photos.ashpex.net"
     
   jellyfin:
     enabled: true 
+    web_port: 8096  # Web interface port
     network_mode: "host"
     memory_limit: "1g"
     config_path: "{{ base_data_path }}/jellyfin/config"
     cache_path: "{{ base_data_path }}/jellyfin/cache"
     media_path: "{{ media_path }}"
+    domain: "media.ashpex.net"
     
   qbittorrent:
     enabled: true 
@@ -85,6 +95,7 @@ services:
     torrent_port: 6881
     config_path: "{{ base_data_path }}/qbittorrent"
     downloads_path: "{{ downloads_path }}"
+    domain: "torrent.ashpex.net"
     
   romm:
     enabled: true 
@@ -97,18 +108,33 @@ services:
     # Sensitive data in vault.yml:
     # romm_db_password, romm_db_root_password, romm_auth_secret_key
     # romm_igdb_client_id, romm_igdb_client_secret
+    domain: "romm.ashpex.net"
     
   waline:
     enabled: false 
     port: 8360
     data_path: "{{ base_data_path }}/waline"
-    
-  owncast:
-    enabled: false
-    web_port: 8085
-    rtmp_port: 1935  
-    data_path: "{{ base_data_path }}/owncast"
+    domain: "comments.ashpex.net"
     
   watchtower:
     enabled: false 
     web_port: 8082  # Optional web interface
+    
+  forgejo:
+    enabled: true
+    web_port: 8087  # External port mapping
+    data_path: "{{ base_data_path }}/forgejo"
+    domain: "git.ashpex.net"
+    
+  traefik:
+    enabled: true
+    web_port: 80        # HTTP
+    websecure_port: 443 # HTTPS
+    dashboard_port: 8080 # Dashboard/API
+    health_port: 8082   # Health check endpoint
+    data_path: "{{ base_data_path }}/traefik"
+    config_path: "{{ base_data_path }}/traefik/config"
+    # Domain for the dashboard (optional)
+    dashboard_domain: "traefik.ashpex.net"
+    # Email for Let's Encrypt certificates
+    acme_email: "{{ vault_acme_email }}"

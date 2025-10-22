@@ -13,6 +13,14 @@ services:
     restart: unless-stopped
     networks:
       - {{ docker_network }}
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.audiobookshelf.rule=Host(`{{ services.audiobookshelf.domain }}`)"
+      - "traefik.http.routers.audiobookshelf.entrypoints=websecure"
+      - "traefik.http.routers.audiobookshelf.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.audiobookshelf.middlewares=resilient-chain@file"
+      - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
 
 networks:
   {{ docker_network }}:
