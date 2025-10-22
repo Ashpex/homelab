@@ -65,6 +65,9 @@
       - "{{ services.traefik.data_path | default(None) }}"
       - "{{ services.traefik.config_path | default(None) }}"
       - "{{ services.traefik.config_path | default(None) ~ '/dynamic' if services.traefik.config_path is defined else None }}"
+      # Authelia
+      - "{{ services.authelia.data_path | default(None) }}"
+      - "{{ services.authelia.config_path | default(None) }}"
     service_directories: "{{ service_directories_raw | reject('equalto', None) | list }}"
 
   pre_tasks:
