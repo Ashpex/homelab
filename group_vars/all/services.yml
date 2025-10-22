@@ -127,7 +127,7 @@ services:
     session_secret: "{{ vault_authelia_session_secret }}"
     storage_encryption_key: "{{ vault_authelia_storage_key }}"
     default_redirect_url: "https://hub.ashpex.net"
-    theme: "dark"
+    theme: "light"
     
   watchtower:
     enabled: false 
