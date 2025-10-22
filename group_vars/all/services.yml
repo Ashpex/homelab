@@ -60,7 +60,7 @@ services:
     enabled: true
     port: 8090  # Changed from 80 to avoid conflict with Traefik
     config_path: "{{ base_data_path }}/glance/config"
-    domain: "glance.ashpex.net"
+    domain: "hub.ashpex.net"
     
   gotify:
     enabled: true 
