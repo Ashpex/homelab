@@ -7,12 +7,8 @@ services:
         limits:
           memory: {{ services.jellyfin.memory_limit }}
     #user: "{{ user_id }}:{{ group_id }}"
-{% if services.jellyfin.network_mode == 'host' %}
-    network_mode: 'host'
-{% else %}
     ports:
       - "{{ services.jellyfin.web_port }}:8096"
-{% endif %}
     volumes:
       - "{{ services.jellyfin.config_path }}:/config"
       - "{{ services.jellyfin.cache_path }}:/cache"
@@ -25,7 +21,6 @@ services:
     restart: 'unless-stopped'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-{% if services.jellyfin.network_mode != 'host' %}
     networks:
       - {{ docker_network }}
     labels:
@@ -40,4 +35,3 @@ services:
 networks:
   {{ docker_network }}:
     external: true
-{% endif %}
