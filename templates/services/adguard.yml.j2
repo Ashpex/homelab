@@ -9,29 +9,43 @@ services:
       - "{{ services.adguard.data_path }}/work:/opt/adguardhome/work"
       - "{{ services.adguard.data_path }}/config:/opt/adguardhome/conf"
     ports:
+      # Plain DNS (required for ad blocking)
       - '{{ services.adguard.dns_port }}:53/tcp'
       - '{{ services.adguard.dns_port }}:53/udp'
+      # Web UI (also accessible via Traefik at adguard.ashpex.net)
       - '{{ services.adguard.web_port }}:80/tcp'
-      # DNS-over-HTTPS/TLS/QUIC (direct access required)
-      - '443:443/tcp'
-      - '443:443/udp'
       - '3000:3000/tcp'
+      # DNS-over-TLS (optional - comment out if not needed)
       - '853:853/tcp'
-      - '784:784/udp'
       - '853:853/udp'
+      # DNS-over-QUIC (optional - comment out if not needed)
+      - '784:784/udp'
       - '8853:8853/udp'
+      # DNSCrypt (optional - comment out if not needed)
       - '5443:5443/tcp'
       - '5443:5443/udp'
+      # NOTE: Port 443 removed to avoid conflict with Traefik
+      # If you need DNS-over-HTTPS, configure it inside AdGuard to use a different port
     networks:
       - {{ docker_network }}
     labels:
-      # Traefik configuration (for web UI only)
+      # Traefik configuration
       - "traefik.enable=true"
+      
+      # Web UI
       - "traefik.http.routers.adguard.rule=Host(`{{ services.adguard.domain }}`)"
       - "traefik.http.routers.adguard.entrypoints=websecure"
       - "traefik.http.routers.adguard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.adguard.middlewares=secure-chain@file"
       - "traefik.http.services.adguard.loadbalancer.server.port=80"
+      
+      # DNS-over-HTTPS (DoH) endpoint
+      - "traefik.http.routers.adguard-doh.rule=Host(`{{ services.adguard.dns_domain }}`) && Path(`/dns-query`)"
+      - "traefik.http.routers.adguard-doh.entrypoints=websecure"
+      - "traefik.http.routers.adguard-doh.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adguard-doh.service=adguard-doh"
+      - "traefik.http.services.adguard-doh.loadbalancer.server.port=443"
+      - "traefik.http.services.adguard-doh.loadbalancer.server.scheme=https"
 
 networks:
   {{ docker_network }}:
