@@ -1,6 +1,5 @@
 ---
 # Shared Traefik Middleware Configuration
-# Based on best practices from https://doc.traefik.io/traefik/middlewares/overview/
 # Reference in labels: traefik.http.routers.service.middlewares=middleware-name@file
 
 http:
@@ -20,18 +19,15 @@ http:
         customFrameOptionsValue: "SAMEORIGIN"
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
-        # CSP disabled - too restrictive for modern web apps with inline styles/scripts and data URIs
-        # Uncomment and customize per-service if needed:
-        # contentSecurityPolicy: "default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:"
         customResponseHeaders:
           X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex"
           server: ""  # Hide server header
           X-Powered-By: ""  # Hide framework info
 
-    # Authelia ForwardAuth (protect routes via SSO)
+    # Authelia ForwardAuth
     authelia-forwardauth:
       forwardAuth:
-        address: "http://authelia:9091/api/authz/forwardauth?rd=https://auth.ashpex.net"
+        address: "http://authelia:9091/api/authz/forward-auth"
         trustForwardHeader: true
         authResponseHeaders:
           - Remote-User
@@ -99,16 +95,6 @@ http:
     inflight-limit:
       inFlightReq:
         amount: 100
-    
-    # ============ Authentication Middleware ============
-    
-    # Basic Auth (generate with: htpasswd -nb username password)
-    # Uncomment and add your credentials
-    # basic-auth:
-    #   basicAuth:
-    #     users:
-    #       - "admin:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"  # admin:admin
-    #     removeHeader: true  # Don't pass Authorization header to backend
     
     # IP Whitelist - Local networks only
     # local-only:
