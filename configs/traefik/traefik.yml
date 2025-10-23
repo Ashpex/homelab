@@ -41,9 +41,7 @@ entryPoints:
   websecure:
     address: ":443"
     http:
-      tls:
-        certResolver: letsencrypt
-        options: default
+      tls: {}
       # Add security headers at entry point level
       middlewares:
         - secure-headers@file
@@ -78,16 +76,7 @@ tls:
       sniStrict: true
 
 # Certificate Resolvers (Let's Encrypt)
-certificatesResolvers:
-  letsencrypt:
-    acme:
-      email: "{{ services.traefik.acme_email }}"
-      storage: /acme.json
-      # Use HTTP challenge for certificate validation
-      httpChallenge:
-        entryPoint: web
-      # Uncomment for staging/testing to avoid rate limits
-      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+# No ACME when using Cloudflare Tunnel for TLS
 
 # Ping / Health Check
 ping:
