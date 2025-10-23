@@ -128,6 +128,10 @@ services:
     storage_encryption_key: "{{ vault_authelia_storage_key }}"
     default_redirect_url: "https://hub.ashpex.net"
     theme: "light"
+    # OIDC client for Forgejo
+    forgejo_client_id: "{{ vault_authelia_forgejo_client_id | default('') }}"
+    forgejo_client_secret_hash: "{{ vault_authelia_forgejo_client_secret_hash | default('') }}"
+    forgejo_auth_name: "authelia"
     
   watchtower:
     enabled: false 
