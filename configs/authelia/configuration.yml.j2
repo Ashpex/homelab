@@ -48,4 +48,38 @@ notifier:
     filename: /data/notification.txt
 
 
+identity_providers:
+  oidc:
+    enable: true
+    issuer: https://{{ services.authelia.domain }}
+    jwks:
+      - key: file:/config/oidc-jwks.json
+    access_token_lifespan: 1h
+    authorize_code_lifespan: 1m
+    id_token_lifespan: 1h
+    
+    clients:
+      - client_id: '{{ services.authelia.forgejo_client_id }}'
+        client_name: 'Forgejo'
+        # Hash your secret per the Authelia FAQ and store in vault_authelia_forgejo_client_secret_hash
+        client_secret: '{{ services.authelia.forgejo_client_secret_hash }}'
+        public: false
+        authorization_policy: 'two_factor'
+        require_pkce: true
+        pkce_challenge_method: 'S256'
+        redirect_uris:
+          - 'https://{{ services.forgejo.domain }}/user/oauth2/{{ services.authelia.forgejo_auth_name }}/callback'
+        scopes:
+          - 'openid'
+          - 'email'
+          - 'profile'
+          - 'groups'
+        response_types:
+          - 'code'
+        grant_types:
+          - 'authorization_code'
+        access_token_signed_response_alg: 'none'
+        userinfo_signed_response_alg: 'none'
+        token_endpoint_auth_method: 'client_secret_basic'
+
 
