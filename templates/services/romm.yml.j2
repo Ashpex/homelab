@@ -43,7 +43,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.romm.rule=Host(`{{ services.romm.domain }}`)"
       - "traefik.http.routers.romm.entrypoints=websecure"
-      - "traefik.http.routers.romm.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.romm.tls=true"
       - "traefik.http.routers.romm.middlewares=secure-chain@file,authelia-forwardauth@file"
       - "traefik.http.services.romm.loadbalancer.server.port=8080"
 

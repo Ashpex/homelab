@@ -20,7 +20,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.alist.rule=Host(`{{ services.alist.domain }}`)"
       - "traefik.http.routers.alist.entrypoints=websecure"
-      - "traefik.http.routers.alist.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.alist.tls=true"
       - "traefik.http.routers.alist.middlewares=secure-chain@file"
       - "traefik.http.services.alist.loadbalancer.server.port=5244"
 

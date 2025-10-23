@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.waline.rule=Host(`{{ services.waline.domain }}`)"
       - "traefik.http.routers.waline.entrypoints=websecure"
-      - "traefik.http.routers.waline.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.waline.tls=true"
       - "traefik.http.routers.waline.middlewares=secure-chain@file"
       - "traefik.http.services.waline.loadbalancer.server.port=8360"
 
