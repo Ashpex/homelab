@@ -16,7 +16,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.glance.rule=Host(`{{ services.glance.domain }}`)"
       - "traefik.http.routers.glance.entrypoints=websecure"
-      - "traefik.http.routers.glance.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.glance.tls=true"
       - "traefik.http.routers.glance.middlewares=secure-chain@file"
       - "traefik.http.services.glance.loadbalancer.server.port=8080"
 

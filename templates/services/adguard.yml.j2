@@ -35,7 +35,7 @@ services:
       # Web UI Router
       - "traefik.http.routers.adguard-web.rule=Host(`{{ services.adguard.domain }}`)"
       - "traefik.http.routers.adguard-web.entrypoints=websecure"
-      - "traefik.http.routers.adguard-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adguard-web.tls=true"
       - "traefik.http.routers.adguard-web.middlewares=secure-chain@file"
       - "traefik.http.routers.adguard-web.service=adguard-web"
       
@@ -45,7 +45,7 @@ services:
       # DNS-over-HTTPS (DoH) Router
       - "traefik.http.routers.adguard-doh.rule=Host(`{{ services.adguard.dns_domain }}`) && Path(`/dns-query`)"
       - "traefik.http.routers.adguard-doh.entrypoints=websecure"
-      - "traefik.http.routers.adguard-doh.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adguard-doh.tls=true"
       - "traefik.http.routers.adguard-doh.service=adguard-doh"
       
       # DNS-over-HTTPS (DoH) Service

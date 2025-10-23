@@ -31,7 +31,6 @@ services:
       - "traefik.http.routers.forgejo.rule=Host(`{{ services.forgejo.domain }}`)"
       - "traefik.http.routers.forgejo.entrypoints=websecure"
       - "traefik.http.routers.forgejo.tls=true"
-      - "traefik.http.routers.forgejo.tls.certresolver=letsencrypt"
       
       # Use secure middleware chain (compression + security headers)
       - "traefik.http.routers.forgejo.middlewares=secure-chain@file,authelia-forwardauth@file"
