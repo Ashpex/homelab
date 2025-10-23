@@ -31,7 +31,7 @@ http:
     # Authelia ForwardAuth (protect routes via SSO)
     authelia-forwardauth:
       forwardAuth:
-        address: "http://authelia:9091/api/authz/forwardauth?rd=https://{{ services.authelia.domain }}"
+        address: "http://authelia:9091/api/authz/forwardauth?rd=https://auth.ashpex.net"
         trustForwardHeader: true
         authResponseHeaders:
           - Remote-User
