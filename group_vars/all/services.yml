@@ -112,13 +112,13 @@ services:
     domain: "romm.ashpex.net"
     
   waline:
-    enabled: false 
+    enabled: true 
     port: 8360
     data_path: "{{ base_data_path }}/waline"
     domain: "comments.ashpex.net"
     
   authelia:
-    enabled: false
+    enabled: true
     web_port: 9091
     domain: "auth.ashpex.net"
     data_path: "{{ base_data_path }}/authelia"
@@ -134,7 +134,7 @@ services:
     forgejo_auth_name: "authelia"
     
   watchtower:
-    enabled: false 
+    enabled: true 
     web_port: 8085  # Optional web interface
     
   forgejo:

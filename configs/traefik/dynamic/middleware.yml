@@ -27,7 +27,7 @@ http:
     # Authelia ForwardAuth
     authelia-forwardauth:
       forwardAuth:
-        address: "http://authelia:9091/api/authz/forward-auth"
+        address: "http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.ashpex.net%2F"
         trustForwardHeader: true
         authResponseHeaders:
           - Remote-User
