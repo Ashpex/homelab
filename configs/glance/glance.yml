@@ -57,9 +57,6 @@ pages:
               - title: Fediverse 
                 url: https://social.ashpex.net
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/mastodon.svg
-              - title: Owncast
-                url: https://live.ashpex.net
-                icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/owncast.svg 
 
               - title: AdGuard Home
                 url: http://server.ashpex.net:8081/ 
