@@ -1,198 +1,55 @@
 ---
-- name: Deploy Homeserver Services
-  hosts: homeserver
-  gather_facts: yes
-  become: no
+# Role-based entrypoint: deploys enabled services via the generic service role
+
+- hosts: homeserver
+  become: true
   vars_files:
     - ../group_vars/all/services.yml
     - ../group_vars/all/vault.yml
 
-  vars:
-    # Build services list 
-    enabled_services_list: >-
-      {{ services | dict2items
-                 | selectattr('value.enabled', 'defined')
-                 | selectattr('value.enabled') | list }}
-    target_services: >-
-      {{ (services | dict2items | selectattr('key', 'equalto', single_service) | list)
-          if (single_service is defined)
-          else enabled_services_list }}
-
-    service_directories_raw:
-      # AdGuard
-      - "{{ services.adguard.data_path | default(None) }}"
-      # Alist
-      - "{{ services.alist.data_path | default(None) }}"
-      # Arr Suite
-      - "{{ services.arr.data_path | default(None) ~ '/sonarr' if services.arr.data_path is defined else None }}"
-      - "{{ services.arr.data_path | default(None) ~ '/radarr' if services.arr.data_path is defined else None }}"
-      - "{{ services.arr.data_path | default(None) ~ '/prowlarr' if services.arr.data_path is defined else None }}"
-      # Audiobookshelf
-      - "{{ services.audiobookshelf.config_path | default(None) }}"
-      - "{{ services.audiobookshelf.metadata_path | default(None) }}"
-      # Backrest
-      - "{{ services.backrest.data_path | default(None) }}"
-      - "{{ services.backrest.config_path | default(None) }}"
-      - "{{ services.backrest.cache_path | default(None) }}"
-      # Copyparty
-      - "{{ services.copyparty.config_path | default(None) }}"
-      # Frigate
-      - "{{ services.frigate.config_path | default(None) }}"
-      - "{{ services.frigate.data_path | default(None) }}"
-      # Glance
-      - "{{ services.glance.config_path | default(None) }}"
-      # Gotify
-      - "{{ services.gotify.data_path | default(None) }}"
-      # Immich
-      - "{{ services.immich.upload_path | default(None) }}"
-      - "{{ services.immich.data_path ~ '/postgres' if services.immich.data_path is defined else None }}"
-      # Jellyfin
-      - "{{ services.jellyfin.config_path | default(None) }}"
-      - "{{ services.jellyfin.cache_path | default(None) }}"
-      # qBittorrent
-      - "{{ services.qbittorrent.config_path | default(None) }}"
-      # RomM
-      - "{{ services.romm.library_path | default(None) }}"
-      - "{{ (services.romm.library_path ~ '/roms') if services.romm.library_path is defined else None }}"
-      - "{{ (services.romm.library_path ~ '/bios') if services.romm.library_path is defined else None }}"
-      - "{{ services.romm.assets_path | default(None) }}"
-      - "{{ services.romm.config_path | default(None) }}"
-      # Waline
-      - "{{ services.waline.data_path | default(None) }}"
-      # Forgejo
-      - "{{ services.forgejo.data_path | default(None) }}"
-      # Traefik
-      - "{{ services.traefik.data_path | default(None) }}"
-      - "{{ services.traefik.config_path | default(None) }}"
-      - "{{ services.traefik.config_path | default(None) ~ '/dynamic' if services.traefik.config_path is defined else None }}"
-      # Authelia
-      - "{{ services.authelia.data_path | default(None) }}"
-      - "{{ services.authelia.config_path | default(None) }}"
-    service_directories: "{{ service_directories_raw | reject('equalto', None) | list }}"
-
-  pre_tasks:
-    - name: Check if docker is installed
-      command: docker --version
-      register: docker_check
-      failed_when: false
-      changed_when: false
-
-    - name: Check if docker-compose is available
-      command: docker compose version
-      register: docker_compose_check  
-      failed_when: false
-      changed_when: false
-
-    - name: Fail if Docker is not available
-      fail:
-        msg: "Docker is not installed or not in PATH"
-      when: docker_check.rc != 0
-
-    - name: Fail if Docker Compose is not available
-      fail:
-        msg: "Docker Compose is not available. Please install Docker Compose v2"
-      when: docker_compose_check.rc != 0
-
   tasks:
-    - name: Create base directories
-      file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-        owner: "{{ user_id }}"
-        group: "{{ group_id }}"
-      loop:
-        - "{{ base_data_path }}"
-        - "{{ media_path }}"
-        - "{{ downloads_path }}"
-        - "{{ nvr_path }}"
-      become: yes
+    - name: Determine target services to deploy
+      set_fact:
+        services_to_deploy: >-
+          {{
+            (services | dict2items | selectattr('key','equalto', single_service) | list)
+            if (single_service is defined and single_service|length > 0)
+            else (services | dict2items)
+          }}
 
-    - name: Create service-specific directories
-      file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-        owner: "{{ user_id }}"
-        group: "{{ group_id }}"
-      loop: "{{ service_directories }}"
-      become: yes
-
-    - name: Create Docker network
-      docker_network:
-        name: "{{ docker_network }}"
-        state: present
-
-    - name: Create build directories
-      file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-      loop:
-        - "../build"
-        - "../build/services"
-
-    - name: Create service directories for enabled services
-      file:
-        path: "../build/services/{{ item.key }}"
-        state: directory
-        mode: '0755'
-      loop: "{{ target_services }}"
-      loop_control:
-        label: "{{ item.key }}"
-
-    - name: Generate individual service compose files
-      template:
-        src: "../templates/services/{{ item.key }}.yml.j2"
-        dest: "../build/services/{{ item.key }}/docker-compose.yml"
-        backup: yes
-        mode: '0644'
-      loop: "{{ target_services }}"
-      loop_control:
-        label: "{{ item.key }}"
-      when: lookup('fileglob', '../templates/services/' + item.key + '.yml.j2')
-      register: service_templates
-
-    - name: Process config files for each service
-      include_tasks: process_service_configs.yml
-      loop: "{{ target_services }}"
-      loop_control:
-        label: "{{ item.key }}"
-      when: item.value.config_path is defined
-
-    - name: Pull latest images for enabled services
-      command: docker compose pull
-      args:
-        chdir: "../build/services/{{ item.key }}"
-      loop: "{{ target_services }}"
-      loop_control:
-        label: "{{ item.key }}"
-      when: force_pull | default(false)
-      ignore_errors: yes
-
-    - name: Deploy enabled services
-      command: docker compose up -d
-      args:
-        chdir: "../build/services/{{ item.key }}"
-      loop: "{{ target_services }}"
-      loop_control:
-        label: "{{ item.key }}"
-      register: service_deployments
-
-    - name: Wait for services to be healthy
-      uri:
-        url: "http://localhost:{{ item.value.port | default(item.value.web_port) }}"
-        method: GET
-        status_code: [200, 301, 302, 401, 403]
-      loop: "{{ target_services }}"
-      loop_control:
-        label: "{{ item.key }}"
+    - name: Validate requested single_service exists
+      fail:
+        msg: "Service '{{ single_service }}' not found in services."
       when:
-        - item.value.port is defined or item.value.web_port is defined
-        - item.key not in ['jellyfin', 'frigate', 'watchtower']  # Skip services with special networking
-      retries: 30
-      delay: 10
-      ignore_errors: yes
+        - single_service is defined
+        - single_service|length > 0
+        - services_to_deploy | length == 0
+
+    - name: Resolve desired service_action
+      set_fact:
+        desired_service_action: "{{ service_action | default('up') }}"
+    - name: Ensure Docker and base system are ready
+      block:
+        - name: Docker setup
+          include_role:
+            name: docker
+        - name: Common setup
+          include_role:
+            name: common
+
+    - name: Deploy enabled services via roles
+      include_role:
+        name: service
+      vars:
+        service_key: "{{ item.key }}"
+        service_cfg: "{{ item.value }}"
+        service_action: "{{ desired_service_action }}"
+      when: (item.value.enabled | default(false)) or (single_service is defined and single_service|length > 0)
+      loop: "{{ services_to_deploy }}"
+      loop_control:
+        label: "{{ item.key }}"
+      # tags per-item are intentionally omitted to avoid templating 'item' in tags
 
     - name: Display service URLs
       include_tasks: display_service_urls.yml
+      when: desired_service_action == 'up'

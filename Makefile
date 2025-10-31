@@ -1,5 +1,5 @@
 # Homeserver Infrastructure as Code
-.PHONY: help init setup deploy update stop status clean setup-vault edit-vault encrypt-vault decrypt-vault
+.PHONY: help init bootstrap deploy update stop status clean setup-vault edit-vault encrypt-vault decrypt-vault
 
 # Default target
 help: ## Show this help message
@@ -12,17 +12,17 @@ help: ## Show this help message
 init: ## Install required tools (Docker, Ansible, Git, Tailscale) and utilities
 	./scripts/init.sh
 
-setup: ## Set up project structure and configuration
-	./setup.sh
+bootstrap: ## Bootstrap host (install Docker, Compose, utilities)
+	ansible-playbook playbooks/bootstrap.yml --ask-become-pass
 
 deploy: ## Deploy all enabled services
 	ansible-playbook playbooks/deploy.yml --ask-vault-pass --ask-become-pass
 
 update: ## Update all services to latest images  
-	ansible-playbook playbooks/update.yml
+	ansible-playbook playbooks/update.yml --ask-vault-pass --ask-become-pass
 
 stop: ## Stop all services
-	ansible-playbook playbooks/stop.yml
+	ansible-playbook playbooks/stop.yml --ask-vault-pass --ask-become-pass
 
 
 status: ## Show status of all containers
@@ -97,7 +97,7 @@ force-pull: ## Force pull latest images even if compose unchanged
 
 # Configuration validation
 validate: ## Validate Ansible configuration
-	ansible-playbook playbooks/deploy.yml --syntax-check
+	ansible-playbook playbooks/deploy.yml --syntax-check --ask-vault-pass
 	ansible-inventory --list
 
 # Generate current docker-compose.yml for inspection

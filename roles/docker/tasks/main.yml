@@ -1,0 +1,45 @@
+---
+# Ensure Docker, Docker Compose, and the shared Docker network exist
+
+- name: Check if Docker is available
+  command: docker --version
+  register: docker_check
+  failed_when: false
+  changed_when: false
+  become: false
+
+- name: Fail if Docker is not installed
+  fail:
+    msg: "Docker is not installed or not in PATH"
+  when: docker_check.rc != 0
+
+- name: Check if Docker Compose plugin is available
+  command: docker compose version
+  register: docker_compose_check
+  failed_when: false
+  changed_when: false
+  become: false
+
+- name: Check if legacy docker-compose is available
+  command: docker-compose version --short
+  register: docker_compose_legacy
+  failed_when: false
+  changed_when: false
+  become: false
+
+- name: Fail if no Docker Compose is available
+  fail:
+    msg: "Neither Docker Compose v2 plugin nor legacy docker-compose is available. Install one of them."
+  when:
+    - docker_compose_check.rc != 0
+    - docker_compose_legacy.rc != 0
+
+- name: Set compose_cmd fact
+  set_fact:
+    compose_cmd: "{{ 'docker compose' if docker_compose_check.rc == 0 else 'docker-compose' }}"
+
+- name: Ensure Docker network exists
+  community.docker.docker_network:
+    name: "{{ docker_network }}"
+    state: present
+

@@ -25,7 +25,6 @@ services:
       - "traefik.enable=false"
       - "traefik.http.routers.frigate.rule=Host(`{{ services.frigate.domain }}`)"
       - "traefik.http.routers.frigate.entrypoints=websecure"
-      - "traefik.http.routers.frigate.tls.certresolver=letsencrypt"
       - "traefik.http.routers.frigate.middlewares=secure-chain@file"
       - "traefik.http.services.frigate.loadbalancer.server.port=8971"
 

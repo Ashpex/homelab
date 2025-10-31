@@ -23,7 +23,6 @@ services:
       - "traefik.enable=false"
       - "traefik.http.routers.qbittorrent.rule=Host(`{{ services.qbittorrent.domain }}`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
-      - "traefik.http.routers.qbittorrent.tls.certresolver=letsencrypt"
       - "traefik.http.routers.qbittorrent.middlewares=secure-chain@file"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port={{ services.qbittorrent.web_port }}"
 

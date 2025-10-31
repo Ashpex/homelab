@@ -1,0 +1,12 @@
+---
+- name: Bootstrap Homelab Host
+  hosts: homeserver
+  become: true
+
+  tasks:
+    - name: Run bootstrap role (install Docker, Compose, utilities)
+      include_role:
+        name: bootstrap
+      vars:
+        install_tailscale: true
+

@@ -1,0 +1,35 @@
+---
+# Create base/data dirs, set ownership, and run basic sanity checks
+
+- name: Ensure base directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ user_id }}"
+    group: "{{ group_id }}"
+  loop:
+    - "{{ base_data_path }}"
+    - "{{ media_path }}"
+    - "{{ downloads_path }}"
+    - "{{ nvr_path }}"
+  when: item is defined
+  become: yes
+
+- name: Set timezone symlink (if available)
+  file:
+    src: "/usr/share/zoneinfo/{{ timezone }}"
+    dest: "/etc/localtime"
+    state: link
+  become: yes
+  when: timezone is defined
+
+- name: Basic sanity checks
+  assert:
+    that:
+      - docker_network is defined
+      - base_data_path is defined
+      - user_id is defined
+      - group_id is defined
+    fail_msg: "Required variables are missing. Check inventory/hosts.yml and group_vars/all/services.yml"
+

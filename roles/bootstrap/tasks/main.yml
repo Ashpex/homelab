@@ -1,0 +1,137 @@
+---
+# Host bootstrap: install Docker/Compose, common utilities, and optionally Tailscale
+
+- name: Gather facts
+  setup:
+
+- name: Ensure package cache up to date (Debian/Ubuntu)
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == 'Debian'
+  become: yes
+
+- name: Install prerequisites for Docker (Debian/Ubuntu)
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+  when: ansible_os_family == 'Debian'
+  become: yes
+
+- name: Add Docker GPG key (Debian/Ubuntu)
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_os_family == 'Debian'
+  become: yes
+
+- name: Add Docker repository (Debian/Ubuntu)
+  apt_repository:
+    repo: "deb [arch={{ ansible_architecture | default('amd64') }}] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename | default('focal') }} stable"
+    state: present
+  when: ansible_os_family == 'Debian'
+  become: yes
+
+- name: Install Docker & Compose v2 (Debian/Ubuntu)
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
+  become: yes
+
+- name: Install Docker (RHEL/CentOS)
+  yum:
+    name:
+      - yum-utils
+    state: present
+  when: ansible_os_family == 'RedHat'
+  become: yes
+
+- name: Add Docker repo (RHEL/CentOS)
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+  when: ansible_os_family == 'RedHat'
+  become: yes
+
+- name: Install Docker & Compose v2 (RHEL/CentOS)
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+  when: ansible_os_family == 'RedHat'
+  become: yes
+
+- name: Install Docker & Compose (Arch)
+  pacman:
+    name:
+      - docker
+      - docker-compose
+    state: present
+    update_cache: yes
+  when: ansible_os_family == 'Archlinux'
+  become: yes
+
+- name: Ensure docker service is enabled and started
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Ensure docker group exists
+  group:
+    name: docker
+    state: present
+  become: yes
+
+- name: Add user to docker group
+  user:
+    name: "{{ bootstrap_user | default(ansible_user_id | default(ansible_user)) }}"
+    groups: docker
+    append: yes
+  become: yes
+
+- name: Install common utilities
+  package:
+    name:
+      - git
+      - curl
+      - jq
+      - rsync
+      - tree
+      - htop
+      - rclone
+    state: present
+  become: yes
+
+- name: Install Tailscale (optional)
+  shell: curl -fsSL https://tailscale.com/install.sh | sh
+  args:
+    executable: /bin/bash
+  when: install_tailscale | default(false)
+  become: yes
+
+- name: Verify Docker installation
+  command: docker --version
+  changed_when: false
+
+- name: Verify Compose v2
+  command: docker compose version
+  changed_when: false
+
+
+
