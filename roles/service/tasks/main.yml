@@ -1,0 +1,191 @@
+
+# Generic service role
+# Expects:
+# - service_key: name of the service (e.g., "forgejo")
+# - service_cfg: dict of that service's config (from services.<name>)
+# - service_action: one of [up, down, pull, recreate] (default: up)
+
+- name: Define build paths
+  set_fact:
+    resolved_build_root: "{{ (build_root if (build_root is defined and build_root | length > 0) else (playbook_dir + '/../build')) }}"
+    service_build_dir: "{{ (build_root if (build_root is defined and build_root | length > 0) else (playbook_dir + '/../build')) }}/services/{{ service_key }}"
+
+# service_action is passed by deploy.yml; assume it's resolved there
+
+- name: Detect compose command (plugin vs legacy)
+  block:
+    - name: Check docker compose plugin
+      command: docker compose version
+      register: compose_plugin
+      failed_when: false
+      changed_when: false
+
+    - name: Check legacy docker-compose binary
+      command: docker-compose version --short
+      register: compose_legacy
+      failed_when: false
+      changed_when: false
+
+    - name: Set compose_cmd fact
+      set_fact:
+        compose_cmd: "{{ 'docker compose' if compose_plugin.rc == 0 else 'docker-compose' }}"
+
+- name: Ensure build roots exist
+  file:
+    path: "{{ build_dir }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ resolved_build_root }}"
+    - "{{ resolved_build_root }}/services"
+    - "{{ service_build_dir }}"
+  loop_control:
+    loop_var: build_dir
+
+- name: Collect service-specific directories
+  set_fact:
+    service_dir_candidates: |
+      {{ [
+          service_cfg.config_path | default(None),
+          service_cfg.data_path | default(None),
+          service_cfg.cache_path | default(None),
+          service_cfg.metadata_path | default(None),
+          service_cfg.assets_path | default(None),
+          service_cfg.upload_path | default(None),
+          service_cfg.library_path | default(None)
+        ] | reject('equalto', None) | list }}
+
+- name: Ensure service-specific directories exist
+  file:
+    path: "{{ svc_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ user_id }}"
+    group: "{{ group_id }}"
+  loop: "{{ service_dir_candidates }}"
+  loop_control:
+    loop_var: svc_dir
+  become: yes
+
+- name: Render docker-compose.yml if template exists
+  vars:
+    compose_template_src: "{{ playbook_dir }}/../templates/services/{{ service_key }}.yml.j2"
+  block:
+    - name: Check template
+      stat:
+        path: "{{ compose_template_src }}"
+      register: compose_template
+
+    - name: Render compose
+      when: compose_template.stat.exists and service_action != 'down'
+      template:
+        src: "{{ compose_template_src }}"
+        dest: "{{ service_build_dir }}/docker-compose.yml"
+        mode: '0644'
+
+# Traefik-specific configuration handling
+- block:
+    - name: Render Traefik static configuration
+      template:
+        src: "{{ playbook_dir }}/../configs/traefik/traefik.yml"
+        dest: "{{ services.traefik.config_path }}/traefik.yml"
+        mode: '0644'
+
+    - name: Ensure Traefik acme.json exists
+      file:
+        path: "{{ services.traefik.data_path }}/acme.json"
+        state: touch
+        mode: '0600'
+        owner: "{{ user_id }}"
+        group: "{{ group_id }}"
+      become: yes
+
+    - name: Find Traefik dynamic config files
+      find:
+        paths: "{{ playbook_dir }}/../configs/traefik/dynamic"
+        patterns: "*"
+        excludes: "*.example,.gitkeep"
+        file_type: file
+        recurse: yes
+      register: traefik_dynamic_files
+      failed_when: false
+
+    - name: Copy Traefik dynamic config files
+      copy:
+        src: "{{ config_file.path }}"
+        dest: "{{ services.traefik.config_path }}/dynamic/{{ config_file.path | basename }}"
+        mode: '0644'
+      loop: "{{ traefik_dynamic_files.files }}"
+      loop_control:
+        loop_var: config_file
+      when: traefik_dynamic_files.files is defined and traefik_dynamic_files.files | length > 0
+  when: service_key == 'traefik' and service_action != 'down'
+
+# Generic config processing for non-Traefik services
+- block:
+    - name: Find .j2 template files for {{ service_key }}
+      find:
+        paths: "{{ playbook_dir }}/../configs/{{ service_key }}"
+        patterns: "*.j2"
+        file_type: file
+        recurse: yes
+      register: j2_files
+      failed_when: false
+
+    - name: Find regular config files for {{ service_key }}
+      find:
+        paths: "{{ playbook_dir }}/../configs/{{ service_key }}"
+        patterns: "*"
+        excludes: "*.j2,*.example,.gitkeep"
+        file_type: file
+        recurse: yes
+      register: regular_files
+      failed_when: false
+
+    - name: Render .j2 template files for {{ service_key }}
+      when: j2_files.files is defined and j2_files.files | length > 0
+      template:
+        src: "{{ config_file.path }}"
+        dest: "{{ service_cfg.config_path }}/{{ config_file.path | regex_replace('^.*/configs/' + service_key + '/', '') | regex_replace('\\.j2$', '') }}"
+        mode: '0644'
+      loop: "{{ j2_files.files }}"
+      loop_control:
+        loop_var: config_file
+
+    - name: Copy regular config files for {{ service_key }}
+      when: regular_files.files is defined and regular_files.files | length > 0
+      copy:
+        src: "{{ config_file.path }}"
+        dest: "{{ service_cfg.config_path }}/{{ config_file.path | regex_replace('^.*/configs/' + service_key + '/', '') }}"
+        mode: '0644'
+      loop: "{{ regular_files.files }}"
+      loop_control:
+        loop_var: config_file
+  when: service_key != 'traefik' and service_cfg.config_path is defined and service_action != 'down'
+
+- name: Pull images
+  shell: "{{ (compose_cmd | default('docker compose')) }} pull"
+  args:
+    chdir: "{{ service_build_dir }}"
+  when: force_pull | default(false) or service_action in ['pull', 'recreate']
+  ignore_errors: yes
+
+- name: Compose down
+  shell: "{{ (compose_cmd | default('docker compose')) }} down"
+  args:
+    chdir: "{{ service_build_dir }}"
+  when: service_action == 'down'
+
+- name: Compose up
+  shell: "{{ (compose_cmd | default('docker compose')) }} up -d"
+  args:
+    chdir: "{{ service_build_dir }}"
+  when: service_action in ['up']
+
+- name: Compose up (force recreate)
+  shell: "{{ (compose_cmd | default('docker compose')) }} up -d --force-recreate"
+  args:
+    chdir: "{{ service_build_dir }}"
+  when: service_action in ['recreate']
+
+

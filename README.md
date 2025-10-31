@@ -16,14 +16,12 @@ This repository contains an Ansible-based Infrastructure as Code (IaC) solution 
 
 ### Prerequisites Installation
 
-Use the automated installation script to set up all required tools:
-
 ```bash
-# Install Docker, Ansible, Git, Tailscale, and utilities
+# Minimal local setup (Ansible, helpers)
 make init
 
-# Set up project structure and configuration
-make setup
+# One-time host provisioning (Docker, utilities, optional)
+make bootstrap
 ```
 
 **Manual installation** (if preferred):
@@ -48,8 +46,8 @@ make setup
 
 2. **Set up encrypted secrets**:
    ```bash
-   # The setup script will guide you through vault creation
-   make setup
+   # Create/edit the vault file (interactive)
+   make setup-vault
    ```
 
 3. **Configure services** in `group_vars/all/services.yml`:
@@ -64,6 +62,8 @@ make deploy
 
 # Deploy a specific service
 make deploy-service jellyfin
+# or
+ansible-playbook playbooks/deploy.yml -e single_service=jellyfin
 
 # Update all services to latest versions
 make update
@@ -164,9 +164,10 @@ vault_romm_retroachievements_api_key: "your_retroachievements_api_key"
 ### Individual Service Management
 
 ```bash
-# Deploy only specific services
+# Single-service deploys
 make deploy-service immich
 make deploy-service romm
+ansible-playbook playbooks/deploy.yml -e single_service=traefik
 
 # Restart individual services
 make restart-service jellyfin
@@ -205,14 +206,19 @@ ansible-playbook playbooks/deploy.yml --vault-password-file .vault_pass
 ## Project Structure
 
 ```
-stacks/
+homelab/
 ├── ansible.cfg              # Ansible configuration
 ├── Makefile                 # Convenient command shortcuts
 ├── inventory/
 │   └── hosts.yml           # Server inventory and variables
 ├── group_vars/all/
-│   ├── services.yml        # Service configurations
+│   ├── services.yml        # Service configurations (single source of truth)
 │   └── vault.yml           # Encrypted secrets (Ansible Vault)
+├── roles/                  # Role-based automation
+│   ├── bootstrap/          # One-time host provisioning (Docker, utils)
+│   ├── docker/             # Ensure Docker/Compose, network
+│   ├── common/             # Base dirs, timezone, sanity checks
+│   └── service/            # Generic per-service compose/config/deploy
 ├── templates/services/     # Jinja2 templates for Docker Compose
 │   ├── jellyfin.yml.j2
 │   ├── romm.yml.j2
@@ -222,7 +228,8 @@ stacks/
 │   ├── backrest/excludes.txt
 │   └── romm/config.yml
 ├── playbooks/            # Ansible playbooks
-│   ├── deploy.yml
+│   ├── site.yml          # Entrypoint; imports deploy.yml
+│   ├── deploy.yml        # Main logic (roles + service loop)
 │   ├── update.yml
 │   └── stop.yml
 ├── scripts/             # Helper scripts
@@ -342,10 +349,10 @@ For services with databases, use the interactive tasks menu (`make tasks`) or ru
 
 ## Traefik Reverse Proxy
 
-This setup includes Traefik as a reverse proxy with automatic HTTPS via Let's Encrypt.
+This setup includes Traefik as a reverse proxy. With Cloudflare Tunnel, TLS terminates at Cloudflare; Traefik's internal ACME is disabled in this repo.
 
 **Features:**
-- Automatic HTTPS certificates for all services
+- HTTPS via Cloudflare Tunnel (no ACME in Traefik)
 - Security headers and compression
 - Rate limiting and circuit breaker patterns
 - Cloudflare integration support
@@ -358,6 +365,7 @@ This setup includes Traefik as a reverse proxy with automatic HTTPS via Let's En
 **Documentation:**
 - [Traefik Integration Guide](docs/TRAEFIK-INTEGRATION.md)
 - [Traefik Best Practices](docs/TRAEFIK-BEST-PRACTICES.md)
+- [Ansible Roles Guide](docs/ANSIBLE-ROLES.md)
 
 **Access:**
 - Dashboard: `http://localhost:8080` (local only)
@@ -368,7 +376,7 @@ This setup includes Traefik as a reverse proxy with automatic HTTPS via Let's En
 - **Vault encryption**: All sensitive data is encrypted with Ansible Vault
 - **Network isolation**: Services communicate through a dedicated Docker network
 - **User permissions**: Most services run as your user, not root (except where required)
-- **HTTPS everywhere**: Traefik provides automatic SSL/TLS for all services
+- **TLS via Cloudflare**: TLS terminates at Cloudflare Tunnel (Traefik ACME disabled in this setup)
 - **Security headers**: OWASP-recommended headers applied via Traefik middleware
 - **Firewall**: Configure your firewall to restrict external access as needed
 

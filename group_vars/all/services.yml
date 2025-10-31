@@ -2,7 +2,7 @@
 # Service configurations with ports and settings
 services:
   adguard:
-    enabled: true 
+    enabled:  true 
     web_port: 8081 
     dns_port: 53
     data_path: "{{ base_data_path }}/adguard"
@@ -70,7 +70,7 @@ services:
     domain: "gotify.ashpex.net"
     
   immich:
-    enabled: false 
+    enabled: true 
     port: 2283
     upload_path: "{{ media_path }}/immich"
     data_path: "{{ base_data_path }}/immich"

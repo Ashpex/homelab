@@ -186,21 +186,9 @@ The Ansible playbook will automatically:
 - Copy `.yml`, `.json`, `.conf` files as-is
 - Render `.j2` files with variables substituted
 
-### 5. Update Deploy Playbook (if special directories needed)
+### 5. No playbook changes needed
 
-**File:** `playbooks/deploy.yml`
-
-Most services don't require this step. Only add if your service needs special directory handling:
-
-```yaml
-service_directories_raw:
-  # ... existing directories ...
-  # MyService
-  - "{{ services.myservice.data_path | default(None) }}"
-  - "{{ services.myservice.config_path | default(None) }}"
-  # Add subdirectories if needed
-  - "{{ services.myservice.data_path | default(None) ~ '/uploads' if services.myservice.data_path is defined else None }}"
-```
+The generic `service` role discovers and creates service directories and processes templates/configs automatically. You typically do not need to modify `playbooks/deploy.yml`.
 
 ### 6. Update Display Service URLs (optional)
 
@@ -246,6 +234,8 @@ ansible-playbook playbooks/deploy.yml --check --diff
 ```bash
 # Deploy only your new service
 make deploy-service myservice
+# or
+ansible-playbook playbooks/deploy.yml -e single_service=myservice
 ```
 
 ### 3. Verify Deployment

@@ -2,42 +2,38 @@
 - name: Update Homeserver Services
   hosts: homeserver
   gather_facts: no
+  vars_files:
+    - ../group_vars/all/services.yml
+    - ../group_vars/all/vault.yml
 
   tasks:
-    - name: Find enabled service directories
-      find:
-        paths: "../build/services"
-        file_type: directory
-      register: service_dirs
+    - name: Pull images for enabled services via role
+      include_role:
+        name: service
+      vars:
+        service_key: "{{ item.key }}"
+        service_cfg: "{{ item.value }}"
+        service_action: pull
+      when: item.value.enabled | default(false)
+      loop: "{{ services | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
 
-    - name: Pull latest images for all services
-      command: docker compose pull
-      args:
-        chdir: "{{ item.path }}"
-      loop: "{{ service_dirs.files }}"
-      register: pull_results
-      changed_when: "'Downloaded newer image' in item.stdout"
-      ignore_errors: yes
-
-    - name: Recreate containers with new images
-      command: docker compose up -d --force-recreate
-      args:
-        chdir: "{{ item.item.path }}"
-      loop: "{{ pull_results.results }}"
-      when: item.changed
-      ignore_errors: yes
+    - name: Recreate containers for enabled services via role
+      include_role:
+        name: service
+      vars:
+        service_key: "{{ item.key }}"
+        service_cfg: "{{ item.value }}"
+        service_action: recreate
+      when: item.value.enabled | default(false)
+      loop: "{{ services | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
 
     - name: Clean up old images
       command: docker image prune -f
-      when: pull_results.results | selectattr('changed', 'equalto', true) | list | length > 0
 
     - name: Display update status
       debug:
-        msg: |
-          {% set updated_services = pull_results.results | selectattr('changed', 'equalto', true) | list %}
-          {% if updated_services | length > 0 %}
-          ✅ Services updated successfully!
-          Updated {{ updated_services | length }} service(s) with new images.
-          {% else %}
-          ℹ️  All services are already up to date.
-          {% endif %}
+        msg: "✅ Update cycle completed (pull + recreate)."

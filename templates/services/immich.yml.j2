@@ -27,7 +27,6 @@ services:
       - "traefik.enable=false"
       - "traefik.http.routers.immich.rule=Host(`{{ services.immich.domain }}`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
-      - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
       - "traefik.http.routers.immich.middlewares=secure-chain@file"
       - "traefik.http.services.immich.loadbalancer.server.port=2283"
 

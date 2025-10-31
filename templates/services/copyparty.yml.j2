@@ -23,7 +23,6 @@ services:
       - "traefik.enable=false"
       - "traefik.http.routers.copyparty.rule=Host(`{{ services.copyparty.domain }}`)"
       - "traefik.http.routers.copyparty.entrypoints=websecure"
-      - "traefik.http.routers.copyparty.tls.certresolver=letsencrypt"
       - "traefik.http.routers.copyparty.middlewares=secure-chain@file"
       - "traefik.http.services.copyparty.loadbalancer.server.port=3923"
 

@@ -1,14 +1,4 @@
 ---
-# Main site playbook - imports all other playbooks
-# Usage: ansible-playbook playbooks/site.yml --tags deploy
-#        ansible-playbook playbooks/site.yml --tags update  
-#        ansible-playbook playbooks/site.yml --tags stop
+# Main site playbook - import deploy as the default
 
 - import_playbook: deploy.yml
-  tags: ['deploy', 'never']
-
-- import_playbook: update.yml
-  tags: ['update', 'never']
-  
-- import_playbook: stop.yml
-  tags: ['stop', 'never']
