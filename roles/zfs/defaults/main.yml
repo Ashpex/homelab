@@ -1,0 +1,29 @@
+---
+# Safety
+zfs_confirm: false
+
+# Pool configuration
+zfs_pool_name: tank
+zfs_vdev_type: mirror            # one of: stripe, mirror, raidz1, raidz2, raidz3
+zfs_devices: []                  # e.g. ['/dev/sdb','/dev/sdc']
+zfs_pool_opts:
+  ashift: 12                     # 4k sectors; set at pool create
+  autotrim: on
+
+# Default dataset properties (applied to pool after creation)
+zfs_default_props:
+  compression: zstd              # inherited by datasets
+  atime: off
+
+# Datasets to create (names are relative to the pool)
+zfs_datasets: []                 # e.g. [{ name: media, mountpoint: /mnt/media, recordsize: 1M }]
+
+# Maintenance
+zfs_enable_scrub_cron: true      # weekly zpool scrub
+
+# ARC tuning (bytes). Leave null to use ZFS defaults (auto-scale)
+zfs_arc_max: null                # e.g. 2147483648 (2 GiB)
+zfs_arc_min: null                # e.g. 536870912 (512 MiB)
+zfs_runtime_tune: true           # also write to /sys/module/zfs/parameters at runtime
+...
+

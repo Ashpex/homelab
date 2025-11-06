@@ -1,0 +1,243 @@
+---
+# General system and storage health diagnostics
+
+- name: Set diagnostics timestamp and paths
+  ansible.builtin.set_fact:
+    health_ts: "{{ ansible_date_time.iso8601_basic }}"
+    health_remote_dir: "/tmp/health-{{ ansible_date_time.iso8601_basic }}"
+    health_local_dir: "{{ health_output_root }}/{{ inventory_hostname }}/{{ ansible_date_time.iso8601_basic }}"
+
+- name: Ensure remote diagnostics directory exists
+  ansible.builtin.file:
+    path: "{{ health_remote_dir }}"
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Ensure tooling is installed (Debian/Ubuntu)
+  ansible.builtin.package:
+    name:
+      - smartmontools
+      - sysstat
+      - nvme-cli
+      - fio
+      - net-tools
+      - ethtool
+    state: present
+  when: ansible_facts.os_family == 'Debian'
+  become: yes
+
+# System basics
+- name: Collect system health info
+  ansible.builtin.shell: |
+    {
+      echo '=== uname -a ==='; uname -a;
+      echo;
+      echo '=== uptime ==='; uptime;
+      echo;
+      echo '=== top snapshot ==='; top -b -n1 | head -n 50;
+      echo;
+      echo '=== free -h ==='; free -h;
+      echo;
+      echo '=== vmstat 1 5 ==='; vmstat 1 5;
+      echo;
+      echo '=== df -hT ==='; df -hT;
+    } > {{ health_remote_dir }}/system.txt
+  args:
+    executable: /bin/bash
+  when: health_system | default(true)
+  changed_when: false
+  become: yes
+
+# Filesystems and mounts
+- name: Collect mounts and fstab
+  ansible.builtin.shell: |
+    mount | sort -k3 > {{ health_remote_dir }}/mounts.txt
+    cat /etc/fstab > {{ health_remote_dir }}/fstab.txt
+  args:
+    executable: /bin/bash
+  when: health_fs | default(true)
+  changed_when: false
+  become: yes
+
+# Network
+- name: Collect network info
+  ansible.builtin.shell: |
+    ip -br a > {{ health_remote_dir }}/ip-a.txt
+    ip -s link > {{ health_remote_dir }}/ip-stats.txt
+    ss -tuan > {{ health_remote_dir }}/sockets.txt
+  args:
+    executable: /bin/bash
+  when: health_network | default(true)
+  changed_when: false
+  become: yes
+
+# Services / logs
+- name: Collect failed services and recent errors
+  ansible.builtin.shell: |
+    systemctl --failed > {{ health_remote_dir }}/systemd-failed.txt || true
+    journalctl -p err -S -2h > {{ health_remote_dir }}/journal-errors.txt || true
+  args:
+    executable: /bin/bash
+  when: health_services | default(true)
+  changed_when: false
+  become: yes
+
+# iostat
+- name: iostat extended sample
+  ansible.builtin.shell: iostat -x 1 3 > {{ health_remote_dir }}/iostat.txt || true
+  args:
+    executable: /bin/bash
+  when: health_iostat | default(true)
+  changed_when: false
+  become: yes
+
+# Disk discovery
+- name: Collect lsblk summary
+  ansible.builtin.shell: |
+    lsblk -d -e 7,11 -o NAME,TYPE,SIZE,MODEL,SERIAL,ROTA,STATE,TRAN > {{ health_remote_dir }}/lsblk.txt
+    lsblk -t > {{ health_remote_dir }}/lsblk-tree.txt
+  args:
+    executable: /bin/bash
+  changed_when: false
+  become: yes
+
+- name: Determine block devices (auto)
+  ansible.builtin.shell: |
+    lsblk -dn -o NAME,TYPE | awk '$2=="disk"{print "/dev/"$1}'
+  args:
+    executable: /bin/bash
+  register: health_detected
+  changed_when: false
+  become: yes
+
+- name: Final device list
+  ansible.builtin.set_fact:
+    health_final_devices: "{{ (health_devices | length > 0) | ternary(health_devices, (health_detected.stdout_lines | default([]))) }}"
+
+- name: Run SMART for SATA/SAS devices
+  ansible.builtin.shell: |
+    smartctl -a {{ dev }} > {{ health_remote_dir }}/smart_{{ dev | regex_replace('^/','') | regex_replace('/','_') }}.txt || true
+  args:
+    executable: /bin/bash
+  loop: "{{ health_final_devices | select('match','^/dev/sd.*|^/dev/hd.*|^/dev/vd.*') | list }}"
+  loop_control:
+    loop_var: dev
+  when: health_disk_smart | default(true)
+  changed_when: false
+  become: yes
+
+- name: Run NVMe smart-log
+  ansible.builtin.shell: |
+    nvme smart-log {{ dev }} > {{ health_remote_dir }}/nvme_{{ dev | regex_replace('^/','') | regex_replace('/','_') }}.txt || true
+  args:
+    executable: /bin/bash
+  loop: "{{ health_final_devices | select('match','^/dev/nvme[0-9]+n[0-9]+$') | list }}"
+  loop_control:
+    loop_var: dev
+  when: health_disk_nvme | default(true)
+  changed_when: false
+  become: yes
+
+- name: Capture mdadm status if present
+  block:
+    - name: mdadm --detail --scan
+      ansible.builtin.shell: mdadm --detail --scan > {{ health_remote_dir }}/mdadm-scan.txt || true
+      args:
+        executable: /bin/bash
+      changed_when: false
+      become: yes
+
+    - name: Enumerate md devices
+      ansible.builtin.shell: awk '/^md[0-9]+/{print $1}' /proc/mdstat | sed 's/^/\\/dev\\/'
+      args:
+        executable: /bin/bash
+      register: md_list
+      changed_when: false
+      failed_when: false
+
+    - name: mdadm --detail for each array
+      ansible.builtin.shell: mdadm --detail {{ md }} > {{ health_remote_dir }}/mdadm_{{ md | regex_replace('^/','') | regex_replace('/','_') }}.txt || true
+      args:
+        executable: /bin/bash
+      loop: "{{ md_list.stdout_lines | default([]) }}"
+      loop_control:
+        loop_var: md
+      changed_when: false
+      become: yes
+  when: health_mdadm | default(true)
+
+- name: Capture ZFS status if present
+  block:
+    - name: Check zpool availability
+      ansible.builtin.command: bash -lc 'command -v zpool'
+      register: zpool_cmd
+      failed_when: false
+      changed_when: false
+
+    - name: zpool status and health
+      ansible.builtin.shell: |
+        zpool status -x > {{ health_remote_dir }}/zpool-status-short.txt || true
+        zpool status -v > {{ health_remote_dir }}/zpool-status.txt || true
+        zpool iostat -v 1 3 > {{ health_remote_dir }}/zpool-iostat.txt || true
+      args:
+        executable: /bin/bash
+      when: zpool_cmd.rc == 0
+      changed_when: false
+      become: yes
+  when: health_zfs | default(true)
+
+- name: Collect dmesg (full and filtered)
+  ansible.builtin.shell: |
+    dmesg -T > {{ health_remote_dir }}/dmesg.txt || true
+    dmesg -T | egrep -i 'error|fail|ata|nvme|blk|i/o|reset|recovered|media|uncorrect|timeout' -B1 -A1 > {{ health_remote_dir }}/dmesg-important.txt || true
+  args:
+    executable: /bin/bash
+  when: health_dmesg | default(true)
+  changed_when: false
+  become: yes
+
+- name: Optional fio tests on mountpoints
+  ansible.builtin.shell: |
+    fio --name=seqread --rw=read --bs=1M --size={{ health_fio_size }} --time_based=1 --runtime={{ health_fio_runtime }} \
+        --ioengine=libaio --iodepth={{ health_fio_iodepth }} --numjobs={{ health_fio_numjobs }} --direct=1 \
+        --directory={{ mp }} > {{ health_remote_dir }}/fio_seqread_{{ mp | regex_replace('^/','') | regex_replace('/','_') }}.txt 2>&1 || true
+    fio --name=randread --rw=randread --bs=4k --size={{ health_fio_size }} --time_based=1 --runtime={{ health_fio_runtime }} \
+        --ioengine=libaio --iodepth={{ health_fio_iodepth }} --numjobs={{ health_fio_numjobs }} --direct=1 \
+        --directory={{ mp }} > {{ health_remote_dir }}/fio_randread_{{ mp | regex_replace('^/','') | regex_replace('/','_') }}.txt 2>&1 || true
+  args:
+    executable: /bin/bash
+  loop: "{{ health_fio_target_paths }}"
+  loop_control:
+    loop_var: mp
+  when: health_fio | default(false) and (health_confirm | default(false))
+  changed_when: true
+  become: yes
+
+- name: Archive diagnostics directory on remote
+  ansible.builtin.archive:
+    path: "{{ health_remote_dir }}"
+    dest: "{{ health_remote_dir }}.tar.gz"
+    format: gz
+  become: yes
+
+- name: Ensure local diagnostics directory exists
+  ansible.builtin.file:
+    path: "{{ health_local_dir }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+
+- name: Fetch diagnostics archive
+  ansible.builtin.fetch:
+    src: "{{ health_remote_dir }}.tar.gz"
+    dest: "{{ health_local_dir }}/"
+    flat: yes
+  become: yes
+
+- name: Display path to collected diagnostics
+  ansible.builtin.debug:
+    msg: "Diagnostics saved to {{ health_local_dir }}/{{ (health_remote_dir + '.tar.gz') | basename }}"
+
+...
+

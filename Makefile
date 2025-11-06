@@ -1,5 +1,5 @@
 # Homeserver Infrastructure as Code
-.PHONY: help init bootstrap deploy update stop status clean setup-vault edit-vault encrypt-vault decrypt-vault
+.PHONY: help init bootstrap deploy update stop status clean setup-vault edit-vault encrypt-vault decrypt-vault raid zfs health
 
 # Default target
 help: ## Show this help message
@@ -99,6 +99,15 @@ force-pull: ## Force pull latest images even if compose unchanged
 validate: ## Validate Ansible configuration
 	ansible-playbook playbooks/deploy.yml --syntax-check --ask-vault-pass
 	ansible-inventory --list
+
+raid: ## Configure/assemble RAID (set vars with -e, confirm required)
+	ansible-playbook playbooks/raid.yml --ask-become-pass
+
+zfs: ## Configure ZFS (set vars with -e, confirm required)
+	ansible-playbook playbooks/zfs.yml --ask-become-pass
+
+health: ## Collect system/storage health diagnostics
+	ansible-playbook playbooks/health.yml --ask-vault-pass --ask-become-pass
 
 # Generate current docker-compose.yml for inspection
 generate-compose: ## Generate docker-compose.yml file for inspection

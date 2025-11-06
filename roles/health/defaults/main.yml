@@ -1,0 +1,33 @@
+---
+# General health diagnostics
+
+# Where to store artifacts on the control node
+health_output_root: "{{ (build_root if (build_root is defined and build_root | length > 0) else (playbook_dir + '/../build')) }}/diagnostics"
+
+# Sections to run
+health_system: true            # CPU, memory, swap, load, processes
+health_fs: true                # df, mount options
+health_network: true           # interfaces, addresses, errors, sockets
+health_services: true          # systemd failed, recent journal errors
+health_iostat: true            # iostat sample
+health_dmesg: true             # kernel ring buffer filtered
+
+# Disk-specific (SMART/NVMe, mdadm, ZFS)
+health_disk_smart: true
+health_disk_nvme: true
+health_mdadm: true 
+health_zfs: true
+
+# Optional fio perf tests (non-destructive file-based)
+health_fio: false
+health_confirm: false          # must be true to allow fio
+health_fio_target_paths: []    # e.g. ['/mnt/media']
+health_fio_size: 1G
+health_fio_runtime: 30
+health_fio_iodepth: 16
+health_fio_numjobs: 1
+
+# Optional explicit device list; when empty, devices are auto-detected
+health_devices: []             # e.g. ['/dev/sda','/dev/sdb','/dev/nvme0n1']
+...
+

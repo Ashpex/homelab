@@ -1,0 +1,167 @@
+---
+# ZFS role: install ZFS, create/assemble pool, set props, create datasets
+
+- name: Safety check — require explicit confirmation
+  ansible.builtin.fail:
+    msg: "Refusing to manage ZFS without confirmation. Set zfs_confirm=true to proceed."
+  when: not (zfs_confirm | default(false))
+
+- name: Validate variables
+  ansible.builtin.assert:
+    that:
+      - zfs_pool_name is defined and zfs_pool_name | length > 0
+      - zfs_vdev_type in ['stripe','mirror','raidz1','raidz2','raidz3']
+      - zfs_devices is defined and ((zfs_vdev_type == 'stripe' and zfs_devices | length >= 1) or (zfs_vdev_type != 'stripe' and zfs_devices | length >= 2))
+    fail_msg: "Invalid ZFS variables. Check zfs_pool_name, zfs_vdev_type, and zfs_devices."
+
+- name: Install ZFS packages (Debian/Ubuntu)
+  ansible.builtin.package:
+    name:
+      - zfsutils-linux
+      - zfs-zed
+    state: present
+  when: ansible_facts.os_family == 'Debian'
+  become: yes
+
+- name: Install ZFS packages (RHEL family)
+  ansible.builtin.package:
+    name: zfs
+    state: present
+  when: ansible_facts.os_family in ['RedHat','Rocky','AlmaLinux','CentOS']
+  become: yes
+  failed_when: false
+
+- name: Ensure ZFS services are enabled (when present)
+  ansible.builtin.service:
+    name: zfs-zed
+    enabled: yes
+    state: started
+  when: ansible_facts.os_family == 'Debian'
+  become: yes
+
+- name: Check if pool exists
+  ansible.builtin.command: zpool list -H -o name {{ zfs_pool_name }}
+  register: pool_list
+  changed_when: false
+  failed_when: false
+  become: yes
+
+- name: Build vdev specification string
+  ansible.builtin.set_fact:
+    zfs_vdev_spec: >-
+      {{ '' if zfs_vdev_type == 'stripe' else zfs_vdev_type }} {{ zfs_devices | join(' ') }}
+
+- name: Create pool if missing
+  ansible.builtin.command: >-
+    zpool create -f
+    -o ashift={{ zfs_pool_opts.ashift | default(12) }}
+    -o autotrim={{ zfs_pool_opts.autotrim | default('on') }}
+    {{ zfs_pool_name }} {{ zfs_vdev_spec | trim }}
+  when: pool_list.rc != 0
+  become: yes
+
+- name: Set default pool properties
+  ansible.builtin.command: zfs set {{ item.key }}={{ item.value }} {{ zfs_pool_name }}
+  loop: "{{ zfs_default_props | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}={{ item.value }}"
+  become: yes
+
+- name: Ensure datasets exist with requested properties
+  vars:
+    ds_name: "{{ zfs_pool_name }}/{{ item.name }}"
+  block:
+    - name: Check dataset {{ item.name }}
+      ansible.builtin.command: zfs list -H -o name {{ ds_name }}
+      register: ds_check
+      changed_when: false
+      failed_when: false
+      become: yes
+
+    - name: Create dataset {{ item.name }}
+      ansible.builtin.command: >-
+        zfs create
+        {% if item.mountpoint is defined %}-o mountpoint={{ item.mountpoint }}{% endif %}
+        {% if item.compression is defined %}-o compression={{ item.compression }}{% endif %}
+        {% if item.recordsize is defined %}-o recordsize={{ item.recordsize }}{% endif %}
+        {{ ds_name }}
+      when: ds_check.rc != 0
+      become: yes
+
+    - name: Update dataset properties for {{ item.name }}
+      ansible.builtin.command: zfs set {{ prop.key }}={{ prop.value }} {{ ds_name }}
+      loop: >-
+        {{
+          (
+            {
+              'mountpoint': item.mountpoint | default(omit),
+              'compression': item.compression | default(omit),
+              'recordsize': item.recordsize | default(omit)
+            }
+          | dict2items
+          | rejectattr('value','equalto','__omit_place_holder__')
+          | list
+          )
+        }}
+      loop_control:
+        loop_var: prop
+      when: ds_check.rc == 0
+      become: yes
+  loop: "{{ zfs_datasets }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Configure weekly scrub (cron)
+  ansible.builtin.cron:
+    name: "ZFS weekly scrub of {{ zfs_pool_name }}"
+    special_time: weekly
+    job: "zpool scrub {{ zfs_pool_name }}"
+    state: present
+  when: zfs_enable_scrub_cron | default(true)
+  become: yes
+
+## ARC tuning (persistent and runtime)
+
+- name: Build modprobe options line when ARC values provided
+  ansible.builtin.set_fact:
+    zfs_modprobe_options: >-
+      options zfs
+      {% if zfs_arc_max is not none %} zfs_arc_max={{ zfs_arc_max }}{% endif %}
+      {% if zfs_arc_min is not none %} zfs_arc_min={{ zfs_arc_min }}{% endif %}
+  when: (zfs_arc_max is not none) or (zfs_arc_min is not none)
+
+- name: Persist ARC options in /etc/modprobe.d/zfs.conf
+  ansible.builtin.lineinfile:
+    path: /etc/modprobe.d/zfs.conf
+    regexp: '^options zfs\b.*$'
+    line: "{{ zfs_modprobe_options | regex_replace('\n', ' ') | trim }}"
+    create: yes
+    owner: root
+    group: root
+    mode: '0644'
+  when: zfs_modprobe_options is defined
+  become: yes
+
+- name: Update initramfs after modprobe change (Debian/Ubuntu)
+  ansible.builtin.command: update-initramfs -u
+  when: zfs_modprobe_options is defined and ansible_facts.os_family == 'Debian'
+  become: yes
+
+- name: Runtime tune ARC max
+  ansible.builtin.shell: echo {{ zfs_arc_max }} > /sys/module/zfs/parameters/zfs_arc_max
+  args:
+    executable: /bin/bash
+  when: zfs_runtime_tune | default(true) and (zfs_arc_max is not none)
+  failed_when: false
+  become: yes
+
+- name: Runtime tune ARC min
+  ansible.builtin.shell: echo {{ zfs_arc_min }} > /sys/module/zfs/parameters/zfs_arc_min
+  args:
+    executable: /bin/bash
+  when: zfs_runtime_tune | default(true) and (zfs_arc_min is not none)
+  failed_when: false
+  become: yes
+
+...
+
