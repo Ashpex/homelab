@@ -1,0 +1,18 @@
+---
+raid_confirm: false            # must be true to proceed
+raid_create: true              # create if array not present
+raid_name: md0                 # e.g. md0
+raid_level: 1                  # e.g. 0,1,5,6,10
+raid_devices: []               # e.g. ['/dev/sdb', '/dev/sdc']
+raid_metadata: '1.2'           # mdadm metadata version
+raid_bitmap: false             # use internal bitmap
+
+raid_filesystem: ext4          # ext4|xfs|btrfs (mkfs must exist)
+raid_mount_point: /mnt/raid
+raid_mount_options: defaults,noatime
+
+# Optional ownership for mount point
+raid_owner: null               # defaults to user_id when defined
+raid_group: null               # defaults to group_id when defined
+...
+

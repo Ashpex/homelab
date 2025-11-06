@@ -1,0 +1,25 @@
+---
+- name: Configure RAID array(s)
+  hosts: homeserver
+  gather_facts: yes
+  become: yes
+
+  vars_files:
+    - ../group_vars/all/services.yml
+    - ../group_vars/all/vault.yml
+
+  # Example defaults: override with -e or inventory as needed
+  vars:
+    raid_confirm: false           # set true to actually run
+    raid_name: md0
+    raid_level: 1
+    raid_devices: []              # e.g. ['/dev/sdb', '/dev/sdc']
+    raid_filesystem: ext4
+    raid_mount_point: /mnt/raid
+
+  tasks:
+    - name: Include RAID role
+      include_role:
+        name: raid
+
+

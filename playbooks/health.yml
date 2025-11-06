@@ -1,0 +1,27 @@
+---
+- name: Collect system and storage health diagnostics
+  hosts: homeserver
+  gather_facts: yes
+  become: yes
+
+  vars_files:
+    - ../group_vars/all/services.yml
+    - ../group_vars/all/vault.yml
+
+  # Example toggles (override with -e as needed)
+  vars:
+    health_system: true
+    health_fs: true
+    health_network: true
+    health_services: true
+    health_disk_smart: true
+    health_disk_nvme: true
+    health_mdadm: false 
+    health_zfs: false 
+
+  tasks:
+    - name: Include health role
+      include_role:
+        name: health
+
+

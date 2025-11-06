@@ -1,0 +1,24 @@
+---
+- name: Configure ZFS pool and datasets
+  hosts: homeserver
+  gather_facts: yes
+  become: yes
+
+  vars_files:
+    - ../group_vars/all/services.yml
+    - ../group_vars/all/vault.yml
+
+  # Example defaults:  override with -e as needed
+  vars:
+    zfs_confirm: false
+    zfs_pool_name: tank
+    zfs_vdev_type: mirror
+    zfs_devices: []            # e.g. ['/dev/sdb','/dev/sdc']
+    zfs_datasets: []
+
+  tasks:
+    - name: Include ZFS role
+      include_role:
+        name: zfs
+
+

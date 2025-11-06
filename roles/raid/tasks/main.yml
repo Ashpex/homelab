@@ -1,0 +1,137 @@
+---
+# RAID role: create/assemble mdadm array, format, and mount
+
+- name: Safety check — require explicit confirmation
+  ansible.builtin.fail:
+    msg: "Refusing to manage RAID without confirmation. Set raid_confirm=true to proceed."
+  when: not (raid_confirm | default(false))
+
+- name: Validate variables
+  ansible.builtin.assert:
+    that:
+      - raid_devices is defined
+      - raid_devices | length >= 2
+      - raid_name is defined
+      - raid_level is defined
+      - raid_filesystem is defined
+      - raid_mount_point is defined
+    fail_msg: "Missing or invalid RAID vars. Required: raid_devices(>=2), raid_name, raid_level, raid_filesystem, raid_mount_point"
+
+- name: Ensure mdadm is installed
+  ansible.builtin.package:
+    name: mdadm
+    state: present
+  become: yes
+
+- name: Try to assemble any pre-existing arrays
+  ansible.builtin.command: mdadm --assemble --scan
+  register: assemble_scan
+  changed_when: "assembled" in (assemble_scan.stdout | default(''))
+  failed_when: false
+  become: yes
+
+- name: Check if array exists
+  ansible.builtin.command: mdadm --detail /dev/{{ raid_name }}
+  register: mdadm_detail
+  changed_when: false
+  failed_when: false
+  become: yes
+
+- name: Create RAID array if missing
+  ansible.builtin.command: >-
+    mdadm --create /dev/{{ raid_name }}
+    --level={{ raid_level }}
+    --raid-devices={{ raid_devices | length }}
+    --metadata={{ raid_metadata | default('1.2') }}
+    {% if raid_bitmap | default(false) %}--bitmap=internal{% endif %}
+    {{ raid_devices | join(' ') }}
+  when: (mdadm_detail.rc | default(1)) != 0 and (raid_create | default(true))
+  register: mdadm_create
+  changed_when: true
+  become: yes
+
+- name: Ensure mdadm configuration is persisted (scan)
+  ansible.builtin.command: mdadm --detail --scan
+  register: mdadm_scan
+  changed_when: false
+  become: yes
+
+- name: Persist mdadm arrays to config (Debian/Ubuntu path)
+  ansible.builtin.copy:
+    dest: /etc/mdadm/mdadm.conf
+    content: |
+      DEVICE partitions
+      {{ mdadm_scan.stdout }}
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_facts.os_family == 'Debian'
+  notify: Update initramfs (Debian/Ubuntu)
+  become: yes
+
+- name: Persist mdadm arrays to config (RHEL path)
+  ansible.builtin.copy:
+    dest: /etc/mdadm.conf
+    content: |
+      DEVICE partitions
+      {{ mdadm_scan.stdout }}
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_facts.os_family in ['RedHat', 'Rocky', 'AlmaLinux', 'CentOS']
+  become: yes
+
+- name: Check filesystem on array
+  ansible.builtin.command: blkid -o value -s TYPE /dev/{{ raid_name }}
+  register: array_fs
+  changed_when: false
+  failed_when: false
+  become: yes
+
+- name: Create filesystem on array if none exists
+  ansible.builtin.command: >-
+    {{ 'mkfs.xfs -f' if raid_filesystem == 'xfs' else 'mkfs -t ' + raid_filesystem + ' -F' }}
+    /dev/{{ raid_name }}
+  when: (array_fs.rc != 0) or ((array_fs.stdout | default('')) | length == 0)
+  become: yes
+
+- name: Ensure mount point directory exists
+  ansible.builtin.file:
+    path: "{{ raid_mount_point }}"
+    state: directory
+    owner: "{{ raid_owner | default(user_id | default(omit)) }}"
+    group: "{{ raid_group | default(group_id | default(omit)) }}"
+    mode: '0755'
+  become: yes
+
+- name: Get array UUID
+  ansible.builtin.command: blkid -o value -s UUID /dev/{{ raid_name }}
+  register: array_uuid
+  changed_when: false
+  become: yes
+
+- name: Ensure fstab entry exists (by UUID)
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: "^UUID={{ array_uuid.stdout | regex_escape }}\s+"
+    line: "UUID={{ array_uuid.stdout }} {{ raid_mount_point }} {{ raid_filesystem }} {{ raid_mount_options | default('defaults,noatime') }} 0 0"
+    state: present
+    create: yes
+    owner: root
+    group: root
+    mode: '0644'
+  when: array_uuid.stdout is defined and array_uuid.stdout | length > 0
+  become: yes
+
+- name: Mount RAID filesystem
+  ansible.builtin.mount:
+    path: "{{ raid_mount_point }}"
+    src: "UUID={{ array_uuid.stdout }}"
+    fstype: "{{ raid_filesystem }}"
+    opts: "{{ raid_mount_options | default('defaults,noatime') }}"
+    state: mounted
+  when: array_uuid.stdout is defined and array_uuid.stdout | length > 0
+  become: yes
+
+...
+
