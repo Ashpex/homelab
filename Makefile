@@ -18,8 +18,12 @@ bootstrap: ## Bootstrap host (install Docker, Compose, utilities)
 deploy: ## Deploy all enabled services
 	ansible-playbook playbooks/deploy.yml --ask-vault-pass --ask-become-pass
 
-update: ## Update all services to latest images  
+update: ## Update all services to latest images
 	ansible-playbook playbooks/update.yml --ask-vault-pass --ask-become-pass
+
+update-service: ## Update specific service (e.g., make update-service jellyfin)
+	@if [ -z "$(word 2,$(MAKECMDGOALS))" ]; then echo "Usage: make update-service <servicename>"; exit 1; fi
+	ansible-playbook playbooks/update.yml -e "single_service=$(word 2,$(MAKECMDGOALS))" --ask-vault-pass --ask-become-pass
 
 stop: ## Stop all services
 	ansible-playbook playbooks/stop.yml --ask-vault-pass --ask-become-pass
@@ -61,9 +65,6 @@ logs-service: ## Show logs for specific service
 		echo "Service $(word 2,$(MAKECMDGOALS)) not found in ./build/services/"; \
 	fi
 
-tasks: ## Show available service tasks
-	@./scripts/tasks.sh
-
 # Prevent make from treating service names as targets
 %:
 	@:
@@ -81,19 +82,9 @@ encrypt-vault: ## Encrypt the vault file
 decrypt-vault: ## Decrypt vault file (for debugging)
 	ansible-vault decrypt group_vars/all/vault.yml
 
-# Development helpers  
+# Development helpers
 dry-run: ## Test deployment without making changes
 	ansible-playbook playbooks/deploy.yml --check --diff --ask-vault-pass --ask-become-pass
-
-logs: ## Show logs for all services
-	@find ./build/services -name "docker-compose.yml" -execdir docker compose logs -f \;
-
-restart: ## Restart all services
-	@find ./build/services -name "docker-compose.yml" -execdir docker compose restart \;
-
-# Force operations
-force-pull: ## Force pull latest images even if compose unchanged
-	ansible-playbook playbooks/deploy.yml -e force_pull=true --ask-vault-pass --ask-become-pass
 
 # Configuration validation
 validate: ## Validate Ansible configuration
@@ -107,8 +98,4 @@ zfs: ## Configure ZFS (set vars with -e, confirm required)
 	ansible-playbook playbooks/zfs.yml --ask-become-pass
 
 health: ## Collect system/storage health diagnostics
-	ansible-playbook playbooks/health.yml --ask-vault-pass --ask-become-pass
-
-# Generate current docker-compose.yml for inspection
-generate-compose: ## Generate docker-compose.yml file for inspection
-	ansible-playbook playbooks/deploy.yml --tags "template" --check
+	ansible-playbook playbooks/health.yml --ask-become-pass

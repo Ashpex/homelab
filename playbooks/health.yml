@@ -4,10 +4,6 @@
   gather_facts: yes
   become: yes
 
-  vars_files:
-    - ../group_vars/all/services.yml
-    - ../group_vars/all/vault.yml
-
   # Example toggles (override with -e as needed)
   vars:
     health_system: true

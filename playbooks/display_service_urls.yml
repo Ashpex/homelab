@@ -1,66 +1,27 @@
 ---
 # Display service URLs after deployment
+# Dynamically generated from services dict — no manual updates needed when adding services
 - name: Display service URLs
   debug:
     msg: |
-      ✅ {% if single_service is defined %}Service '{{ single_service }}' deployed successfully!{% else %}Services deployed successfully!{% endif %}
+      {% if single_service is defined %}Service '{{ single_service }}' deployed successfully!{% else %}Services deployed successfully!{% endif %}
 
+      Access your services at:
+      {% for name, cfg in services | dictsort %}
+      {% if cfg.enabled | default(false) %}
+      {% if name == 'traefik' %}
+      - {{ name }}: http://{{ ansible_host }}:{{ cfg.dashboard_port }}{% if cfg.dashboard_domain is defined %} ({{ cfg.dashboard_domain }}){% endif %}
 
-      📋 Access your services at:
-      {% if services.adguard.enabled %}
-      - AdGuard Home: http://{{ ansible_host }}:{{ services.adguard.web_port }}
+      {% elif name == 'arr' %}
+      - sonarr: http://{{ ansible_host }}:{{ cfg.sonarr_port }}
+      - radarr: http://{{ ansible_host }}:{{ cfg.radarr_port }}
+      - prowlarr: http://{{ ansible_host }}:{{ cfg.prowlarr_port }}
+      {% elif cfg.port is defined %}
+      - {{ name }}: http://{{ ansible_host }}:{{ cfg.port }}{% if cfg.domain is defined %} ({{ cfg.domain }}){% endif %}
+
+      {% elif cfg.web_port is defined %}
+      - {{ name }}: http://{{ ansible_host }}:{{ cfg.web_port }}{% if cfg.domain is defined %} ({{ cfg.domain }}){% endif %}
+
       {% endif %}
-      {% if services.alist.enabled %}
-      - Alist: http://{{ ansible_host }}:{{ services.alist.port }}
       {% endif %}
-      {% if services.arr.enabled %}
-      - Sonarr: http://{{ ansible_host }}:{{ services.arr.sonarr_port }}
-      - Radarr: http://{{ ansible_host }}:{{ services.arr.radarr_port }}
-      - Prowlarr: http://{{ ansible_host }}:{{ services.arr.prowlarr_port }}
-      {% endif %}
-      {% if services.audiobookshelf.enabled %}
-      - Audiobookshelf: http://{{ ansible_host }}:{{ services.audiobookshelf.port }}
-      {% endif %}
-      {% if services.backrest.enabled %}
-      - Backrest: http://{{ ansible_host }}:{{ services.backrest.port }}
-      {% endif %}
-      {% if services.copyparty.enabled %}
-      - Copyparty: http://{{ ansible_host }}:{{ services.copyparty.port }}
-      {% endif %}
-      {% if services.forgejo.enabled %}
-      - Forgejo: http://{{ ansible_host }}:{{ services.forgejo.port }}
-      {% endif %}
-      {% if services.frigate.enabled %}
-      - Frigate: http://{{ ansible_host }}:{{ services.frigate.web_port }}
-      {% endif %}
-      {% if services.glance.enabled %}
-      - Glance: http://{{ ansible_host }}:{{ services.glance.port }}
-      {% endif %}
-      {% if services.gotify.enabled %}
-      - Gotify: http://{{ ansible_host }}:{{ services.gotify.port }}
-      {% endif %}
-      {% if services.immich.enabled %}
-      - Immich: http://{{ ansible_host }}:{{ services.immich.port }}
-      {% endif %}
-      {% if services.jellyfin.enabled %}
-      - Jellyfin: http://{{ ansible_host }}:{{ services.jellyfin.port }}
-      {% endif %}
-      {% if services.qbittorrent.enabled %}
-      - qBittorrent: http://{{ ansible_host }}:{{ services.qbittorrent.web_port }}
-      {% endif %}
-      {% if services.romm.enabled %}
-      - RomM: http://{{ ansible_host }}:{{ services.romm.port }}
-      {% endif %}
-      {% if services.waline.enabled %}
-      - Waline: http://{{ ansible_host }}:{{ services.waline.port }}
-      {% endif %}
-      {% if services.watchtower.enabled and services.watchtower.port is defined %}
-      - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.port }}
-      {% endif %}
-      {% if services.traefik.enabled %}
-      - Traefik Dashboard: http://{{ ansible_host }}:{{ services.traefik.dashboard_port }}
-      {% endif %}
-      {% if services.authelia.enabled %}
-      - Authelia: https://{{ services.authelia.domain }} (or http://{{ ansible_host }}:{{ services.authelia.port }})
-      {% endif %}
-      
+      {% endfor %}

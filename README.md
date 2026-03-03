@@ -4,13 +4,13 @@ This repository contains an Ansible-based Infrastructure as Code (IaC) solution 
 
 ## Features
 
-- 🚀 **Automated Deployment**: One-command deployment of all services
-- 🔧 **Configurable Paths**: No more hardcoded `/mnt/hdd1/` paths
-- 🔐 **Secure Secrets**: Ansible Vault for sensitive data
-- 🔄 **Easy Updates**: Update all services with a single command
-- 📊 **Service Management**: Start, stop, restart individual or all services
-- 🎯 **Individual Service Deployment**: Deploy single services quickly
-- 🛠️ **Service-specific Tasks**: Backup, restore, and maintenance operations
+- **Automated Deployment**: One-command deployment of all services
+- **Configurable Paths**: All paths are variables, no hardcoded values
+- **Secure Secrets**: Ansible Vault for sensitive data
+- **Easy Updates**: Update all services with a single command
+- **Service Management**: Start, stop, restart individual or all services
+- **Individual Service Deployment**: Deploy single services quickly
+- **Service-specific Tasks**: Backup, restore, and maintenance operations
 
 ## Quick Start
 
@@ -28,6 +28,7 @@ make bootstrap
 - **Docker & Docker Compose** on your homeserver
 - **Ansible** on your local machine or homeserver
 - **Git** for version control
+- **community.docker** Ansible collection: `ansible-galaxy collection install -r requirements.yml`
 
 ### Initial Setup
 
@@ -39,10 +40,10 @@ make bootstrap
    media_path: "/mnt/hdd1/media"           # Media files
    downloads_path: "/mnt/ssd/downloads"    # Download location
    nvr_path: "/mnt/hdd1/nvr"              # Security camera storage
-   user_id: 1000                          # Your user ID
-   group_id: 1000                         # Your group ID
-   docker_network: "homelab"              # Docker network name
+   docker_network: "media"                 # Docker network name
    ```
+
+   Note: `user_id` and `group_id` are resolved dynamically at runtime via `id -u` and `id -g`.
 
 2. **Set up encrypted secrets**:
    ```bash
@@ -52,7 +53,7 @@ make bootstrap
 
 3. **Configure services** in `group_vars/all/services.yml`:
    - Enable/disable services by setting `enabled: true/false`
-   - Adjust ports, paths, and other settings
+   - Adjust ports, paths, images, and other settings
 
 ### Basic Usage
 
@@ -62,11 +63,12 @@ make deploy
 
 # Deploy a specific service
 make deploy-service jellyfin
-# or
-ansible-playbook playbooks/deploy.yml -e single_service=jellyfin
 
-# Update all services to latest versions
+# Update all services to latest images
 make update
+
+# Update a specific service
+make update-service jellyfin
 
 # Stop all services
 make stop
@@ -74,17 +76,11 @@ make stop
 # Restart a specific service
 make restart-service immich
 
-# View logs for all services
-make logs
-
 # View logs for a specific service
 make logs-service romm
 
 # Show running containers
 make status
-
-# Access service-specific tasks (backup, restore, etc.)
-make tasks
 ```
 
 ## Available Services
@@ -93,23 +89,24 @@ Currently supported services:
 
 | Service | Description | Default Port | Status |
 |---------|-------------|--------------|--------|
-| **AdGuard** | Network-wide ad blocking | 3000 | ✅ |
-| **Alist** | File manager and sharing | 5244 | ✅ |
-| **ARR Stack** | Sonarr, Radarr, etc. | 8989, 7878 | ✅ |
-| **Audiobookshelf** | Audiobook and podcast server | 13378 | ✅ |
-| **Backrest** | Backup solution with restic | 9898 | ✅ |
-| **Copyparty** | File sharing server | 3923 | ✅ |
-| **Forgejo** | Self-hosted Git service | 8087 | ✅ |
-| **Frigate** | NVR for security cameras | 8971 | ✅ |
-| **Glance** | Dashboard and monitoring | 8083 | ✅ |
-| **Gotify** | Push notification server | 8080 | ✅ |
-| **Immich** | Photo management (Google Photos alternative) | 2283 | ✅ |
-| **Jellyfin** | Media server | 8096 | ✅ |
-| **Traefik** | Reverse proxy with automatic HTTPS | 80/443/8080 | ✅ |
-| **qBittorrent** | BitTorrent client | 8084 | ✅ |
-| **RomM** | ROM management with metadata | 8086 | ✅ |
-| **Waline** | Comment system | 8360 | ✅ |
-| **Watchtower** | Auto-update containers | N/A | ✅ |
+| **AdGuard** | Network-wide ad blocking | 8081 | Enabled |
+| **Alist** | File manager and sharing | 8083 | Enabled |
+| **ARR Stack** | Sonarr, Radarr, Prowlarr | 8989, 7878, 9696 | Disabled |
+| **Audiobookshelf** | Audiobook and podcast server | 13378 | Enabled |
+| **Authelia** | Authentication and authorization | 9091 | Enabled |
+| **Backrest** | Backup solution with restic | 9898 | Disabled |
+| **Copyparty** | File sharing server | 3923 | Enabled |
+| **Forgejo** | Self-hosted Git service | 8087 | Enabled |
+| **Frigate** | NVR for security cameras | 8971 | Disabled |
+| **Glance** | Dashboard and monitoring | 8090 | Enabled |
+| **Gotify** | Push notification server | 8888 | Enabled |
+| **Immich** | Photo management (Google Photos alternative) | 2283 | Enabled |
+| **Jellyfin** | Media server | 8096 | Enabled |
+| **qBittorrent** | BitTorrent client | 8084 | Enabled |
+| **RomM** | ROM management with metadata | 8086 | Enabled |
+| **Traefik** | Reverse proxy | 80/443/8080 | Enabled |
+| **Waline** | Comment system | 8360 | Enabled |
+| **Watchtower** | Auto-update containers | 8085 | Enabled |
 
 ## Configuration
 
@@ -120,21 +117,24 @@ Edit `group_vars/all/services.yml` to configure your services:
 ```yaml
 services:
   jellyfin:
-    enabled: true                    # Enable/disable service
-    web_port: 8096                  # Port mapping
+    enabled: true
+    image: "jellyfin/jellyfin:latest"   # Centralized image reference
+    port: 8096                          # Single-port services use 'port'
     config_path: "{{ base_data_path }}/jellyfin/config"
     cache_path: "{{ base_data_path }}/jellyfin/cache"
-    media_path: "{{ media_path }}"  # Uses variable from inventory
-    
-  romm:
+    media_path: "{{ media_path }}"
+
+  adguard:
     enabled: true
-    web_port: 8086
-    library_path: "{{ media_path }}/roms"    # Your ROM collection
-    assets_path: "{{ base_data_path }}/romm/assets"     # Saves, states
-    config_path: "{{ base_data_path }}/romm/config"     # Configuration
-    db_name: "romm"
-    db_user: "romm-user"
+    image: "adguard/adguardhome:latest"
+    web_port: 8081                      # Multi-port services use prefixed names
+    dns_port: 53
+    data_path: "{{ base_data_path }}/adguard"
 ```
+
+**Port naming convention:**
+- `port` — for services with a single port
+- `web_port`, `dns_port`, `torrent_port`, etc. — for services with multiple ports
 
 ### Path Management
 
@@ -142,7 +142,7 @@ All paths are variables defined in `inventory/hosts.yml`:
 
 - `base_data_path`: Main application data storage
 - `media_path`: Media files (videos, music, photos, ROMs)
-- `downloads_path`: Download directory  
+- `downloads_path`: Download directory
 - `nvr_path`: NVR/security camera storage
 
 ### Secrets Management
@@ -167,7 +167,9 @@ vault_romm_retroachievements_api_key: "your_retroachievements_api_key"
 # Single-service deploys
 make deploy-service immich
 make deploy-service romm
-ansible-playbook playbooks/deploy.yml -e single_service=traefik
+
+# Update a single service
+make update-service jellyfin
 
 # Restart individual services
 make restart-service jellyfin
@@ -179,28 +181,16 @@ make logs-service frigate
 make stop-service qbittorrent
 ```
 
-### Service-specific Tasks
-
-Access additional operations through the interactive tasks menu:
-
-```bash
-make tasks
-# Choose from:
-# 1. Backup RomM database
-# 2. Restore RomM database
-# (More tasks added as services require them)
-```
-
 ### Custom Variables
 
 Override variables at runtime:
 
 ```bash
 # Use different data path temporarily
-ansible-playbook playbooks/deploy.yml -e base_data_path=/tmp/test-data
+ansible-playbook playbooks/deploy.yml -e base_data_path=/tmp/test-data --ask-vault-pass --ask-become-pass
 
 # Deploy with specific vault password file
-ansible-playbook playbooks/deploy.yml --vault-password-file .vault_pass
+ansible-playbook playbooks/deploy.yml --vault-password-file .vault_pass --ask-become-pass
 ```
 
 ## Project Structure
@@ -209,6 +199,7 @@ ansible-playbook playbooks/deploy.yml --vault-password-file .vault_pass
 homelab/
 ├── ansible.cfg              # Ansible configuration
 ├── Makefile                 # Convenient command shortcuts
+├── requirements.yml         # Ansible collection dependencies
 ├── inventory/
 │   └── hosts.yml           # Server inventory and variables
 ├── group_vars/all/
@@ -218,23 +209,31 @@ homelab/
 │   ├── bootstrap/          # One-time host provisioning (Docker, utils)
 │   ├── docker/             # Ensure Docker/Compose, network
 │   ├── common/             # Base dirs, timezone, sanity checks
-│   └── service/            # Generic per-service compose/config/deploy
+│   ├── service/            # Generic per-service compose/config/deploy
+│   ├── health/             # System/storage diagnostics
+│   ├── raid/               # RAID array management
+│   └── zfs/                # ZFS pool/dataset management
 ├── templates/services/     # Jinja2 templates for Docker Compose
 │   ├── jellyfin.yml.j2
 │   ├── romm.yml.j2
 │   └── ...
-├── configs/               # Static configuration files
-│   ├── glance/glance.yml
+├── configs/               # Configuration files
+│   ├── traefik/
+│   │   ├── traefik.yml.j2            # Static config (Jinja2 template)
+│   │   └── dynamic/middleware.yml    # Dynamic middleware
+│   ├── glance/glance.yml            # Static config (copied as-is)
 │   ├── backrest/excludes.txt
 │   └── romm/config.yml
 ├── playbooks/            # Ansible playbooks
-│   ├── site.yml          # Entrypoint; imports deploy.yml
 │   ├── deploy.yml        # Main logic (roles + service loop)
-│   ├── update.yml
-│   └── stop.yml
+│   ├── update.yml        # Pull latest images and recreate
+│   ├── stop.yml          # Stop services
+│   ├── bootstrap.yml     # One-time host setup
+│   ├── health.yml        # System diagnostics
+│   ├── raid.yml          # RAID configuration
+│   └── zfs.yml           # ZFS configuration
 ├── scripts/             # Helper scripts
 │   ├── init.sh         # System setup script
-│   ├── tasks.sh        # Interactive tasks menu
 │   ├── backup-romm.sh  # RomM backup script
 │   └── restore-romm.sh # RomM restore script
 └── build/              # Generated Docker Compose files (gitignored)
@@ -249,7 +248,7 @@ homelab/
 If you're migrating from individual Docker Compose setups:
 
 1. **Backup your current data** (important!)
-2. **Stop existing containers**: 
+2. **Stop existing containers**:
    ```bash
    cd /path/to/old/setup
    docker compose down
@@ -266,15 +265,15 @@ If you're migrating from individual Docker Compose setups:
 
 ### Common Issues
 
-1. **Permission errors**: 
-   - Check `user_id` and `group_id` in `inventory/hosts.yml`
+1. **Permission errors**:
+   - `user_id` and `group_id` are resolved dynamically — verify with `id -u` and `id -g`
    - Some services (like RomM) may need to run as root for volume permissions
 
-2. **Port conflicts**: 
+2. **Port conflicts**:
    - Adjust ports in `group_vars/all/services.yml`
    - Check for conflicts: `sudo netstat -tlnp | grep :PORT`
 
-3. **Path not found**: 
+3. **Path not found**:
    - Verify all paths in `inventory/hosts.yml` exist
    - Check directory permissions: `ls -la /mnt/hdd1/`
 
@@ -319,7 +318,7 @@ docker system df
 # Weekly: Update all services
 make update
 
-# Monthly: Clean up unused resources  
+# Monthly: Clean up unused resources
 make clean
 ```
 
@@ -328,16 +327,16 @@ make clean
 For detailed instructions on adding new services, see [Adding Services Guide](docs/ADDING-SERVICES.md).
 
 Quick overview:
-1. Add configuration to `group_vars/all/services.yml`
+1. Add configuration (with `image` field) to `group_vars/all/services.yml`
 2. Create Docker Compose template in `templates/services/servicename.yml.j2`
 3. Add secrets to `group_vars/all/vault.yml` (if needed)
 4. Create config files in `configs/servicename/` (if needed)
 5. Test deployment: `make deploy-service servicename`
-6. Update this README
+6. The service URL display is generated automatically — no manual update needed
 
 ### Database Backups
 
-For services with databases, use the interactive tasks menu (`make tasks`) or run backup scripts manually:
+For services with databases, run the backup scripts directly:
 
 ```bash
 # RomM database backup
@@ -358,7 +357,7 @@ This setup includes Traefik as a reverse proxy. With Cloudflare Tunnel, TLS term
 - Cloudflare integration support
 
 **Configuration:**
-- Static config: `configs/traefik/traefik.yml`
+- Static config: `configs/traefik/traefik.yml.j2`
 - Dynamic middleware: `configs/traefik/dynamic/middleware.yml`
 - Service domains: Configured in `group_vars/all/services.yml`
 
@@ -383,7 +382,7 @@ This setup includes Traefik as a reverse proxy. With Cloudflare Tunnel, TLS term
 ## Performance Tips
 
 - **SSD for databases**: Store database files on SSD when possible
-- **Resource limits**: Set appropriate memory limits in service configurations  
+- **Resource limits**: Set appropriate memory limits in service configurations
 - **Monitoring**: Use Glance dashboard to monitor system resources
 - **Log rotation**: Configure Docker log rotation to prevent disk filling
 
