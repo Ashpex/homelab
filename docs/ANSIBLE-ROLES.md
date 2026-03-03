@@ -13,8 +13,6 @@ This homelab adopts Ansible roles for clarity, reuse, and per-service deployment
 ```
 homelab/
 ├── roles/
-│   ├── bootstrap/          # one-time host provisioning (Docker, utils)
-│   │   └── tasks/main.yml
 │   ├── docker/             # ensure Docker/Compose, network
 │   │   └── tasks/main.yml
 │   ├── common/             # base dirs, timezone, sanity checks
@@ -31,7 +29,6 @@ homelab/
     ├── deploy.yml          # main logic (roles + service loop)
     ├── update.yml          # pull latest images and recreate
     ├── stop.yml            # stop services
-    ├── bootstrap.yml       # one-time host setup
     ├── health.yml          # system diagnostics
     ├── raid.yml            # RAID configuration
     └── zfs.yml             # ZFS configuration
@@ -90,7 +87,7 @@ make deploy-service forgejo
 - Traefik-specific: ensure `acme.json` exists with `0600` permissions
 
 ## Migration strategy
-1. Create `roles/bootstrap`, `roles/docker`, `roles/common`, and the generic `roles/service`.
+1. Create `roles/docker`, `roles/common`, and the generic `roles/service`.
 2. Use `playbooks/deploy.yml` as the main logic.
 3. Move per-service compose templates to `templates/services/<service>.yml.j2` and any config files to `configs/<service>/`.
 4. Deploy services via the generic `service` role loop.
