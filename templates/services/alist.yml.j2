@@ -1,6 +1,6 @@
 services:
   alist:
-    image: 'xhofe/alist:latest'
+    image: '{{ services.alist.image }}'
     container_name: alist
     volumes:
       - "{{ services.alist.data_path }}:/opt/alist/data"

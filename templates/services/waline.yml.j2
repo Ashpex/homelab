@@ -1,7 +1,7 @@
 services:
   waline:
     container_name: waline
-    image: lizheming/waline:latest
+    image: {{ services.waline.image }}
     restart: always
     ports:
       - "{{ services.waline.port }}:8360"

@@ -1,7 +1,7 @@
 services:
   traefik:
     container_name: traefik
-    image: traefik:v3.2
+    image: {{ services.traefik.image }}
     restart: always
     security_opt:
       - no-new-privileges:true

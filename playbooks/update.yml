@@ -1,25 +1,17 @@
 ---
 - name: Update Homeserver Services
   hosts: homeserver
-  gather_facts: no
+  become: true
   vars_files:
     - ../group_vars/all/services.yml
     - ../group_vars/all/vault.yml
 
   tasks:
-    - name: Pull images for enabled services via role
+    - name: Ensure Docker is ready
       include_role:
-        name: service
-      vars:
-        service_key: "{{ item.key }}"
-        service_cfg: "{{ item.value }}"
-        service_action: pull
-      when: item.value.enabled | default(false)
-      loop: "{{ services | dict2items }}"
-      loop_control:
-        label: "{{ item.key }}"
+        name: docker
 
-    - name: Recreate containers for enabled services via role
+    - name: Pull and recreate enabled services
       include_role:
         name: service
       vars:
@@ -36,4 +28,4 @@
 
     - name: Display update status
       debug:
-        msg: "✅ Update cycle completed (pull + recreate)."
+        msg: "Update cycle completed (pull + recreate)."

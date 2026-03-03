@@ -1,6 +1,6 @@
 services:
   backrest:
-    image: garethgeorge/backrest:latest
+    image: {{ services.backrest.image }}
     container_name: backrest
     hostname: backrest
     user: "{{ user_id }}:{{ group_id }}"

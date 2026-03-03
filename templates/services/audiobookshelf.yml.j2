@@ -1,7 +1,7 @@
 services:
   audiobookshelf:
     container_name: audiobookshelf
-    image: ghcr.io/advplyr/audiobookshelf:latest
+    image: {{ services.audiobookshelf.image }}
     ports:
       - "{{ services.audiobookshelf.port }}:80"
     volumes:

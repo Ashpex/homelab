@@ -1,6 +1,6 @@
 services:
   adguardhome:
-    image: 'adguard/adguardhome:latest'
+    image: '{{ services.adguard.image }}'
     container_name: 'adguard'
     hostname: 'adguard'
     restart: 'unless-stopped'

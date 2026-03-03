@@ -1,7 +1,7 @@
 services:
   gotify:
     container_name: gotify
-    image: gotify/server
+    image: {{ services.gotify.image }}
     ports:
       - "{{ services.gotify.port }}:80"
     environment:

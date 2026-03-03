@@ -1,6 +1,6 @@
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    image: {{ services.jellyfin.image }}
     container_name: jellyfin
     deploy:
       resources:
@@ -8,7 +8,7 @@ services:
           memory: {{ services.jellyfin.memory_limit }}
     #user: "{{ user_id }}:{{ group_id }}"
     ports:
-      - "{{ services.jellyfin.web_port }}:8096"
+      - "{{ services.jellyfin.port }}:8096"
     volumes:
       - "{{ services.jellyfin.config_path }}:/config"
       - "{{ services.jellyfin.cache_path }}:/cache"

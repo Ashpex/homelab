@@ -1,12 +1,16 @@
 ---
 - name: Stop Homeserver Services
   hosts: homeserver
-  gather_facts: no
+  become: true
   vars_files:
     - ../group_vars/all/services.yml
     - ../group_vars/all/vault.yml
 
   tasks:
+    - name: Ensure Docker is ready
+      include_role:
+        name: docker
+
     - name: Stop enabled services via role
       include_role:
         name: service
@@ -21,4 +25,4 @@
 
     - name: Display stop status
       debug:
-        msg: "🛑 All enabled services have been stopped."
+        msg: "All enabled services have been stopped."

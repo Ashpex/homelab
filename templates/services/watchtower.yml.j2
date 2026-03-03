@@ -1,7 +1,7 @@
 services:
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower
+    image: {{ services.watchtower.image }}
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -9,9 +9,9 @@ services:
       - TZ={{ timezone }}
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 30 12 * * *  # Run daily at 12:30 PM
-{% if services.watchtower.web_port is defined %}
+{% if services.watchtower.port is defined %}
     ports:
-       - "{{ services.watchtower.web_port }}:8080"
+       - "{{ services.watchtower.port }}:8080"
 {% endif %}
     networks:
       - {{ docker_network }}

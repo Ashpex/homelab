@@ -1,6 +1,6 @@
 services:
   copyparty:
-    image: copyparty/ac:latest
+    image: {{ services.copyparty.image }}
     container_name: copyparty
     user: "{{ user_id }}:{{ group_id }}"
     ports:

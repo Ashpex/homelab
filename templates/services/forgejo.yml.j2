@@ -1,7 +1,7 @@
 services:
   forgejo:
     container_name: forgejo
-    image: codeberg.org/forgejo/forgejo:13
+    image: {{ services.forgejo.image }}
     volumes:
       - "{{ services.forgejo.data_path }}:/data"
       - /etc/timezone:/etc/timezone:ro
@@ -9,7 +9,7 @@ services:
     # Direct port access (for local testing or when Traefik is disabled)
     # Comment out when using Traefik
     ports:
-      - "{{ services.forgejo.web_port }}:3000"
+      - "{{ services.forgejo.port }}:3000"
     restart: always
     environment:
       - USER_UID={{ user_id }}

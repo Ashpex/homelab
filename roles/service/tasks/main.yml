@@ -4,31 +4,15 @@
 # - service_key: name of the service (e.g., "forgejo")
 # - service_cfg: dict of that service's config (from services.<name>)
 # - service_action: one of [up, down, pull, recreate] (default: up)
+# - compose_cmd: set by the docker role (e.g., "docker compose" or "docker-compose")
 
 - name: Define build paths
   set_fact:
     resolved_build_root: "{{ (build_root if (build_root is defined and build_root | length > 0) else (playbook_dir + '/../build')) }}"
-    service_build_dir: "{{ (build_root if (build_root is defined and build_root | length > 0) else (playbook_dir + '/../build')) }}/services/{{ service_key }}"
 
-# service_action is passed by deploy.yml; assume it's resolved there
-
-- name: Detect compose command (plugin vs legacy)
-  block:
-    - name: Check docker compose plugin
-      command: docker compose version
-      register: compose_plugin
-      failed_when: false
-      changed_when: false
-
-    - name: Check legacy docker-compose binary
-      command: docker-compose version --short
-      register: compose_legacy
-      failed_when: false
-      changed_when: false
-
-    - name: Set compose_cmd fact
-      set_fact:
-        compose_cmd: "{{ 'docker compose' if compose_plugin.rc == 0 else 'docker-compose' }}"
+- name: Set service build directory
+  set_fact:
+    service_build_dir: "{{ resolved_build_root }}/services/{{ service_key }}"
 
 - name: Ensure build roots exist
   file:
@@ -83,46 +67,13 @@
         dest: "{{ service_build_dir }}/docker-compose.yml"
         mode: '0644'
 
-# Traefik-specific configuration handling
+# Config file processing (handles all services including Traefik)
 - block:
-    - name: Render Traefik static configuration
-      template:
-        src: "{{ playbook_dir }}/../configs/traefik/traefik.yml"
-        dest: "{{ services.traefik.config_path }}/traefik.yml"
-        mode: '0644'
+    - name: Check if config directory exists for {{ service_key }}
+      stat:
+        path: "{{ playbook_dir }}/../configs/{{ service_key }}"
+      register: config_dir
 
-    - name: Ensure Traefik acme.json exists
-      file:
-        path: "{{ services.traefik.data_path }}/acme.json"
-        state: touch
-        mode: '0600'
-        owner: "{{ user_id }}"
-        group: "{{ group_id }}"
-      become: yes
-
-    - name: Find Traefik dynamic config files
-      find:
-        paths: "{{ playbook_dir }}/../configs/traefik/dynamic"
-        patterns: "*"
-        excludes: "*.example,.gitkeep"
-        file_type: file
-        recurse: yes
-      register: traefik_dynamic_files
-      failed_when: false
-
-    - name: Copy Traefik dynamic config files
-      copy:
-        src: "{{ config_file.path }}"
-        dest: "{{ services.traefik.config_path }}/dynamic/{{ config_file.path | basename }}"
-        mode: '0644'
-      loop: "{{ traefik_dynamic_files.files }}"
-      loop_control:
-        loop_var: config_file
-      when: traefik_dynamic_files.files is defined and traefik_dynamic_files.files | length > 0
-  when: service_key == 'traefik' and service_action != 'down'
-
-# Generic config processing for non-Traefik services
-- block:
     - name: Find .j2 template files for {{ service_key }}
       find:
         paths: "{{ playbook_dir }}/../configs/{{ service_key }}"
@@ -130,7 +81,7 @@
         file_type: file
         recurse: yes
       register: j2_files
-      failed_when: false
+      when: config_dir.stat.exists
 
     - name: Find regular config files for {{ service_key }}
       find:
@@ -140,52 +91,93 @@
         file_type: file
         recurse: yes
       register: regular_files
-      failed_when: false
+      when: config_dir.stat.exists
+
+    - name: Collect config subdirectories
+      set_fact:
+        config_subdirs: >-
+          {{ ((j2_files.files | default([])) + (regular_files.files | default([])))
+             | map(attribute='path')
+             | map('regex_replace', '^.*/configs/' + service_key + '/', '')
+             | map('dirname')
+             | select('ne', '.')
+             | unique
+             | list }}
+      when: config_dir.stat.exists
+
+    - name: Ensure config subdirectories exist
+      file:
+        path: "{{ service_cfg.config_path }}/{{ subdir }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ config_subdirs | default([]) }}"
+      loop_control:
+        loop_var: subdir
+      when: config_subdirs | default([]) | length > 0
 
     - name: Render .j2 template files for {{ service_key }}
-      when: j2_files.files is defined and j2_files.files | length > 0
       template:
         src: "{{ config_file.path }}"
         dest: "{{ service_cfg.config_path }}/{{ config_file.path | regex_replace('^.*/configs/' + service_key + '/', '') | regex_replace('\\.j2$', '') }}"
         mode: '0644'
-      loop: "{{ j2_files.files }}"
+      loop: "{{ j2_files.files | default([]) }}"
       loop_control:
         loop_var: config_file
+      when: j2_files.files | default([]) | length > 0
 
     - name: Copy regular config files for {{ service_key }}
-      when: regular_files.files is defined and regular_files.files | length > 0
       copy:
         src: "{{ config_file.path }}"
         dest: "{{ service_cfg.config_path }}/{{ config_file.path | regex_replace('^.*/configs/' + service_key + '/', '') }}"
         mode: '0644'
-      loop: "{{ regular_files.files }}"
+      loop: "{{ regular_files.files | default([]) }}"
       loop_control:
         loop_var: config_file
-  when: service_key != 'traefik' and service_cfg.config_path is defined and service_action != 'down'
+      when: regular_files.files | default([]) | length > 0
+  when: service_cfg.config_path is defined and service_action != 'down'
+
+# Traefik-specific: ensure acme.json exists with correct permissions
+- name: Ensure Traefik acme.json exists
+  file:
+    path: "{{ services.traefik.data_path }}/acme.json"
+    state: touch
+    mode: '0600'
+    owner: "{{ user_id }}"
+    group: "{{ group_id }}"
+  become: yes
+  when: service_key == 'traefik' and service_action != 'down'
 
 - name: Pull images
-  shell: "{{ (compose_cmd | default('docker compose')) }} pull"
+  command: "{{ compose_cmd }} pull"
   args:
     chdir: "{{ service_build_dir }}"
+  register: pull_result
+  failed_when: false
+  changed_when: pull_result.rc == 0
   when: force_pull | default(false) or service_action in ['pull', 'recreate']
-  ignore_errors: yes
+
+- name: Warn if image pull failed
+  debug:
+    msg: "WARNING: Image pull failed for {{ service_key }}: {{ pull_result.stderr | default('unknown error') }}"
+  when:
+    - pull_result is defined
+    - pull_result.rc is defined
+    - pull_result.rc != 0
 
 - name: Compose down
-  shell: "{{ (compose_cmd | default('docker compose')) }} down"
+  command: "{{ compose_cmd }} down"
   args:
     chdir: "{{ service_build_dir }}"
   when: service_action == 'down'
 
 - name: Compose up
-  shell: "{{ (compose_cmd | default('docker compose')) }} up -d"
+  command: "{{ compose_cmd }} up -d"
   args:
     chdir: "{{ service_build_dir }}"
-  when: service_action in ['up']
+  when: service_action == 'up'
 
 - name: Compose up (force recreate)
-  shell: "{{ (compose_cmd | default('docker compose')) }} up -d --force-recreate"
+  command: "{{ compose_cmd }} up -d --force-recreate"
   args:
     chdir: "{{ service_build_dir }}"
-  when: service_action in ['recreate']
-
-
+  when: service_action == 'recreate'

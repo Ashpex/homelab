@@ -1,7 +1,7 @@
 services:
   authelia:
     container_name: authelia
-    image: authelia/authelia:latest
+    image: {{ services.authelia.image }}
     restart: unless-stopped
     environment:
       - TZ={{ timezone }}
@@ -9,7 +9,7 @@ services:
       - "{{ services.authelia.config_path }}:/config"
       - "{{ services.authelia.data_path }}:/data"
     ports:
-      - "{{ services.authelia.web_port }}:9091"
+      - "{{ services.authelia.port }}:9091"
     networks:
       - {{ docker_network }}
     labels:
