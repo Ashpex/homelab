@@ -7,14 +7,13 @@ This document explains how Traefik configuration works in your homelab setup.
 ```
 Deployment Flow:
 1. deploy.yml runs
-2. Creates service directories
+2. Generic service role creates service directories
 3. Generates docker-compose files from templates
-4. process_service_configs.yml copies config files
-   ├─ Copies configs/traefik/dynamic/* → {data_path}/traefik/config/dynamic/
-   └─ Handles subdirectories recursively
-5. Special Traefik tasks run
-   ├─ Renders configs/traefik/traefik.yml → {data_path}/traefik/config/traefik.yml
-   └─ Creates acme.json with proper permissions
+4. Service role processes config files automatically:
+   ├─ Renders configs/traefik/traefik.yml.j2 → {config_path}/traefik.yml
+   ├─ Copies configs/traefik/dynamic/* → {config_path}/dynamic/
+   └─ Creates subdirectories as needed
+5. Traefik-specific: ensures acme.json exists with 0600 permissions
 6. Services start
 ```
 
@@ -22,7 +21,7 @@ Deployment Flow:
 
 ```
 configs/traefik/                          # Source configs (in repo)
-├── traefik.yml                          # Static config (Jinja2 template)
+├── traefik.yml.j2                       # Static config (Jinja2 template)
 ├── dynamic.yml.example                  # Example dynamic config
 └── dynamic/                             # Dynamic configs
     ├── middleware.yml                   # Shared middleware (auto-loaded)
@@ -36,6 +35,10 @@ configs/traefik/                          # Source configs (in repo)
         └── middleware.yml              # Copied from source
 ```
 
+## TLS Note
+
+This homelab uses **Cloudflare Tunnel** for HTTPS. Traefik's internal ACME/Let's Encrypt is disabled. Router labels use `tls=true` instead of `tls.certresolver=letsencrypt`. If you switch to Traefik-managed certificates, re-enable ACME in `configs/traefik/traefik.yml.j2` and add certresolver labels.
+
 ## Two Configuration Methods
 
 ### Method 1: Docker Labels (Recommended)
@@ -48,19 +51,19 @@ configs/traefik/                          # Source configs (in repo)
 ```yaml
 services:
   forgejo:
-    image: codeberg.org/forgejo/forgejo:13
+    image: {{ services.forgejo.image }}
     labels:
       # Enable Traefik
       - "traefik.enable=true"
-      
+
       # Router configuration
-      - "traefik.http.routers.forgejo.rule=Host(`git.ashpex.net`)"
+      - "traefik.http.routers.forgejo.rule=Host(`{{ services.forgejo.domain }}`)"
       - "traefik.http.routers.forgejo.entrypoints=websecure"
-      - "traefik.http.routers.forgejo.tls.certresolver=letsencrypt"
-      
+      - "traefik.http.routers.forgejo.tls=true"
+
       # Use shared middleware from dynamic config
       - "traefik.http.routers.forgejo.middlewares=secure-chain@file"
-      
+
       # Service port
       - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
 ```
@@ -73,7 +76,7 @@ services:
 
 ### Method 2: Dynamic Config Files
 
-**Use for:** 
+**Use for:**
 - Shared middleware (already created in `dynamic/middleware.yml`)
 - External/non-Docker services
 - Complex routing rules
@@ -90,9 +93,8 @@ http:
       entryPoints:
         - websecure
       service: router-admin
-      tls:
-        certResolver: letsencrypt
-  
+      tls: {}
+
   services:
     router-admin:
       loadBalancer:
@@ -127,10 +129,10 @@ The file `configs/traefik/dynamic/middleware.yml` provides reusable middleware:
 labels:
   # Use a single middleware
   - "traefik.http.routers.myservice.middlewares=secure-headers@file"
-  
+
   # Use multiple middleware (comma-separated)
   - "traefik.http.routers.myservice.middlewares=compress@file,secure-headers@file"
-  
+
   # Use the predefined chain
   - "traefik.http.routers.myservice.middlewares=secure-chain@file"
 ```
@@ -157,19 +159,19 @@ http:
 services:
   forgejo:
     container_name: forgejo
-    image: codeberg.org/forgejo/forgejo:13
+    image: {{ services.forgejo.image }}
     volumes:
       - "{{ services.forgejo.data_path }}:/data"
     restart: always
     environment:
-      - FORGEJO__server__ROOT_URL=https://git.ashpex.net/
+      - FORGEJO__server__ROOT_URL=https://{{ services.forgejo.domain }}/
     networks:
       - {{ docker_network }}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.forgejo.rule=Host(`git.ashpex.net`)"
+      - "traefik.http.routers.forgejo.rule=Host(`{{ services.forgejo.domain }}`)"
       - "traefik.http.routers.forgejo.entrypoints=websecure"
-      - "traefik.http.routers.forgejo.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.forgejo.tls=true"
       - "traefik.http.routers.forgejo.middlewares=secure-chain@file"
       - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
 
@@ -187,7 +189,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.private-service.rule=Host(`private.ashpex.net`)"
   - "traefik.http.routers.private-service.entrypoints=websecure"
-  - "traefik.http.routers.private-service.tls.certresolver=letsencrypt"
+  - "traefik.http.routers.private-service.tls=true"
   - "traefik.http.routers.private-service.middlewares=auth"
   - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
   - "traefik.http.services.private-service.loadbalancer.server.port=8080"
@@ -214,9 +216,8 @@ http:
       service: nas
       middlewares:
         - secure-headers@file
-      tls:
-        certResolver: letsencrypt
-  
+      tls: {}
+
   services:
     nas:
       loadBalancer:
@@ -233,20 +234,20 @@ http:
    # Optional: Remove or comment out port mapping
    # ports:
    #   - "8096:8096"
-   
+
    # Add Traefik labels
    labels:
      - "traefik.enable=true"
-     - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.ashpex.net`)"
+     - "traefik.http.routers.jellyfin.rule=Host(`{{ services.jellyfin.domain }}`)"
      - "traefik.http.routers.jellyfin.entrypoints=websecure"
-     - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
+     - "traefik.http.routers.jellyfin.tls=true"
      - "traefik.http.routers.jellyfin.middlewares=secure-chain@file"
      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
    ```
 
 2. **Redeploy service**
    ```bash
-   ansible-playbook playbooks/deploy.yml --tags jellyfin
+   make deploy-service jellyfin
    ```
 
 3. **Update DNS**
@@ -280,15 +281,9 @@ docker logs traefik
 
 ### SSL Certificate issues
 
-```bash
-# Check certificate status
-docker exec traefik cat /acme.json | jq
-
-# If stuck, remove and regenerate
-docker stop traefik
-rm {base_data_path}/traefik/acme.json
-ansible-playbook playbooks/deploy.yml --tags traefik
-```
+With Cloudflare Tunnel, TLS terminates at Cloudflare. If you see certificate issues:
+1. Check Cloudflare Tunnel status in the Cloudflare dashboard
+2. Verify the tunnel is routing to the correct port
 
 ### Dynamic config not loading
 
@@ -342,9 +337,8 @@ When moving a service behind Traefik:
 - [ ] Remove/comment port mapping (or keep for direct access)
 - [ ] Update ROOT_URL/BASE_URL in service config if needed
 - [ ] Redeploy service
-- [ ] Add DNS record
+- [ ] Add DNS record (or configure Cloudflare Tunnel route)
 - [ ] Test HTTPS access
-- [ ] Verify certificate in browser
 - [ ] Check Traefik dashboard for route
 
 ## Resources
@@ -360,6 +354,6 @@ When moving a service behind Traefik:
 | Service routing | Docker labels | `templates/services/*.yml.j2` | All Docker services |
 | Shared middleware | Dynamic config | `configs/traefik/dynamic/middleware.yml` | Reusable middleware |
 | External services | Dynamic config | `configs/traefik/dynamic/*.yml` | Non-Docker services |
-| Static settings | Template | `configs/traefik/traefik.yml` | Traefik core config |
+| Static settings | Jinja2 template | `configs/traefik/traefik.yml.j2` | Traefik core config |
 
-Your setup is configured to use Docker labels as the primary method, with dynamic config for shared middleware and external services.
+Your setup is configured to use Docker labels as the primary method, with dynamic config for shared middleware and external services. TLS is handled by Cloudflare Tunnel.

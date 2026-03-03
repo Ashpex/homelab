@@ -1,4 +1,0 @@
----
-# Main site playbook - import deploy as the default
-
-- import_playbook: deploy.yml

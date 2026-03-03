@@ -4,11 +4,7 @@
   gather_facts: yes
   become: yes
 
-  vars_files:
-    - ../group_vars/all/services.yml
-    - ../group_vars/all/vault.yml
-
-  # Example defaults:  override with -e as needed
+  # Example defaults: override with -e as needed
   vars:
     zfs_confirm: false
     zfs_pool_name: tank

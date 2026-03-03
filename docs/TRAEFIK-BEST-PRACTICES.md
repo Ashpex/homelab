@@ -45,6 +45,8 @@ tls:
 - `sniStrict` prevents host header attacks
 - Achieves A+ rating on SSL Labs
 
+**Note:** In this homelab, TLS terminates at Cloudflare Tunnel. These TLS options apply if you switch to Traefik-managed certificates.
+
 **Reference:** [TLS Documentation](https://doc.traefik.io/traefik/https/tls/)
 
 ### 3. Health Check Endpoint
@@ -96,7 +98,7 @@ circuit-breaker:
 - **Circuit Breaker**: Prevents cascading failures
 - Improves overall system reliability
 
-**Reference:** 
+**Reference:**
 - [Retry Middleware](https://doc.traefik.io/traefik/middlewares/http/retry/)
 - [Circuit Breaker](https://doc.traefik.io/traefik/middlewares/http/circuitbreaker/)
 
@@ -166,7 +168,7 @@ Prevents privilege escalation and restricts Docker socket access to read-only.
 
 ## Configuration Summary
 
-### Static Configuration (`traefik.yml`)
+### Static Configuration (`configs/traefik/traefik.yml.j2`)
 | Feature | Status | Benefit |
 |---------|--------|---------|
 | TLS 1.2+ only | Enabled | Modern security |
@@ -175,7 +177,7 @@ Prevents privilege escalation and restricts Docker socket access to read-only.
 | Cloudflare IPs | Enabled | Real IP preservation |
 | Entry point middleware | Enabled | Global security |
 
-### Dynamic Configuration (`dynamic/middleware.yml`)
+### Dynamic Configuration (`configs/traefik/dynamic/middleware.yml`)
 | Middleware | Type | Purpose |
 |------------|------|---------|
 | secure-headers | Security | OWASP headers |
@@ -198,9 +200,9 @@ Prevents privilege escalation and restricts Docker socket access to read-only.
 ```yaml
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.forgejo.rule=Host(`git.ashpex.net`)"
+  - "traefik.http.routers.forgejo.rule=Host(`{{ services.forgejo.domain }}`)"
   - "traefik.http.routers.forgejo.entrypoints=websecure"
-  - "traefik.http.routers.forgejo.tls.certresolver=letsencrypt"
+  - "traefik.http.routers.forgejo.tls=true"
   - "traefik.http.routers.forgejo.middlewares=secure-chain@file"
   - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
 ```
@@ -260,7 +262,6 @@ Before deploying to production:
 - [ ] Update Cloudflare IPs if not using Cloudflare
 - [ ] Configure DNS A records
 - [ ] Open firewall ports 80, 443
-- [ ] Test certificate generation (use staging first)
 - [ ] Set up monitoring alerts
 - [ ] Test health check endpoint
 - [ ] Review and adjust rate limits
@@ -284,11 +285,12 @@ labels:
 
 ### 2. Certificate Management
 
-- Let's Encrypt configured
-- HTTP-01 challenge (works without DNS)
-- Use staging for testing to avoid rate limits
+This homelab uses **Cloudflare Tunnel** for TLS — Traefik's ACME is disabled. If switching to Traefik-managed certificates:
 
-**For staging:**
+- Enable ACME in `configs/traefik/traefik.yml.j2`
+- Add `tls.certresolver=letsencrypt` to router labels
+- Use staging for testing to avoid rate limits:
+
 ```yaml
 certificatesResolvers:
   letsencrypt:

@@ -7,6 +7,23 @@
     - ../group_vars/all/vault.yml
 
   tasks:
+    - name: Determine target services
+      set_fact:
+        services_to_update: >-
+          {{
+            (services | dict2items | selectattr('key','equalto', single_service) | list)
+            if (single_service is defined and single_service|length > 0)
+            else (services | dict2items)
+          }}
+
+    - name: Validate requested single_service exists
+      fail:
+        msg: "Service '{{ single_service }}' not found in services."
+      when:
+        - single_service is defined
+        - single_service|length > 0
+        - services_to_update | length == 0
+
     - name: Ensure Docker is ready
       include_role:
         name: docker
@@ -18,8 +35,8 @@
         service_key: "{{ item.key }}"
         service_cfg: "{{ item.value }}"
         service_action: recreate
-      when: item.value.enabled | default(false)
-      loop: "{{ services | dict2items }}"
+      when: (item.value.enabled | default(false)) or (single_service is defined and single_service|length > 0)
+      loop: "{{ services_to_update }}"
       loop_control:
         label: "{{ item.key }}"
 
