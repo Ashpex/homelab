@@ -3,7 +3,7 @@ services:
     container_name: frigate
     privileged: true
     restart: unless-stopped
-    image: ghcr.io/blakeblackshear/frigate:stable
+    image: {{ services.frigate.image }}
     shm_size: "{{ services.frigate.shm_size }}"
     volumes:
       - /etc/localtime:/etc/localtime:ro

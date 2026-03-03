@@ -93,7 +93,7 @@ restart: ## Restart all services
 
 # Force operations
 force-pull: ## Force pull latest images even if compose unchanged
-	ansible-playbook playbooks/deploy.yml -e force_pull=true
+	ansible-playbook playbooks/deploy.yml -e force_pull=true --ask-vault-pass --ask-become-pass
 
 # Configuration validation
 validate: ## Validate Ansible configuration

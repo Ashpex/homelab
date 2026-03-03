@@ -28,7 +28,7 @@
       - Copyparty: http://{{ ansible_host }}:{{ services.copyparty.port }}
       {% endif %}
       {% if services.forgejo.enabled %}
-      - Forgejo: http://{{ ansible_host }}:{{ services.forgejo.web_port }}
+      - Forgejo: http://{{ ansible_host }}:{{ services.forgejo.port }}
       {% endif %}
       {% if services.frigate.enabled %}
       - Frigate: http://{{ ansible_host }}:{{ services.frigate.web_port }}
@@ -43,24 +43,24 @@
       - Immich: http://{{ ansible_host }}:{{ services.immich.port }}
       {% endif %}
       {% if services.jellyfin.enabled %}
-      - Jellyfin: http://{{ ansible_host }}:8096
+      - Jellyfin: http://{{ ansible_host }}:{{ services.jellyfin.port }}
       {% endif %}
-       {% if services.qbittorrent.enabled %}
-       - qBittorrent: http://{{ ansible_host }}:{{ services.qbittorrent.web_port }}
-       {% endif %}
-       {% if services.romm.enabled %}
-       - RomM: http://{{ ansible_host }}:{{ services.romm.web_port }}
-       {% endif %}
+      {% if services.qbittorrent.enabled %}
+      - qBittorrent: http://{{ ansible_host }}:{{ services.qbittorrent.web_port }}
+      {% endif %}
+      {% if services.romm.enabled %}
+      - RomM: http://{{ ansible_host }}:{{ services.romm.port }}
+      {% endif %}
       {% if services.waline.enabled %}
       - Waline: http://{{ ansible_host }}:{{ services.waline.port }}
       {% endif %}
-      {% if services.watchtower.enabled and services.watchtower.web_port is defined %}
-      - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.web_port }}
+      {% if services.watchtower.enabled and services.watchtower.port is defined %}
+      - Watchtower: http://{{ ansible_host }}:{{ services.watchtower.port }}
       {% endif %}
       {% if services.traefik.enabled %}
       - Traefik Dashboard: http://{{ ansible_host }}:{{ services.traefik.dashboard_port }}
       {% endif %}
       {% if services.authelia.enabled %}
-      - Authelia: https://{{ services.authelia.domain }} (or http://{{ ansible_host }}:{{ services.authelia.web_port }})
+      - Authelia: https://{{ services.authelia.domain }} (or http://{{ ansible_host }}:{{ services.authelia.port }})
       {% endif %}
       

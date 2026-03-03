@@ -1,6 +1,6 @@
 services:
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: {{ services.qbittorrent.image }}
     container_name: qbittorrent
     environment:
       - PUID={{ user_id }}

@@ -2,28 +2,34 @@
 # Service configurations with ports and settings
 services:
   adguard:
-    enabled:  true 
-    web_port: 8081 
+    enabled: true
+    image: "adguard/adguardhome:latest"
+    web_port: 8081
     dns_port: 53
     data_path: "{{ base_data_path }}/adguard"
     domain: "adguard.ashpex.net"
     dns_domain: "dns.ashpex.net"  # For DNS-over-HTTPS
     
   alist:
-    enabled: true 
-    port: 8083  # External port mapping
+    enabled: true
+    image: "xhofe/alist:latest"
+    port: 8083
     data_path: "{{ base_data_path }}/alist"
     domain: "files.ashpex.net"
     
   arr:
     enabled: false
+    sonarr_image: "lscr.io/linuxserver/sonarr:latest"
+    radarr_image: "lscr.io/linuxserver/radarr:latest"
+    prowlarr_image: "lscr.io/linuxserver/prowlarr:latest"
     data_path: "{{ base_data_path }}/arr"
     sonarr_port: 8989
     radarr_port: 7878
     prowlarr_port: 9696
     
   audiobookshelf:
-    enabled: true 
+    enabled: true
+    image: "ghcr.io/advplyr/audiobookshelf:latest"
     port: 13378
     config_path: "{{ base_data_path }}/audiobookshelf/config"
     metadata_path: "{{ base_data_path }}/audiobookshelf/metadata"
@@ -31,14 +37,16 @@ services:
     domain: "library.ashpex.net"
     
   backrest:
-    enabled: false 
+    enabled: false
+    image: "garethgeorge/backrest:latest"
     port: 9898
     data_path: "{{ base_data_path }}/backrest/data"
     config_path: "{{ base_data_path }}/backrest/config"
     cache_path: "{{ base_data_path }}/backrest/cache"
     
   copyparty:
-    enabled: true 
+    enabled: true
+    image: "copyparty/ac:latest"
     port: 3923
     config_path: "{{ base_data_path }}/copyparty/config"
     share_path: "{{ root_path }}"
@@ -47,7 +55,8 @@ services:
     domain: "share.ashpex.net"
     
   frigate:
-    enabled: false 
+    enabled: false
+    image: "ghcr.io/blakeblackshear/frigate:stable"
     web_port: 8971
     rtsp_port: 8554
     webrtc_tcp_port: 8555
@@ -59,18 +68,22 @@ services:
     
   glance:
     enabled: true
-    port: 8090  # Changed from 80 to avoid conflict with Traefik
+    image: "glanceapp/glance:latest"
+    port: 8090
     config_path: "{{ base_data_path }}/glance/config"
     domain: "hub.ashpex.net"
     
   gotify:
-    enabled: true 
+    enabled: true
+    image: "gotify/server:latest"
     port: 8888
     data_path: "{{ base_data_path }}/gotify"
     domain: "gotify.ashpex.net"
     
   immich:
-    enabled: true 
+    enabled: true
+    image: "ghcr.io/immich-app/immich-server:{{ services.immich.version }}"
+    ml_image: "ghcr.io/immich-app/immich-machine-learning:{{ services.immich.version }}"
     port: 2283
     upload_path: "{{ media_path }}/immich"
     data_path: "{{ base_data_path }}/immich"
@@ -81,8 +94,9 @@ services:
     domain: "photos.ashpex.net"
     
   jellyfin:
-    enabled: true 
-    web_port: 8096  # Web interface port
+    enabled: true
+    image: "jellyfin/jellyfin:latest"
+    port: 8096
     network_mode: "host"
     memory_limit: "1g"
     config_path: "{{ base_data_path }}/jellyfin/config"
@@ -91,7 +105,8 @@ services:
     domain: "media.ashpex.net"
     
   qbittorrent:
-    enabled: true 
+    enabled: true
+    image: "lscr.io/linuxserver/qbittorrent:latest"
     web_port: 8084
     torrent_port: 6881
     config_path: "{{ base_data_path }}/qbittorrent"
@@ -99,8 +114,10 @@ services:
     domain: "torrent.ashpex.net"
     
   romm:
-    enabled: true 
-    web_port: 8086
+    enabled: true
+    image: "rommapp/romm:latest"
+    db_image: "mariadb:latest"
+    port: 8086
     library_path: "{{ media_path }}/games"    # ROM library structure: /roms/{platform}/ and /bios/{platform}/
     assets_path: "{{ base_data_path }}/romm/assets"     # Saves, states, etc.
     config_path: "{{ base_data_path }}/romm/config"     # config.yml location  
@@ -112,14 +129,16 @@ services:
     domain: "romm.ashpex.net"
     
   waline:
-    enabled: true 
+    enabled: true
+    image: "lizheming/waline:latest"
     port: 8360
     data_path: "{{ base_data_path }}/waline"
     domain: "comments.ashpex.net"
     
   authelia:
     enabled: true
-    web_port: 9091
+    image: "authelia/authelia:latest"
+    port: 9091
     domain: "auth.ashpex.net"
     data_path: "{{ base_data_path }}/authelia"
     config_path: "{{ base_data_path }}/authelia/config"
@@ -134,17 +153,20 @@ services:
     forgejo_auth_name: "authelia"
     
   watchtower:
-    enabled: true 
-    web_port: 8085  # Optional web interface
+    enabled: true
+    image: "containrrr/watchtower:latest"
+    port: 8085
     
   forgejo:
     enabled: true
-    web_port: 8087  # External port mapping
+    image: "codeberg.org/forgejo/forgejo:13"
+    port: 8087
     data_path: "{{ base_data_path }}/forgejo"
     domain: "git.ashpex.net"
     
   traefik:
     enabled: true
+    image: "traefik:v3.2"
     web_port: 80        # HTTP
     websecure_port: 443 # HTTPS
     dashboard_port: 8080 # Dashboard/API

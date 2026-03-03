@@ -1,7 +1,7 @@
 services:
   romm:
     container_name: romm
-    image: rommapp/romm:latest
+    image: {{ services.romm.image }}
     restart: unless-stopped
     environment:
       - DB_HOST=romm-db
@@ -31,7 +31,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "{{ services.romm.web_port }}:8080"
+      - "{{ services.romm.port }}:8080"
     depends_on:
       romm-db:
         condition: service_healthy
@@ -49,7 +49,7 @@ services:
 
   romm-db:
     container_name: romm-db
-    image: mariadb:latest
+    image: {{ services.romm.db_image }}
     restart: unless-stopped
     environment:
       - MARIADB_ROOT_PASSWORD={{ vault_romm_db_root_password }}
