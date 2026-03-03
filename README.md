@@ -17,11 +17,8 @@ This repository contains an Ansible-based Infrastructure as Code (IaC) solution 
 ### Prerequisites Installation
 
 ```bash
-# Minimal local setup (Ansible, helpers)
+# Install required tools (Docker, Ansible, Git, Tailscale, utilities)
 make init
-
-# One-time host provisioning (Docker, utilities, optional)
-make bootstrap
 ```
 
 **Manual installation** (if preferred):
@@ -206,7 +203,6 @@ homelab/
 │   ├── services.yml        # Service configurations (single source of truth)
 │   └── vault.yml           # Encrypted secrets (Ansible Vault)
 ├── roles/                  # Role-based automation
-│   ├── bootstrap/          # One-time host provisioning (Docker, utils)
 │   ├── docker/             # Ensure Docker/Compose, network
 │   ├── common/             # Base dirs, timezone, sanity checks
 │   ├── service/            # Generic per-service compose/config/deploy
@@ -228,7 +224,6 @@ homelab/
 │   ├── deploy.yml        # Main logic (roles + service loop)
 │   ├── update.yml        # Pull latest images and recreate
 │   ├── stop.yml          # Stop services
-│   ├── bootstrap.yml     # One-time host setup
 │   ├── health.yml        # System diagnostics
 │   ├── raid.yml          # RAID configuration
 │   └── zfs.yml           # ZFS configuration

@@ -1,5 +1,5 @@
 # Homeserver Infrastructure as Code
-.PHONY: help init bootstrap deploy update stop status clean setup-vault edit-vault encrypt-vault decrypt-vault raid zfs health
+.PHONY: help init deploy update stop status clean setup-vault edit-vault encrypt-vault decrypt-vault raid zfs health
 
 # Default target
 help: ## Show this help message
@@ -11,9 +11,6 @@ help: ## Show this help message
 
 init: ## Install required tools (Docker, Ansible, Git, Tailscale) and utilities
 	./scripts/init.sh
-
-bootstrap: ## Bootstrap host (install Docker, Compose, utilities)
-	ansible-playbook playbooks/bootstrap.yml --ask-become-pass
 
 deploy: ## Deploy all enabled services
 	ansible-playbook playbooks/deploy.yml --ask-vault-pass --ask-become-pass
