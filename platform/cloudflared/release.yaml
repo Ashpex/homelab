@@ -4,7 +4,7 @@ metadata:
   name: cloudflared
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false 
   targetNamespace: cloudflared
   interval: 30m
   chart:
