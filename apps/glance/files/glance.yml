@@ -87,7 +87,6 @@ pages:
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/authelia.svg
               - title: Traefik
                 url: https://traefik.ashpex.net/
-                check-url: http://traefik.traefik.svc.cluster.local:9100/metrics
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/traefik.svg
               - title: CopyParty
                 url: https://share.ashpex.net/
