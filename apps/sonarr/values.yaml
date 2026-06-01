@@ -1,0 +1,81 @@
+app-template:
+  fullnameOverride: sonarr
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: lscr.io/linuxserver/sonarr
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: PUID
+            value: '1000'
+          - name: PGID
+            value: '1000'
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          ports:
+          - name: web
+            containerPort: 8989
+            hostPort: 8989
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        web:
+          enabled: true
+          primary: true
+          port: 8989
+          protocol: HTTP
+        http:
+          enabled: false
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: sonarr.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: web
+  persistence:
+    main-config:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/arr/sonarr"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/config"
+    main-tv:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/media/tv"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/tv"
+    main-downloads:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/ssd/downloads"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/downloads"

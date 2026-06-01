@@ -1,0 +1,29 @@
+all:
+  hosts:
+    homeserver:
+      ansible_host: localhost
+      ansible_connection: local
+  vars:
+    timezone: Asia/Ho_Chi_Minh
+
+    k3s_version: v1.33.12+k3s1
+    k3s_config_dir: /etc/rancher/k3s
+    k3s_config_file: /etc/rancher/k3s/config.yaml
+    k3s_data_dir: /var/lib/rancher/k3s
+    k3s_kubeconfig_file: /etc/rancher/k3s/k3s.yaml
+
+    homelab_hdd_mount: /mnt/hdd1
+    homelab_ssd_mount: /mnt/ssd
+    homelab_k8s_hdd_volume_root: /mnt/hdd1/k8s-volumes
+
+    homelab_required_mounts:
+      - /mnt/hdd1
+
+    tailscale_ip: 100.96.51.117
+
+    k3s_disable_components:
+      - traefik
+
+    k3s_node_labels:
+      - homelab.node/single=true
+      - homelab.storage/hdd=true

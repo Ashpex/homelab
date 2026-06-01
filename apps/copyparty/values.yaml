@@ -1,0 +1,81 @@
+app-template:
+  fullnameOverride: copyparty
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: copyparty/ac
+            tag: latest
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: "/"
+                  port: http
+                initialDelaySeconds: 30
+                periodSeconds: 60
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: "/"
+                  port: http
+                initialDelaySeconds: 15
+                periodSeconds: 60
+            startup:
+              enabled: false
+          ports:
+          - name: http
+            containerPort: 3923
+      pod:
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 3923
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: share.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-config:
+      enabled: true
+      type: secret
+      name: copyparty-config
+      advancedMounts:
+        main:
+          main:
+          - path: "/cfg/copyparty.conf"
+            subPath: config
+            readOnly: true
+    main-share:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/w"

@@ -1,0 +1,88 @@
+app-template:
+  fullnameOverride: glance
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: glanceapp/glance
+            tag: latest
+            pullPolicy: Always
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: "/"
+                  port: http
+                initialDelaySeconds: 30
+                periodSeconds: 60
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: "/"
+                  port: http
+                initialDelaySeconds: 10
+                periodSeconds: 30
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          ports:
+          - name: http
+            containerPort: 8080
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 8080
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: hub.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-config:
+      enabled: true
+      type: configMap
+      name: glance-config
+      globalMounts:
+        - path: /app/config
+    # main-timezone:
+    #   enabled: true
+    #   type: hostPath
+    #   hostPath: "/etc/timezone"
+    #   hostPathType: File
+    #   advancedMounts:
+    #     main:
+    #       main:
+    #       - path: "/etc/timezone"
+    #         readOnly: true
+    # main-localtime:
+    #   enabled: true
+    #   type: hostPath
+    #   hostPath: "/etc/localtime"
+    #   hostPathType: File
+    #   advancedMounts:
+    #     main:
+    #       main:
+    #       - path: "/etc/localtime"
+    #         readOnly: true

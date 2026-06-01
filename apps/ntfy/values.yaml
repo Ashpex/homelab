@@ -1,0 +1,71 @@
+app-template:
+  fullnameOverride: ntfy
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: binwiederhier/ntfy
+            tag: latest
+          args:
+          - serve
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          - name: NTFY_BASE_URL
+            value: https://notify.ashpex.net
+          - name: NTFY_BEHIND_PROXY
+            value: "true"
+          ports:
+          - name: http
+            containerPort: 80
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 80
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: notify.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-cache:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/ntfy/cache"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/var/cache/ntfy"
+    main-data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/ntfy"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/etc/ntfy"

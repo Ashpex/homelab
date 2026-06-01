@@ -1,0 +1,3 @@
+name: homelab
+runtime: go
+description: Homelab resources managed with Pulumi.
