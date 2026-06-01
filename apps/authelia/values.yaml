@@ -5,7 +5,16 @@ authelia:
         mountPath: /config/users_database.yml
         subPath: users_database.yml
         readOnly: true
+      - name: oidc-jwks
+        mountPath: /secrets/oidc-jwks
+        readOnly: true
     extraVolumes:
+      - name: oidc-jwks
+        secret:
+          secretName: authelia-jwks
+          items:
+            - key: key.pem
+              path: key.pem
       - name: users-db
         configMap:
           name: authelia-users
@@ -63,7 +72,7 @@ authelia:
         jwks:
           - key_id: default
             key:
-              path: '/secrets/internal/oidc-jwks.pem'
+              path: '/secrets/oidc-jwks/key.pem'
         lifespans:
           access_token: 1h
           authorize_code: 1m
