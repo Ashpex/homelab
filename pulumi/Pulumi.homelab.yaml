@@ -91,4 +91,4 @@ config:
         secure: AAABAG6XhpKJ1hv8VVwUSvAbfR2uiRoK6J9gwHR021l2BUoyFIGWOCuMG7hKC7M=
       data:
         ADMIN_PASSWORD:
-          secure: AAABAL+V4ggYwqFP70DiYJJqGpVRSChyKSX3KW3UwouSp39Psqk=
+          secure: AAABALiNPoYDMSAPCuMYojBSVFuhzB3Z2ELyN57jq3pRBs7GEIw=
