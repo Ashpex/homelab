@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glance-config
+  namespace: {{ .Release.Namespace }}
+data:
+  glance.yml: |
+{{ .Files.Get "files/glance.yml" | indent 4 }}

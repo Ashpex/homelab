@@ -1,0 +1,163 @@
+app-template:
+  fullnameOverride: authelia
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: authelia/authelia
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          - name: AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: authelia-secrets
+                key: AUTHELIA_JWT_SECRET
+          - name: AUTHELIA_SESSION_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: authelia-secrets
+                key: AUTHELIA_SESSION_SECRET
+          - name: AUTHELIA_STORAGE_ENCRYPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: authelia-secrets
+                key: AUTHELIA_STORAGE_KEY
+          - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_CLIENTS_0_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: authelia-secrets
+                key: AUTHELIA_FORGEJO_CLIENT_ID
+          - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_CLIENTS_0_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: authelia-secrets
+                key: AUTHELIA_FORGEJO_CLIENT_SECRET_HASH
+          ports:
+          - name: http
+            containerPort: 9091
+  configMaps:
+    config:
+      enabled: true
+      data:
+        configuration.yml: |
+          theme: light
+          server:
+            address: 'tcp://0.0.0.0:9091'
+          log:
+            level: info
+          session:
+            same_site: lax
+            expiration: 1h
+            inactivity: 30m
+            cookies:
+              - name: authelia_session
+                domain: ashpex.net
+                authelia_url: https://auth.ashpex.net
+                default_redirection_url: https://hub.ashpex.net
+          storage:
+            local:
+              path: /data/db.sqlite3
+          authentication_backend:
+            file:
+              path: /config/users_database.yml
+              password:
+                algorithm: argon2id
+          access_control:
+            default_policy: one_factor
+            rules:
+              - domain: '*.ashpex.net'
+                policy: one_factor
+          notifier:
+            filesystem:
+              filename: /data/notification.txt
+          identity_providers:
+            oidc:
+              enable: true
+              issuer: https://auth.ashpex.net
+              jwks:
+                - key: file:/config/oidc-jwks.json
+              access_token_lifespan: 1h
+              authorize_code_lifespan: 1m
+              id_token_lifespan: 1h
+              clients:
+                - client_name: 'Forgejo'
+                  public: false
+                  authorization_policy: 'two_factor'
+                  require_pkce: true
+                  pkce_challenge_method: 'S256'
+                  redirect_uris:
+                    - 'https://git.ashpex.net/user/oauth2/authelia/callback'
+                  scopes:
+                    - 'openid'
+                    - 'email'
+                    - 'profile'
+                    - 'groups'
+                  response_types:
+                    - 'code'
+                  grant_types:
+                    - 'authorization_code'
+                  access_token_signed_response_alg: 'none'
+                  userinfo_signed_response_alg: 'none'
+                  token_endpoint_auth_method: 'client_secret_basic'
+        users_database.yml: |
+          users:
+            ashpex:
+              displayname: "Ashpex"
+              email: "ashpex@pm.me"
+              groups:
+                - admins
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 9091
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: auth.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-config:
+      enabled: true
+      type: configMap
+      name: authelia-config
+      advancedMounts:
+        main:
+          main:
+          - path: "/config/configuration.yml"
+            subPath: configuration.yml
+          - path: "/config/users_database.yml"
+            subPath: users_database.yml
+    main-data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/authelia"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/data"

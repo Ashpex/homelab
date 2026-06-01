@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: global-secrets
+  namespace: flux-system
+spec:
+  targetNamespace: global-secrets
+  interval: 30m
+  dependsOn:
+    - name: external-secrets
+      namespace: flux-system
+  chart:
+    spec:
+      chart: ./platform/global-secrets
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 12h
+      reconcileStrategy: Revision
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3

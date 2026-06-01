@@ -1,0 +1,78 @@
+app-template:
+  fullnameOverride: alist
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: xhofe/alist
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: PUID
+            value: '1000'
+          - name: PGID
+            value: '1000'
+          - name: UMASK
+            value: '022'
+          ports:
+          - name: http
+            containerPort: 5244
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 5244
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: files.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/alist"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/opt/alist/data"
+    main-archive:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/archive"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/archive"
+    main-library:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/media/library"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/library"

@@ -1,0 +1,182 @@
+app-template:
+  fullnameOverride: immich
+  controllers:
+    server:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/immich-app/immich-server
+            tag: release
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: DB_HOSTNAME
+            value: immich-postgres
+          - name: DB_USERNAME
+            value: immich
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: immich-db
+                key: POSTGRES_PASSWORD
+          - name: DB_DATABASE_NAME
+            value: immich
+          - name: UPLOAD_LOCATION
+            value: "/usr/src/app/upload"
+          - name: REDIS_HOSTNAME
+            value: immich-redis
+          ports:
+          - name: http
+            containerPort: 2283
+    machine-learning:
+      enabled: false
+    redis:
+      containers:
+        main:
+          image:
+            repository: docker.io/redis
+            tag: 6.2-alpine
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          ports:
+          - name: redis
+            containerPort: 6379
+    postgres:
+      containers:
+        main:
+          image:
+            repository: docker.io/tensorchord/pgvecto-rs
+            tag: pg14-v0.2.0
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                tcpSocket:
+                  port: postgres
+                initialDelaySeconds: 30
+                periodSeconds: 30
+            startup:
+              enabled: false
+          args:
+          - postgres
+          - "-c"
+          - shared_preload_libraries=vectors.so
+          - "-c"
+          - search_path="$user", public, vectors
+          - "-c"
+          - logging_collector=on
+          - "-c"
+          - max_wal_size=2GB
+          - "-c"
+          - shared_buffers=512MB
+          - "-c"
+          - wal_compression=on
+          env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: immich-db
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_USER
+            value: immich
+          - name: POSTGRES_DB
+            value: immich
+          - name: POSTGRES_INITDB_ARGS
+            value: "--data-checksums"
+          ports:
+          - name: postgres
+            containerPort: 5432
+    main:
+      enabled: false
+  service:
+    server:
+      enabled: true
+      controller: server
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 2283
+          protocol: HTTP
+    redis:
+      enabled: true
+      controller: redis
+      type: ClusterIP
+      ports:
+        redis:
+          enabled: true
+          primary: true
+          port: 6379
+          protocol: TCP
+        http:
+          enabled: false
+    postgres:
+      enabled: true
+      controller: postgres
+      type: ClusterIP
+      ports:
+        postgres:
+          enabled: true
+          primary: true
+          port: 5432
+          protocol: TCP
+        http:
+          enabled: false
+    main:
+      enabled: false
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: photos.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: server
+            port: http
+  persistence:
+    server-upload:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/immich/library"
+      hostPathType: Directory
+      advancedMounts:
+        server:
+          main:
+          - path: "/usr/src/app/upload"
+    server-localtime:
+      enabled: true
+      type: hostPath
+      hostPath: "/etc/localtime"
+      hostPathType: File
+      advancedMounts:
+        server:
+          main:
+          - path: "/etc/localtime"
+            readOnly: true
+    postgres-data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/immich/postgres"
+      hostPathType: Directory
+      advancedMounts:
+        postgres:
+          main:
+          - path: "/var/lib/postgresql/data"

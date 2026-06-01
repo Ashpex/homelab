@@ -1,0 +1,34 @@
+traefik:
+  deployment:
+    replicas: 1
+  ingressClass:
+    name: traefik
+    enabled: true
+    isDefaultClass: true
+  providers:
+    kubernetesCRD:
+      enabled: true
+      allowCrossNamespace: true
+    kubernetesIngress:
+      enabled: true
+  ports:
+    web:
+      http:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+    websecure:
+      http:
+        tls:
+          enabled: true
+  tlsStore:
+    default:
+      defaultCertificate:
+        secretName: ashpex-net-wildcard-tls
+  service:
+    spec:
+      type: LoadBalancer
+  logs:
+    general:
+      level: INFO

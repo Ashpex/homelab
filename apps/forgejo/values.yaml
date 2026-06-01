@@ -1,0 +1,112 @@
+app-template:
+  fullnameOverride: forgejo
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: codeberg.org/forgejo/forgejo
+            tag: '13'
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: USER_UID
+            value: '1000'
+          - name: USER_GID
+            value: '1000'
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          ports:
+          - name: http
+            containerPort: 3000
+  configMaps:
+    config:
+      enabled: true
+      data:
+        app.ini: |
+          APP_NAME = Ashpex's Git Server
+          RUN_MODE = prod
+
+          [server]
+          DOMAIN = git.ashpex.net
+          HTTP_PORT = 3000
+          ROOT_URL = https://git.ashpex.net/
+          DISABLE_SSH = true
+          LANDING_PAGE = /ashpex
+          APP_DATA_PATH = /data/gitea
+
+          [database]
+          DB_TYPE = sqlite3
+          PATH = /data/gitea/forgejo.db
+
+          [security]
+          INSTALL_LOCK = true
+
+          [service]
+          DISABLE_REGISTRATION = true
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 3000
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: git.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-config:
+      enabled: true
+      type: configMap
+      name: forgejo-config
+      advancedMounts:
+        main:
+          main:
+          - path: "/data/gitea/conf/app.ini"
+            subPath: app.ini
+    main-data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/forgejo"
+      hostPathType: Directory
+      globalMounts:
+        - path: "/data"
+    main-timezone:
+      enabled: true
+      type: hostPath
+      hostPath: "/etc/timezone"
+      hostPathType: File
+      advancedMounts:
+        main:
+          main:
+          - path: "/etc/timezone"
+            readOnly: true
+    main-localtime:
+      enabled: true
+      type: hostPath
+      hostPath: "/etc/localtime"
+      hostPathType: File
+      advancedMounts:
+        main:
+          main:
+          - path: "/etc/localtime"
+            readOnly: true
