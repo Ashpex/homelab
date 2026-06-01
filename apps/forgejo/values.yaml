@@ -1,5 +1,9 @@
 forgejo:
   gitea:
+    admin:
+      existingSecret: forgejo-admin
+      username: ashpex
+      email: ashpex@pm.me
     config:
       APP_NAME: "Ashpex's Git Server"
       RUN_MODE: prod
