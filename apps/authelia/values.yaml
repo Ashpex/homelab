@@ -2,6 +2,8 @@ app-template:
   fullnameOverride: authelia
   controllers:
     main:
+      pod:
+        enableServiceLinks: false
       initContainers:
         decode-jwks:
           image:
@@ -10,20 +12,21 @@ app-template:
           command:
           - sh
           - -c
-          - "echo $AUTHELIA_OIDC_JWKS_KEY | base64 -d > /jwks/oidc-jwks.pem"
+          - "echo $AUTHELIA_OIDC_JWKS_KEY | base64 -d > /jwks/oidc-jwks.pem && chmod 600 /jwks/oidc-jwks.pem"
           env:
           - name: AUTHELIA_OIDC_JWKS_KEY
             valueFrom:
               secretKeyRef:
                 name: authelia-secrets
                 key: AUTHELIA_OIDC_JWKS_KEY
-      pod:
-        enableServiceLinks: false
       containers:
         main:
           image:
             repository: authelia/authelia
             tag: latest
+          args:
+          - --config=/config/configuration.yml
+          - --config.experimental.filters=template
           probes:
             liveness:
               enabled: false
@@ -49,16 +52,6 @@ app-template:
               secretKeyRef:
                 name: authelia-secrets
                 key: AUTHELIA_STORAGE_KEY
-          - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_CLIENTS_0_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: authelia-secrets
-                key: AUTHELIA_FORGEJO_CLIENT_ID
-          - name: AUTHELIA_IDENTITY_PROVIDERS_OIDC_CLIENTS_0_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: authelia-secrets
-                key: AUTHELIA_FORGEJO_CLIENT_SECRET_HASH
           ports:
           - name: http
             containerPort: 9091
@@ -100,14 +93,15 @@ app-template:
           identity_providers:
             oidc:
               jwks:
-                - key:
-                    path: /jwks/oidc-jwks.pem
+                - key: {{"{{ secret \"/jwks/oidc-jwks.pem\" | mindent 20 \"|\" | msquote }}"}}
               lifespans:
                 access_token: 1h
                 authorize_code: 1m
                 id_token: 1h
               clients:
-                - client_name: 'Forgejo'
+                - client_id: '35ad937b9ec69fcc3a8a747ea18adc6fb95217684e9c65eb0da390bd17e0d18b'
+                  client_name: 'Forgejo'
+                  client_secret: '$pbkdf2-sha512$310000$6r4perAAoBbkqAtMTC9U6A$oWhKbu.rN20Pgnal9lFzEptYpDU6lLGmijSIHODUki01crZqHhHVtfyq5uOPp2OlVn8qSr9/JetvCwK2cH3NDg'
                   public: false
                   authorization_policy: 'one_factor'
                   require_pkce: true
