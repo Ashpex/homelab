@@ -101,9 +101,10 @@ app-template:
                 authorize_code: 1m
                 id_token: 1h
               clients:
-                - client_id: '35ad937b9ec69fcc3a8a747ea18adc6fb95217684e9c65eb0da390bd17e0d18b'
+                - client_id: {{"{{ secret \"/secrets/FORGEJO_CLIENT_ID\" | msquote }}"}}
                   client_name: 'Forgejo'
-                  client_secret: '$pbkdf2-sha512$310000$6r4perAAoBbkqAtMTC9U6A$oWhKbu.rN20Pgnal9lFzEptYpDU6lLGmijSIHODUki01crZqHhHVtfyq5uOPp2OlVn8qSr9/JetvCwK2cH3NDg'
+                  client_secret: {{"{{ secret \"/secrets/FORGEJO_CLIENT_SECRET_HASH\" | msquote }}"}}
+
                   public: false
                   authorization_policy: 'one_factor'
                   require_pkce: true
@@ -173,6 +174,15 @@ app-template:
         main:
           main:
           - path: "/data"
+    secrets:
+      enabled: true
+      type: secret
+      name: authelia-secrets
+      advancedMounts:
+        main:
+          main:
+          - path: "/secrets"
+            readOnly: true
     jwks:
       enabled: true
       type: emptyDir
