@@ -2,6 +2,20 @@ app-template:
   fullnameOverride: forgejo
   controllers:
     main:
+      initContainers:
+        init-config:
+          image:
+            repository: busybox
+            tag: latest
+          command:
+          - sh
+          - -c
+          - |
+            mkdir -p /data/gitea/conf
+            if [ ! -f /data/gitea/conf/app.ini ]; then
+              cp /config-template/app.ini /data/gitea/conf/app.ini
+              chown 1000:1000 /data/gitea/conf/app.ini
+            fi
       containers:
         main:
           image:
@@ -49,6 +63,14 @@ app-template:
 
           [service]
           DISABLE_REGISTRATION = true
+
+          [openid]
+          ENABLE_OPENID_SIGNIN = true
+          ENABLE_OPENID_SIGNUP = false
+
+          [oauth2_client]
+          ENABLE_AUTO_REGISTRATION = true
+          ACCOUNT_LINKING = auto
   service:
     main:
       enabled: true
@@ -74,31 +96,25 @@ app-template:
             name: main
             port: http
   persistence:
-    main-config:
-      enabled: true
-      type: configMap
-      name: forgejo-config
-      advancedMounts:
-        main:
-          main:
-          - path: "/data/gitea/conf/app.ini"
-            subPath: app.ini
     main-data:
       enabled: true
       type: hostPath
       hostPath: "/mnt/hdd1/infra-data/forgejo"
       hostPathType: Directory
-      globalMounts:
-        - path: "/data"
-    main-timezone:
-      enabled: true
-      type: hostPath
-      hostPath: "/etc/timezone"
-      hostPathType: File
       advancedMounts:
         main:
+          init-config:
+          - path: "/data"
           main:
-          - path: "/etc/timezone"
+          - path: "/data"
+    config-template:
+      enabled: true
+      type: configMap
+      name: forgejo-config
+      advancedMounts:
+        main:
+          init-config:
+          - path: "/config-template"
             readOnly: true
     main-localtime:
       enabled: true
