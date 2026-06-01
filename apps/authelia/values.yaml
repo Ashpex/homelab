@@ -24,6 +24,8 @@ app-template:
           image:
             repository: authelia/authelia
             tag: latest
+          command:
+          - authelia
           args:
           - --config=/config/configuration.yml
           - --config.experimental.filters=template
