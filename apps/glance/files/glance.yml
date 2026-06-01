@@ -93,6 +93,10 @@ pages:
                 url: https://files.ashpex.net/
                 check-url: http://alist.alist.svc.cluster.local:5244/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/files.svg
+              - title: Forgejo
+                url: https://git.ashpex.net/
+                check-url: http://forgejo.forgejo.svc.cluster.local:3000/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/forgejo.svg
               - title: Backrest
                 url: https://backrest.ashpex.net/
                 check-url: http://backrest.backrest.svc.cluster.local:9898/

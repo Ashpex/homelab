@@ -63,6 +63,7 @@ app-template:
           [service]
           DISABLE_REGISTRATION = true
           ENABLE_BASIC_AUTHENTICATION = false
+          ENABLE_PASSWORD_SIGNIN_FORM = false
 
           [openid]
           ENABLE_OPENID_SIGNIN = false
