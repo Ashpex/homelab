@@ -1,4 +1,5 @@
 forgejo:
+  fullnameOverride: forgejo
   gitea:
     admin:
       existingSecret: forgejo-admin
