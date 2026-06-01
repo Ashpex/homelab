@@ -17,6 +17,8 @@ app-template:
               secretKeyRef:
                 name: authelia-secrets
                 key: AUTHELIA_OIDC_JWKS_KEY
+      pod:
+        enableServiceLinks: false
       containers:
         main:
           image:
@@ -97,13 +99,13 @@ app-template:
               filename: /data/notification.txt
           identity_providers:
             oidc:
-              enable: true
-              issuer: https://auth.ashpex.net
               jwks:
-                - key: file:/jwks/oidc-jwks.pem
-              access_token_lifespan: 1h
-              authorize_code_lifespan: 1m
-              id_token_lifespan: 1h
+                - key:
+                    path: /jwks/oidc-jwks.pem
+              lifespans:
+                access_token: 1h
+                authorize_code: 1m
+                id_token: 1h
               clients:
                 - client_name: 'Forgejo'
                   public: false
