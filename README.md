@@ -22,8 +22,6 @@ make bootstrap-k3s
 make flux-bootstrap
 ```
 
-`flux-bootstrap` installs Flux `source-controller` and `helm-controller`.
-
 ## Validation
 
 ```sh
