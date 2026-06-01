@@ -7,4 +7,4 @@ spec:
   interval: 1m
   url: https://github.com/Ashpex/homelab.git
   ref:
-    branch: k3s-flux-migration
+    branch: master
