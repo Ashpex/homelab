@@ -1,0 +1,2 @@
+- name: Renovate Bot GitHub Action
+  uses: renovatebot/github-action@v46.1.14
