@@ -101,9 +101,9 @@ app-template:
                 authorize_code: 1m
                 id_token: 1h
               clients:
-                - client_id: {{"{{ secret \"/secrets/FORGEJO_CLIENT_ID\" | msquote }}"}}
+                - client_id: {{"{{ secret \"/oidc-clients/FORGEJO_CLIENT_ID\" | msquote }}"}}
                   client_name: 'Forgejo'
-                  client_secret: {{"{{ secret \"/secrets/FORGEJO_CLIENT_SECRET_HASH\" | msquote }}"}}
+                  client_secret: {{"{{ secret \"/oidc-clients/FORGEJO_CLIENT_SECRET_HASH\" | msquote }}"}}
 
                   public: false
                   authorization_policy: 'one_factor'
@@ -182,6 +182,15 @@ app-template:
         main:
           main:
           - path: "/secrets"
+            readOnly: true
+    oidc-clients:
+      enabled: true
+      type: secret
+      name: oidc-clients
+      advancedMounts:
+        main:
+          main:
+          - path: "/oidc-clients"
             readOnly: true
     jwks:
       enabled: true
