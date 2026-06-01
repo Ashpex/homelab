@@ -63,7 +63,7 @@ authelia:
         jwks:
           - key_id: default
             key:
-              path: '/secrets/oidc-jwks.pem'
+              path: '/secrets/internal/oidc-jwks.pem'
         lifespans:
           access_token: 1h
           authorize_code: 1m
@@ -73,6 +73,7 @@ authelia:
             client_name: 'Forgejo'
             client_secret:
               path: '/secrets/oidc-clients/FORGEJO_CLIENT_SECRET_HASH'
+            consent_mode: auto
             public: false
             authorization_policy: one_factor
             require_pkce: true
