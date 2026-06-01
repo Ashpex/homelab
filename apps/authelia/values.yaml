@@ -1,4 +1,5 @@
 authelia:
+  nameOverride: authelia
   pod:
     extraVolumeMounts:
       - name: users-db
