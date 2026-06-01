@@ -63,7 +63,8 @@ app-template:
           [service]
           DISABLE_REGISTRATION = true
           ENABLE_BASIC_AUTHENTICATION = false
-          ENABLE_PASSWORD_SIGNIN_FORM = false
+          ENABLE_INTERNAL_SIGNIN = false
+          ALLOW_ONLY_EXTERNAL_REGISTRATION = true
 
           [openid]
           ENABLE_OPENID_SIGNIN = false
