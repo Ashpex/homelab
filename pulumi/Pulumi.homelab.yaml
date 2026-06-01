@@ -7,7 +7,7 @@ config:
   homelab:cloudflareTunnel:
     id: 9028a97f-35d2-4e2b-828c-fa97a446f48e
     name: nas
-    service: https://localhost:443
+    service: https://traefik-traefik.traefik.svc.cluster.local:443
     noTLSVerify: true
     hostnames:
       - files.ashpex.net
