@@ -9,6 +9,26 @@ import (
 )
 
 func Create(ctx *pulumi.Context, secrets []config.Secret) error {
+	// Collect unique namespaces and ensure they exist
+	namespaces := map[string]*corev1.Namespace{}
+	for _, secret := range secrets {
+		ns := secret.TargetNamespace()
+		if _, exists := namespaces[ns]; !exists {
+			namespace, err := corev1.NewNamespace(ctx, naming.Resource("namespace", ns), &corev1.NamespaceArgs{
+				Metadata: &metav1.ObjectMetaArgs{
+					Name: pulumi.String(ns),
+					Labels: pulumi.StringMap{
+						"app.kubernetes.io/managed-by": pulumi.String("pulumi"),
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			namespaces[ns] = namespace
+		}
+	}
+
 	for _, secret := range secrets {
 		stringData := pulumi.StringMap{}
 		for key, value := range secret.Data {
@@ -27,7 +47,7 @@ func Create(ctx *pulumi.Context, secrets []config.Secret) error {
 			},
 			StringData: stringData,
 			Type:       pulumi.String("Opaque"),
-		})
+		}, pulumi.DependsOn([]pulumi.Resource{namespaces[namespace]}))
 		if err != nil {
 			return err
 		}
