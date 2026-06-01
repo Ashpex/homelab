@@ -1,4 +1,5 @@
 traefik:
+  fullnameOverride: traefik
   deployment:
     replicas: 1
   ingressClass:
