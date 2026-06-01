@@ -4,7 +4,7 @@ metadata:
   name: forgejo
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false 
   targetNamespace: forgejo
   interval: 30m
   dependsOn:
