@@ -2,6 +2,21 @@ app-template:
   fullnameOverride: authelia
   controllers:
     main:
+      initContainers:
+        decode-jwks:
+          image:
+            repository: busybox
+            tag: latest
+          command:
+          - sh
+          - -c
+          - "echo $AUTHELIA_OIDC_JWKS_KEY | base64 -d > /jwks/oidc-jwks.pem"
+          env:
+          - name: AUTHELIA_OIDC_JWKS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: authelia-secrets
+                key: AUTHELIA_OIDC_JWKS_KEY
       containers:
         main:
           image:
@@ -85,14 +100,14 @@ app-template:
               enable: true
               issuer: https://auth.ashpex.net
               jwks:
-                - key: file:/config/oidc-jwks.json
+                - key: file:/jwks/oidc-jwks.pem
               access_token_lifespan: 1h
               authorize_code_lifespan: 1m
               id_token_lifespan: 1h
               clients:
                 - client_name: 'Forgejo'
                   public: false
-                  authorization_policy: 'two_factor'
+                  authorization_policy: 'one_factor'
                   require_pkce: true
                   pkce_challenge_method: 'S256'
                   redirect_uris:
@@ -106,13 +121,12 @@ app-template:
                     - 'code'
                   grant_types:
                     - 'authorization_code'
-                  access_token_signed_response_alg: 'none'
-                  userinfo_signed_response_alg: 'none'
                   token_endpoint_auth_method: 'client_secret_basic'
         users_database.yml: |
           users:
             ashpex:
               displayname: "Ashpex"
+              password: "$argon2id$v=19$m=65536,t=3,p=4$DuECNUTdWbyJL32iN6jClQ$2hnbM3QNNtksRyWvGBO/n4ztNFEYNXR4jZ1SSgw+5jM"
               email: "ashpex@pm.me"
               groups:
                 - admins
@@ -156,8 +170,18 @@ app-template:
       enabled: true
       type: hostPath
       hostPath: "/mnt/hdd1/infra-data/authelia"
-      hostPathType: Directory
+      hostPathType: DirectoryOrCreate
       advancedMounts:
         main:
           main:
           - path: "/data"
+    jwks:
+      enabled: true
+      type: emptyDir
+      advancedMounts:
+        main:
+          decode-jwks:
+          - path: "/jwks"
+          main:
+          - path: "/jwks"
+            readOnly: true
