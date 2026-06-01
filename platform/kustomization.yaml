@@ -7,3 +7,4 @@ resources:
   - global-secrets/release.yaml
   - cert-manager/release.yaml
   - cert-manager-config/release.yaml
+  - cloudflared/release.yaml
