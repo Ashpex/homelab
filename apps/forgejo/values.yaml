@@ -17,6 +17,7 @@ forgejo:
         DB_TYPE: sqlite3
       security:
         INSTALL_LOCK: true
+        MIN_PASSWORD_LENGTH: 4
       service:
         DISABLE_REGISTRATION: true
         ENABLE_BASIC_AUTHENTICATION: false
