@@ -1,0 +1,122 @@
+---
+- name: Bootstrap K3s host
+  hosts: homeserver
+  gather_facts: true
+  become: true
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart k3s
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: k3s_service_exists.stat.exists | default(false)
+
+  tasks:
+    - name: Assert this playbook is running on a Debian-family host
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family == "Debian"
+        fail_msg: "This bootstrap path targets the current Ubuntu server only."
+
+    - name: Check required mounts exist before K3s starts
+      ansible.builtin.command: "mountpoint -q {{ item }}"
+      changed_when: false
+      loop: "{{ homelab_required_mounts }}"
+
+    - name: Ensure local Kubernetes HDD volume root exists
+      ansible.builtin.file:
+        path: "{{ homelab_k8s_hdd_volume_root }}"
+        state: directory
+        mode: "0755"
+
+    - name: Install host packages needed for K3s bootstrap
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: true
+
+    - name: Read current timezone
+      ansible.builtin.command: timedatectl show -p Timezone --value
+      register: current_timezone
+      changed_when: false
+
+    - name: Set host timezone
+      ansible.builtin.command: "timedatectl set-timezone {{ timezone }}"
+      when: current_timezone.stdout != timezone
+
+    - name: Ensure K3s config directory exists
+      ansible.builtin.file:
+        path: "{{ k3s_config_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Write K3s config
+      ansible.builtin.template:
+        src: ../templates/k3s-config.yaml.j2
+        dest: "{{ k3s_config_file }}"
+        mode: "0644"
+      notify: Restart k3s
+
+    - name: Download K3s install script
+      ansible.builtin.get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: "0755"
+
+    - name: Check installed K3s version
+      ansible.builtin.command: /usr/local/bin/k3s --version
+      register: installed_k3s_version
+      changed_when: false
+      failed_when: false
+
+    - name: Install or update pinned K3s version
+      ansible.builtin.shell: |
+        INSTALL_K3S_VERSION="{{ k3s_version }}" INSTALL_K3S_SKIP_START=true sh /tmp/k3s-install.sh
+      args:
+        executable: /bin/bash
+      when: installed_k3s_version.rc != 0 or k3s_version not in installed_k3s_version.stdout
+      notify:
+        - Reload systemd
+        - Restart k3s
+
+    - name: Check K3s service file exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/k3s.service
+      register: k3s_service_exists
+
+    - name: Ensure K3s systemd override directory exists
+      ansible.builtin.file:
+        path: /etc/systemd/system/k3s.service.d
+        state: directory
+        mode: "0755"
+
+    - name: Make K3s wait for storage mounts
+      ansible.builtin.template:
+        src: ../templates/k3s-storage-mounts.conf.j2
+        dest: /etc/systemd/system/k3s.service.d/10-storage-mounts.conf
+        mode: "0644"
+      notify:
+        - Reload systemd
+        - Restart k3s
+
+    - name: Enable and start K3s
+      ansible.builtin.systemd:
+        name: k3s
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Wait for kubeconfig
+      ansible.builtin.wait_for:
+        path: "{{ k3s_kubeconfig_file }}"
+        timeout: 120
+
+    - name: Show kubeconfig location
+      ansible.builtin.debug:
+        msg: "K3s kubeconfig is available on the server at {{ k3s_kubeconfig_file }}"

@@ -1,0 +1,28 @@
+---
+- name: Install Flux and bootstrap GitOps
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Check flux CLI is installed
+      ansible.builtin.command: flux --version
+      register: flux_cli
+      changed_when: false
+
+    - name: Check kubectl can reach the target cluster
+      ansible.builtin.command: kubectl version --client=false
+      changed_when: false
+
+    - name: Install Flux (all components)
+      ansible.builtin.command: flux install
+      register: flux_install
+      changed_when: "'created' in flux_install.stdout or 'configured' in flux_install.stdout"
+
+    - name: Apply GitRepository and Kustomization
+      ansible.builtin.shell: |
+        set -eu
+        kubectl apply -f "{{ playbook_dir }}/../../../flux/gitrepository.yaml"
+        kubectl apply -f "{{ playbook_dir }}/../../../flux/kustomization.yaml"
+      args:
+        executable: /bin/sh
+      changed_when: true

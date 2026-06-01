@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: local-storage
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: ./platform/local-storage
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 12h
+      reconcileStrategy: Revision
+  maxHistory: 2
+  values:
+    name: hdd-local
+    isDefaultClass: false
+    provisioner: rancher.io/local-path
+    nodePath: /mnt/hdd1/k8s-volumes
+    pathPattern: "{{ .PVC.Namespace }}/{{ .PVC.Name }}"
+    volumeBindingMode: WaitForFirstConsumer
+    reclaimPolicy: Retain
+    allowVolumeExpansion: true

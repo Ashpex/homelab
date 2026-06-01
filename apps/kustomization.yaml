@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - adguard/release.yaml
+  - backrest/release.yaml
+  - alist/release.yaml
+  - audiobookshelf/release.yaml
+  - authelia/release.yaml
+  - copyparty/release.yaml
+  - forgejo/release.yaml
+  - frigate/release.yaml
+  - glance/release.yaml
+  - ntfy/release.yaml
+  - immich/release.yaml
+  - jellyfin/release.yaml
+  - qbittorrent/release.yaml
+  - romm/release.yaml
+  - sonarr/release.yaml
+  - radarr/release.yaml
+  - prowlarr/release.yaml
+  - waline/release.yaml

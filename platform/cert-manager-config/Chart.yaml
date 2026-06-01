@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cert-manager-config
+description: ClusterIssuer and wildcard certificate for cert-manager
+type: application
+version: 0.1.0

@@ -1,0 +1,13 @@
+write-kubeconfig-mode: "0644"
+tls-san:
+  - "{{ tailscale_ip }}"
+data-dir: "{{ k3s_data_dir }}"
+secrets-encryption: true
+disable:
+{% for component in k3s_disable_components %}
+  - {{ component }}
+{% endfor %}
+node-label:
+{% for label in k3s_node_labels %}
+  - {{ label }}
+{% endfor %}

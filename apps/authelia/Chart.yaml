@@ -1,0 +1,9 @@
+apiVersion: v2
+name: authelia
+description: authelia homelab app.
+type: application
+version: 0.1.0
+dependencies:
+  - name: authelia
+    version: 0.11.6
+    repository: oci://ghcr.io/authelia/chartrepo

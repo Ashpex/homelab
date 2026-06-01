@@ -1,0 +1,95 @@
+app-template:
+  fullnameOverride: backrest
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: garethgeorge/backrest
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          - name: BACKREST_PORT
+            value: "0.0.0.0:9898"
+          ports:
+          - name: http
+            containerPort: 9898
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 9898
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: backrest.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    main-config:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/backrest/config"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/config"
+    main-data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/backrest/data"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/data"
+    main-cache:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/backrest/cache"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/cache"
+    main-hdd1:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/hdd1"
+    main-rclone:
+      enabled: true
+      type: hostPath
+      hostPath: "/home/ashpex/.config/rclone"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/root/.config/rclone"
+            readOnly: true

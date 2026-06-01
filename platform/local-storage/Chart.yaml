@@ -1,0 +1,6 @@
+apiVersion: v2
+name: local-storage
+description: Local-path StorageClass definitions for the homelab.
+type: application
+version: 0.1.0
+appVersion: "1"
