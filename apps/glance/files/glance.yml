@@ -67,7 +67,7 @@ pages:
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/frigate-light.svg
               - title: Forgejo
                 url: https://git.ashpex.net/
-                check-url: http://forgejo.forgejo.svc.cluster.local:3000/
+                check-url: http://forgejo-forgejo-http.forgejo.svc.cluster.local:3000/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/forgejo.svg
               - title: Prowlarr
                 url: https://prowlarr.ashpex.net/
@@ -83,7 +83,7 @@ pages:
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/cockpit-light.svg
               - title: Authelia
                 url: https://auth.ashpex.net/
-                check-url: http://authelia.authelia.svc.cluster.local:9091/
+                check-url: http://authelia-authelia.authelia.svc.cluster.local/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/authelia.svg
               - title: Traefik
                 url: https://traefik.ashpex.net/
