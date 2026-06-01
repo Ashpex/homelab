@@ -79,3 +79,8 @@ config:
       data:
         config:
           secure: AAABAF5eqGebNt5RsDTfVqH2mibihFdy4oD1RXV3LS2FuegrolYsGHE30r0mB/xu2u+RW+VQgPahdzH+B4O9RAXAmDAbAgHQCDrnoCTKyXxrzOXtOL+ZYMe9HCaglJqu8yZIQ5dd6h3gr5w+guFHPaYxd0qubosIz/zG/o2pcJ7yruX5dlI0SHaneWK1dQ==
+    - name:
+        secure: AAABALdthn868KkBMYeH2XCi0tZDPdpFwqUCYIHVDIcn5CJasFjTep7HJr8Jjxlnj7wBm6BDEWM=
+      data:
+        token:
+          secure: AAABAEuSLtk2LTrunpKdr0GLEOrApzQzTM21XM6AOqtDCE0/GrBNvPYXaLLj4SKsDT4Y+sHJKyeNIpaVtRNDrMZpq5czxNBjNTCSFFpk9hABa3qq016DZzYK4bxUuAclMkvj0mNv+LPkVB5AhntOnxWE2ZvM29Qg8tB9QNTxtEZbZbBgw0mbk4RXOPVOnUqw79kS6NbNeLMKogR63GwvRUgKFKcYZWDwnACzZnuDit2dl0j8k28rNIm4LNfW3cg/NMDxX46q5JXo6x8cjHO5tt4Zvfd9dfko
