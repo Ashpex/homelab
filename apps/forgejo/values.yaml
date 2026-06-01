@@ -63,9 +63,10 @@ app-template:
 
           [service]
           DISABLE_REGISTRATION = true
+          ENABLE_BASIC_AUTHENTICATION = false
 
           [openid]
-          ENABLE_OPENID_SIGNIN = true
+          ENABLE_OPENID_SIGNIN = false
           ENABLE_OPENID_SIGNUP = false
 
           [oauth2_client]
