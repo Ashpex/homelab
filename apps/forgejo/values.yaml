@@ -12,10 +12,8 @@ app-template:
           - -c
           - |
             mkdir -p /data/gitea/conf
-            if [ ! -f /data/gitea/conf/app.ini ]; then
-              cp /config-template/app.ini /data/gitea/conf/app.ini
-              chown 1000:1000 /data/gitea/conf/app.ini
-            fi
+            cp /config-template/app.ini /data/gitea/conf/app.ini
+            chown 1000:1000 /data/gitea/conf/app.ini
       containers:
         main:
           image:
