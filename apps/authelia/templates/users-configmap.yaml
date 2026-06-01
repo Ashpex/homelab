@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authelia-users
+  namespace: {{ .Release.Namespace }}
+data:
+  users_database.yml: |
+    users:
+      ashpex:
+        displayname: "Ashpex"
+        password: "$argon2id$v=19$m=65536,t=3,p=4$DuECNUTdWbyJL32iN6jClQ$2hnbM3QNNtksRyWvGBO/n4ztNFEYNXR4jZ1SSgw+5jM"
+        email: "ashpex@pm.me"
+        groups:
+          - admins

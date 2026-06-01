@@ -1,204 +1,95 @@
-app-template:
-  fullnameOverride: authelia
-  controllers:
-    main:
-      pod:
-        enableServiceLinks: false
-      initContainers:
-        decode-jwks:
-          image:
-            repository: busybox
-            tag: latest
-          command:
-          - sh
-          - -c
-          - "echo $AUTHELIA_OIDC_JWKS_KEY | base64 -d > /jwks/oidc-jwks.pem && chmod 600 /jwks/oidc-jwks.pem"
-          env:
-          - name: AUTHELIA_OIDC_JWKS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: authelia-secrets
-                key: AUTHELIA_OIDC_JWKS_KEY
-      containers:
-        main:
-          image:
-            repository: authelia/authelia
-            tag: latest
-          command:
-          - authelia
-          args:
-          - --config=/config/configuration.yml
-          - --config.experimental.filters=template
-          probes:
-            liveness:
-              enabled: false
-            readiness:
-              enabled: false
-            startup:
-              enabled: false
-          env:
-          - name: TZ
-            value: Asia/Ho_Chi_Minh
-          - name: AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: authelia-secrets
-                key: AUTHELIA_JWT_SECRET
-          - name: AUTHELIA_SESSION_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: authelia-secrets
-                key: AUTHELIA_SESSION_SECRET
-          - name: AUTHELIA_STORAGE_ENCRYPTION_KEY
-            valueFrom:
-              secretKeyRef:
-                name: authelia-secrets
-                key: AUTHELIA_STORAGE_KEY
-          ports:
-          - name: http
-            containerPort: 9091
-  configMaps:
-    config:
-      enabled: true
-      data:
-        configuration.yml: |
-          theme: light
-          server:
-            address: 'tcp://0.0.0.0:9091'
-          log:
-            level: info
-          session:
-            same_site: lax
-            expiration: 1h
-            inactivity: 30m
-            cookies:
-              - name: authelia_session
-                domain: ashpex.net
-                authelia_url: https://auth.ashpex.net
-                default_redirection_url: https://hub.ashpex.net
-          storage:
-            local:
-              path: /data/db.sqlite3
-          authentication_backend:
-            file:
-              path: /config/users_database.yml
-              password:
-                algorithm: argon2id
-          access_control:
-            default_policy: one_factor
-            rules:
-              - domain: '*.ashpex.net'
-                policy: one_factor
-          notifier:
-            filesystem:
-              filename: /data/notification.txt
-          identity_providers:
-            oidc:
-              jwks:
-                - key: {{"{{ secret \"/jwks/oidc-jwks.pem\" | mindent 20 \"|\" | msquote }}"}}
-              lifespans:
-                access_token: 1h
-                authorize_code: 1m
-                id_token: 1h
-              clients:
-                - client_id: {{"{{ secret \"/oidc-clients/FORGEJO_CLIENT_ID\" | msquote }}"}}
-                  client_name: 'Forgejo'
-                  client_secret: {{"{{ secret \"/oidc-clients/FORGEJO_CLIENT_SECRET_HASH\" | msquote }}"}}
+authelia:
+  pod:
+    extraVolumeMounts:
+      - name: users-db
+        mountPath: /config/users_database.yml
+        subPath: users_database.yml
+        readOnly: true
+    extraVolumes:
+      - name: users-db
+        configMap:
+          name: authelia-users
 
-                  public: false
-                  authorization_policy: 'one_factor'
-                  require_pkce: true
-                  pkce_challenge_method: 'S256'
-                  redirect_uris:
-                    - 'https://git.ashpex.net/user/oauth2/authelia/callback'
-                  scopes:
-                    - 'openid'
-                    - 'email'
-                    - 'profile'
-                    - 'groups'
-                  response_types:
-                    - 'code'
-                  grant_types:
-                    - 'authorization_code'
-                  token_endpoint_auth_method: 'client_secret_basic'
-        users_database.yml: |
-          users:
-            ashpex:
-              displayname: "Ashpex"
-              password: "$argon2id$v=19$m=65536,t=3,p=4$DuECNUTdWbyJL32iN6jClQ$2hnbM3QNNtksRyWvGBO/n4ztNFEYNXR4jZ1SSgw+5jM"
-              email: "ashpex@pm.me"
-              groups:
-                - admins
-  service:
-    main:
-      enabled: true
-      controller: main
-      type: ClusterIP
-      ports:
-        http:
-          enabled: true
-          primary: true
-          port: 9091
-          protocol: HTTP
   ingress:
-    main:
-      enabled: true
-      className: traefik
-      annotations: {}
-      hosts:
-      - host: auth.ashpex.net
-        paths:
-        - path: "/"
-          pathType: Prefix
-          service:
-            name: main
-            port: http
+    enabled: true
+    className: traefik
+    tls:
+      enabled: false
+
+  secret:
+    existingSecret: authelia-secrets
+    additionalSecrets:
+      oidc-clients:
+        path: ''
+
+  configMap:
+    theme: light
+
+    log:
+      level: info
+
+    session:
+      cookies:
+        - subdomain: auth
+          domain: ashpex.net
+          default_redirection_url: https://hub.ashpex.net
+
+    storage:
+      local:
+        enabled: true
+        path: /data/db.sqlite3
+
+    authentication_backend:
+      file:
+        enabled: true
+        path: /config/users_database.yml
+        password:
+          algorithm: argon2
+
+    access_control:
+      default_policy: one_factor
+      rules:
+        - domain: '*.ashpex.net'
+          policy: one_factor
+
+    notifier:
+      filesystem:
+        enabled: true
+        filename: /data/notification.txt
+
+    identity_providers:
+      oidc:
+        enabled: true
+        jwks:
+          - key_id: default
+            key:
+              path: '/secrets/oidc-jwks.pem'
+        lifespans:
+          access_token: 1h
+          authorize_code: 1m
+          id_token: 1h
+        clients:
+          - client_id: '35ad937b9ec69fcc3a8a747ea18adc6fb95217684e9c65eb0da390bd17e0d18b'
+            client_name: 'Forgejo'
+            client_secret:
+              path: '/secrets/oidc-clients/FORGEJO_CLIENT_SECRET_HASH'
+            public: false
+            authorization_policy: one_factor
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+              - https://git.ashpex.net/user/oauth2/authelia/callback
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            token_endpoint_auth_method: client_secret_basic
+
   persistence:
-    main-config:
-      enabled: true
-      type: configMap
-      name: authelia-config
-      advancedMounts:
-        main:
-          main:
-          - path: "/config/configuration.yml"
-            subPath: configuration.yml
-          - path: "/config/users_database.yml"
-            subPath: users_database.yml
-    main-data:
-      enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/authelia"
-      hostPathType: DirectoryOrCreate
-      advancedMounts:
-        main:
-          main:
-          - path: "/data"
-    secrets:
-      enabled: true
-      type: secret
-      name: authelia-secrets
-      advancedMounts:
-        main:
-          main:
-          - path: "/secrets"
-            readOnly: true
-    oidc-clients:
-      enabled: true
-      type: secret
-      name: oidc-clients
-      advancedMounts:
-        main:
-          main:
-          - path: "/oidc-clients"
-            readOnly: true
-    jwks:
-      enabled: true
-      type: emptyDir
-      advancedMounts:
-        main:
-          decode-jwks:
-          - path: "/jwks"
-          main:
-          - path: "/jwks"
-            readOnly: true
+    enabled: true
+    existingClaim: authelia-data
