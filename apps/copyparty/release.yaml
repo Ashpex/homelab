@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: copyparty
+  namespace: flux-system
+spec:
+  suspend: false 
+  targetNamespace: copyparty
+  interval: 30m
+  chart:
+    spec:
+      chart: ./apps/copyparty
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 12h
+      reconcileStrategy: Revision
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3

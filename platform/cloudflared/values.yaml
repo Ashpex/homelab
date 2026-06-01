@@ -1,0 +1,32 @@
+app-template:
+  fullnameOverride: cloudflared
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: cloudflare/cloudflared
+            tag: latest
+          command:
+          - cloudflared
+          - tunnel
+          - --edge-ip-version
+          - "4"
+          - --no-autoupdate
+          - run
+          env:
+          - name: TUNNEL_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: cloudflared-tunnel-token
+                key: token
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+  service:
+    main:
+      enabled: false

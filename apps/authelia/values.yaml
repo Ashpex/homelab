@@ -1,0 +1,96 @@
+authelia:
+  pod:
+    extraVolumeMounts:
+      - name: users-db
+        mountPath: /config/users_database.yml
+        subPath: users_database.yml
+        readOnly: true
+    extraVolumes:
+      - name: users-db
+        configMap:
+          name: authelia-users
+
+  ingress:
+    enabled: true
+    className: traefik
+    tls:
+      enabled: false
+
+  secret:
+    existingSecret: authelia-secrets
+    additionalSecrets:
+      oidc-clients:
+        path: ''
+
+  configMap:
+    theme: light
+
+    log:
+      level: info
+
+    session:
+      cookies:
+        - subdomain: auth
+          domain: ashpex.net
+          default_redirection_url: https://hub.ashpex.net
+
+    storage:
+      local:
+        enabled: true
+        path: /data/db.sqlite3
+
+    authentication_backend:
+      file:
+        enabled: true
+        path: /config/users_database.yml
+        password:
+          algorithm: argon2
+
+    access_control:
+      default_policy: one_factor
+      rules:
+        - domain: '*.ashpex.net'
+          policy: one_factor
+
+    notifier:
+      filesystem:
+        enabled: true
+        filename: /data/notification.txt
+
+    identity_providers:
+      oidc:
+        enabled: true
+        jwks:
+          - key_id: default
+            key:
+              path: '/secrets/internal/oidc-jwks.pem'
+        lifespans:
+          access_token: 1h
+          authorize_code: 1m
+          id_token: 1h
+        clients:
+          - client_id: '35ad937b9ec69fcc3a8a747ea18adc6fb95217684e9c65eb0da390bd17e0d18b'
+            client_name: 'Forgejo'
+            client_secret:
+              path: '/secrets/oidc-clients/FORGEJO_CLIENT_SECRET_HASH'
+            consent_mode: auto
+            public: false
+            authorization_policy: one_factor
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+              - https://git.ashpex.net/user/oauth2/authelia/callback
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            token_endpoint_auth_method: client_secret_basic
+
+  persistence:
+    enabled: true
+    existingClaim: authelia-data

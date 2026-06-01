@@ -4,3 +4,12 @@ snac2
 .vault_password
 *.backup
 build/
+*.tgz
+Chart.lock
+**/charts/
+
+# Pulumi stack files are allowed only for the Pulumi project that stores
+# encrypted config secrets in Git.
+Pulumi.*.yaml
+!pulumi/Pulumi.*.yaml
+!.*/Pulumi.*.yaml.example

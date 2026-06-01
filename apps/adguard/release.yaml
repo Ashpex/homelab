@@ -1,0 +1,29 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: adguard
+  namespace: flux-system
+spec:
+  suspend: true
+  targetNamespace: adguard
+  interval: 30m
+  dependsOn:
+    - name: traefik
+      namespace: flux-system
+  chart:
+    spec:
+      chart: ./apps/adguard
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 12h
+      reconcileStrategy: Revision
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3

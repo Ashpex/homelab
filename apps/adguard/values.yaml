@@ -1,0 +1,136 @@
+app-template:
+  fullnameOverride: adguard
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: adguard/adguardhome
+            tag: latest
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: "/"
+                  port: web
+                initialDelaySeconds: 30
+                periodSeconds: 60
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: "/"
+                  port: web
+                initialDelaySeconds: 10
+                periodSeconds: 30
+            startup:
+              enabled: false
+          ports:
+          - name: web
+            containerPort: 80
+          - name: setup
+            containerPort: 3000
+          - name: doh
+            containerPort: 443
+          - name: dns-tcp
+            containerPort: 53
+            protocol: TCP
+            hostPort: 53
+          - name: dns-udp
+            containerPort: 53
+            protocol: UDP
+            hostPort: 53
+          - name: dot-tcp
+            containerPort: 853
+            protocol: TCP
+            hostPort: 853
+          - name: dot-udp
+            containerPort: 853
+            protocol: UDP
+            hostPort: 853
+          - name: doq
+            containerPort: 784
+            protocol: UDP
+            hostPort: 784
+          - name: doq-alt
+            containerPort: 8853
+            protocol: UDP
+            hostPort: 8853
+          - name: dnscrypt-tcp
+            containerPort: 5443
+            protocol: TCP
+            hostPort: 5443
+          - name: dnscrypt-udp
+            containerPort: 5443
+            protocol: UDP
+            hostPort: 5443
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        web:
+          enabled: true
+          primary: true
+          port: 80
+          protocol: HTTP
+        setup:
+          enabled: true
+          primary: false
+          port: 3000
+          protocol: HTTP
+        doh:
+          enabled: true
+          primary: false
+          port: 443
+          protocol: HTTPS
+        http:
+          enabled: false
+  ingress:
+    web:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: adguard.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: web
+    doh:
+      enabled: false
+  persistence:
+    main-work:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/adguard/work"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/opt/adguardhome/work"
+    main-config:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/adguard/config"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/opt/adguardhome/conf"
+    main-localtime:
+      enabled: true
+      type: hostPath
+      hostPath: "/etc/localtime"
+      hostPathType: File
+      advancedMounts:
+        main:
+          main:
+          - path: "/etc/localtime"
+            readOnly: true

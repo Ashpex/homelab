@@ -1,0 +1,47 @@
+forgejo:
+  gitea:
+    admin:
+      existingSecret: forgejo-admin
+      username: ashpex
+      email: ashpex@pm.me
+    config:
+      APP_NAME: "Ashpex's Git Server"
+      RUN_MODE: prod
+      server:
+        DOMAIN: git.ashpex.net
+        ROOT_URL: https://git.ashpex.net/
+        HTTP_PORT: 3000
+        DISABLE_SSH: true
+        LANDING_PAGE: /ashpex
+      database:
+        DB_TYPE: sqlite3
+      security:
+        INSTALL_LOCK: true
+      service:
+        DISABLE_REGISTRATION: true
+        ENABLE_BASIC_AUTHENTICATION: false
+        ENABLE_INTERNAL_SIGNIN: false
+        ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+      openid:
+        ENABLE_OPENID_SIGNIN: false
+        ENABLE_OPENID_SIGNUP: false
+      oauth2_client:
+        ENABLE_AUTO_REGISTRATION: true
+        ACCOUNT_LINKING: auto
+    oauth:
+      - name: authelia
+        provider: openidConnect
+        existingSecret: forgejo-oauth
+        autoDiscoverUrl: https://auth.ashpex.net/.well-known/openid-configuration
+  persistence:
+    enabled: true
+    create: false
+    claimName: forgejo-data
+  ingress:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: git.ashpex.net
+        paths:
+          - path: /
+            pathType: Prefix

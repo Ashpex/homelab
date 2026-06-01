@@ -1,0 +1,49 @@
+config:
+  # Provider credentials:
+  #   pulumi config set cloudflare:apiToken <token> --secret
+  #   pulumi config set tailscale:apiKey <key> --secret
+  #   pulumi config set tailscale:tailnet <tailnet-id>
+
+  homelab:cloudflareAccountId: "TODO"
+  homelab:cloudflareZoneId: "TODO"
+  # Usually "<tunnel-id>.cfargotunnel.com" for Cloudflare Tunnel.
+  homelab:cloudflareTarget: "TODO.cfargotunnel.com"
+  homelab:cloudflareRecordType: "CNAME"
+  # Public DNS is opt-in. Do not add services that should only be reachable over
+  # Tailscale or another private network.
+  # homelab:publicDnsRecords:
+  #   - name: "*.example.com"
+  #     comment: Homelab Cloudflare Tunnel wildcard
+  homelab:publicDnsRecords: []
+
+  # Optional: manage the Cloudflare Tunnel public hostname route.
+  # Import the existing resource before the first `pulumi up`.
+  # homelab:cloudflareTunnel:
+  #   id: "TODO"
+  #   name: nas
+  #   hostname: "*.example.com"
+  #   service: "https://localhost:443"
+  #   noTLSVerify: true
+
+  # Tailscale auth-key creation is opt-in because generated keys are secrets
+  # stored in Pulumi state.
+  homelab:createTailscaleAuthKey: false
+
+  # App secrets should be set with:
+  #   pulumi config set --secret secrets '<json>'
+  #
+  # The real Pulumi.homelab.yaml can be committed when this value is encrypted
+  # under a "secure:" entry. Do not commit plaintext secret values.
+  #
+  # Example JSON shape:
+  # [
+  #   {
+  #     "name": "immich.db",
+  #     "data": {
+  #       "POSTGRES_PASSWORD": "replace-me"
+  #     }
+  #   }
+  # ]
+  #
+  # Pulumi writes these as Kubernetes Secrets in the global-secrets namespace.
+  homelab:secrets: []

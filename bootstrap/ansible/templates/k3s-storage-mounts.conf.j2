@@ -1,0 +1,2 @@
+[Unit]
+RequiresMountsFor={% for mount in homelab_required_mounts %} {{ mount }}{% endfor %}
