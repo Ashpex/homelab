@@ -1,19 +1,13 @@
 # Homelab IaC
 
-This directory contains the new K3s and Flux-based infrastructure path.
-
 ## Layers
 
 - `ansible/`: Ubuntu host bootstrap for K3s and local storage assumptions.
 - `../flux`: Flux source object applied by Ansible.
 - `../platform`: platform Helm charts and HelmRelease objects.
 - `../apps`: app Helm charts and HelmRelease objects.
-- `../docs/SECRETS.md`: app-secret workflow for Kubernetes and ESO.
-- `../docs/APP-MIGRATION.md`: migrated app releases and per-app resume steps.
 - `scripts/`: one-time bootstrap helpers.
 
-The old Docker Compose and root Ansible deployment files have been removed; this
-directory is the remaining host/bootstrap automation.
 
 ## Bootstrap
 
