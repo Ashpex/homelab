@@ -1,23 +1,14 @@
 # Pulumi IaC
 
-Pulumi Go project for homelab resources:
-
 - Cloudflare DNS records.
 - Cloudflare Tunnel public hostname config.
 - Optional Tailscale auth key generation.
 - Kubernetes Secrets in `global-secrets` consumed by External Secrets Operator.
 
-Pulumi stack files under this directory are intended to be committed when they
-contain encrypted `secure:` config values. Do not edit plaintext secrets into
-`Pulumi.<stack>.yaml`; use `pulumi config set --secret ...`.
-
 ## Cloudflare
 
-This project creates proxied DNS records only for hostnames explicitly listed in
+This creates proxied DNS records only for hostnames explicitly listed in
 `publicDnsRecords`, and can manage the Cloudflare Tunnel public hostname route.
-Keep the public list small. Anything that should only be reachable over
-Tailscale should not be added here.
-
 Public records point at one configured target, normally a Cloudflare Tunnel CNAME:
 
 ```text
@@ -34,12 +25,6 @@ pulumi config set cloudflareZoneId <zone-id>
 pulumi config set cloudflareTarget <tunnel-id>.cfargotunnel.com
 pulumi config set cloudflareRecordType CNAME
 ```
-
-Minimum Cloudflare token permissions:
-
-- Zone: `DNS` -> `Edit`, scoped to `ashpex.net`.
-- Account: `Cloudflare Tunnel` -> `Edit` or `Write`, scoped to the Ashpex
-  account.
 
 `cloudflareAccountId` is used for account-scoped resources such as Cloudflare
 Tunnel, Zero Trust, and Access policies. DNS records use `cloudflareZoneId`.
@@ -66,17 +51,6 @@ config:
     hostname: "*.ashpex.net"
     service: https://localhost:443
     noTLSVerify: true
-```
-
-This manages the remote tunnel config shown in the Cloudflare dashboard:
-`*.ashpex.net -> https://localhost:443`, followed by a required
-`http_status:404` fallback rule.
-
-For your existing `nas` tunnel, import before the first `pulumi up`:
-
-```sh
-pulumi stack select homelab
-pulumi import cloudflare:index/zeroTrustTunnelCloudflaredConfig:ZeroTrustTunnelCloudflaredConfig tunnel-nas '55710c1407575fc42410d149071f713c/9028a97f-35d2-4e2b-828c-fa97a446f48e'
 ```
 
 If you also manage the existing wildcard DNS record, import that DNS record too:
