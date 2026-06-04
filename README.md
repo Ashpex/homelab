@@ -2,6 +2,8 @@
 
 K3s, Flux Helm controller, and Pulumi IaC for the home server.
 
+Server dashboard: [hub.ashpex.net](https://hub.ashpex.net)
+
 <img width="948" height="629" alt="Screenshot 2026-06-04 at 6 02 37 PM" src="https://github.com/user-attachments/assets/c998d0d0-6e74-4694-883a-5e7508cbbfa5" />
 
 
