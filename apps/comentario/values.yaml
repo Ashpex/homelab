@@ -1,0 +1,58 @@
+app-template:
+  fullnameOverride: comentario
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: registry.gitlab.com/comentario/comentario
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: BASE_URL
+            value: https://comments.ashpex.net
+          - name: DB_URL
+            value: "sqlite3:///data/comentario.db"
+          ports:
+          - name: http
+            containerPort: 80
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 80
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: comments.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/comentario"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/data"
