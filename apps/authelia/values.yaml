@@ -108,7 +108,7 @@ authelia:
             public: false
             authorization_policy: one_factor
             redirect_uris:
-              - https://comments.ashpex.net/api/oauth/callback/oidc1
+              - https://comments.ashpex.net/api/oauth/oidc:authelia/callback
             scopes:
               - openid
               - email
