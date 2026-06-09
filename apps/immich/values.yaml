@@ -30,6 +30,8 @@ app-template:
             value: "/usr/src/app/upload"
           - name: REDIS_HOSTNAME
             value: immich-redis
+          - name: IMMICH_CONFIG_FILE
+            value: "/config/immich.yaml"
           ports:
           - name: http
             containerPort: 2283
@@ -170,6 +172,16 @@ app-template:
         server:
           main:
           - path: "/etc/localtime"
+            readOnly: true
+    server-config:
+      enabled: true
+      type: secret
+      name: immich-config
+      advancedMounts:
+        server:
+          main:
+          - path: "/config/immich.yaml"
+            subPath: immich.yaml
             readOnly: true
     postgres-data:
       enabled: true

@@ -71,6 +71,12 @@ config:
           secure: AAABALZVhRLsYQS/MG6uhCaZz+75dwgXDXV3B7pnC9nUsIl6C/pL+xCB6Q/55psMBEq9GeDc7iqSkvSE4A5sTbr2ejGEILczdfVwe2EKZuWnJqbt7ySWfsKGYMdaLGh/
         CALIBRE_WEB_CLIENT_SECRET_HASH:
           secure: AAABAHGOXzOQbWTq01gpQIFuJ976V6ld16fzG9Mxg6x3dj5xAErk7qn1OmmyIqeN+iS8usuRhpxR4+5cTcOUmxtpilUvSHLAhkudXKbDCC4XWoeJzTx1/ZETn67vRHY5NCq3XUB2Jw+1dQWvFySUkugbsMpiRqcvohbRpeSNbRiLsSk+Osz4DMXfHITjupTU0FP09xu1LBw1qkSsQ/KfHq3Y8A==
+        IMMICH_CLIENT_ID:
+          secure: AAABAMd+buBFR1bILA2KbGCTDdNB+meWNiYaowe0HF5dtaZksxQ=
+        IMMICH_CLIENT_SECRET:
+          secure: AAABAE5buGE8V30/msJR+T/Tp7cCXq5kDRT7iz19Rab3z38ojwl7BPYB5q0yenYxRnbFNdGW7MmW9jNTbD+gvllrQCVx8daQ/Dqvjwb5TsPGD+aEZ8UWi4O7bi14yh31
+        IMMICH_CLIENT_SECRET_HASH:
+          secure: AAABAPkBRUdf+GWhoMdoRNnejHTwaDg29vVQl3sakcaZ0c2FUE2u0MYECnltBigvQp5flbwp0ZiZDqq6XmOEYIoi4mSkNdveHSE/bPpXhx0vpFdHGehQjB7MiXoPXGBM4ltKJ6fA4OCuw5RxNPPL7HrYChHJCTuXBeoeed8FBmBLkvuq/MSpzmRtqcwUsEKOl6LXVNS4Dp0R2k584FbjBppEBw==
     - name:
         secure: AAABAG6XhpKJ1hv8VVwUSvAbfR2uiRoK6J9gwHR021l2BUoyFIGWOCuMG7hKC7M=
       data:
