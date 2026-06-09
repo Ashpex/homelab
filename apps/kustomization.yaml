@@ -14,7 +14,6 @@ resources:
   - immich/release.yaml
   - jellyfin/release.yaml
   - qbittorrent/release.yaml
-  - romm/release.yaml
   - sonarr/release.yaml
   - radarr/release.yaml
   - prowlarr/release.yaml
