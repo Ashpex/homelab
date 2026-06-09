@@ -17,11 +17,16 @@ app-template:
           env:
           - name: BASE_URL
             value: https://comments.ashpex.net
-          - name: DB_URL
-            value: "sqlite3:///data/comentario.db"
           ports:
           - name: http
             containerPort: 80
+  configMaps:
+    config:
+      enabled: true
+      data:
+        secrets.yaml: |
+          sqlite3:
+            file: /data/comentario.db
   service:
     main:
       enabled: true
@@ -47,6 +52,16 @@ app-template:
             name: main
             port: http
   persistence:
+    secrets:
+      enabled: true
+      type: configMap
+      name: comentario-config
+      advancedMounts:
+        main:
+          main:
+          - path: "/secrets.yaml"
+            subPath: secrets.yaml
+            readOnly: true
     data:
       enabled: true
       type: hostPath
