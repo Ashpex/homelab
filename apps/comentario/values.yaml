@@ -14,6 +14,9 @@ app-template:
               enabled: false
             startup:
               enabled: false
+          args:
+          - -secrets
+          - /config/secrets.yaml
           env:
           - name: BASE_URL
             value: https://comments.ashpex.net
@@ -59,7 +62,7 @@ app-template:
       advancedMounts:
         main:
           main:
-          - path: "/secrets.yaml"
+          - path: "/config/secrets.yaml"
             subPath: secrets.yaml
             readOnly: true
     data:
