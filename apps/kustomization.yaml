@@ -18,5 +18,5 @@ resources:
   - sonarr/release.yaml
   - radarr/release.yaml
   - prowlarr/release.yaml
-  - waline/release.yaml
+  - comentario/release.yaml
   - calibre-web/release.yaml
