@@ -12,10 +12,8 @@ config:
     hostnames:
       - files.ashpex.net
       - hub.ashpex.net
-      - media.ashpex.net
       - git.ashpex.net
       - auth.ashpex.net
-      - adguard.ashpex.net
       - comments.ashpex.net
       - library.ashpex.net
   cloudflare:apiToken:
