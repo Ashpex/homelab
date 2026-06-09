@@ -23,13 +23,6 @@ app-template:
           ports:
           - name: http
             containerPort: 80
-  configMaps:
-    config:
-      enabled: true
-      data:
-        secrets.yaml: |
-          sqlite3:
-            file: /data/comentario.db
   service:
     main:
       enabled: true
@@ -57,8 +50,8 @@ app-template:
   persistence:
     secrets:
       enabled: true
-      type: configMap
-      name: comentario-config
+      type: secret
+      name: comentario-secrets
       advancedMounts:
         main:
           main:
