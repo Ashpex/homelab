@@ -30,7 +30,7 @@ app-template:
       enabled: true
       data:
         config.yaml: |
-          idps:
+          idp:
             oidc:
               - id: authelia
                 name: Authelia
