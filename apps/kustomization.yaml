@@ -19,3 +19,4 @@ resources:
   - radarr/release.yaml
   - prowlarr/release.yaml
   - waline/release.yaml
+  - calibre-web/release.yaml

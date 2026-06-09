@@ -50,10 +50,10 @@ pages:
                 url: https://photos.ashpex.net/
                 check-url: http://immich-server.immich.svc.cluster.local:2283/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/immich.svg
-              - title: Audiobookshelf
+              - title: Calibre Web
                 url: https://library.ashpex.net/
-                check-url: http://audiobookshelf.audiobookshelf.svc.cluster.local:80/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/audiobookshelf.svg
+                check-url: http://calibre-web.calibre-web.svc.cluster.local:8083/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/calibre-web.svg
               - title: Romm
                 url: http://server.ashpex.net:8086/
                 icon: https://cdn.jsdelivr.net/gh/selfhst/icons/webp/romm.webp
