@@ -141,6 +141,30 @@ authelia:
             access_token_signed_response_alg: none
             userinfo_signed_response_alg: none
             token_endpoint_auth_method: client_secret_basic
+          - client_id: 'immich'
+            client_name: 'Immich'
+            client_secret:
+              path: '/secrets/oidc-clients/IMMICH_CLIENT_SECRET_HASH'
+            consent_mode: auto
+            public: false
+            authorization_policy: one_factor
+            require_pkce: false
+            pkce_challenge_method: ''
+            redirect_uris:
+              - https://photos.ashpex.net/auth/login
+              - https://photos.ashpex.net/user-settings
+              - app.immich:///oauth-callback
+            scopes:
+              - openid
+              - email
+              - profile
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            access_token_signed_response_alg: none
+            userinfo_signed_response_alg: none
+            token_endpoint_auth_method: client_secret_post
 
   persistence:
     enabled: true
