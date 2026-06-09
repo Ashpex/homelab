@@ -8,7 +8,7 @@ data:
     users:
       ashpex:
         displayname: "Ashpex"
-        password: "$argon2id$v=19$m=65536,t=3,p=4$VroCi4ZzfEPs1m5RSH2Ryg$1A0jCBj0Iu+a8SPLpXGmx4lVKaxSMmw3uGA5tmVuWkY"
+        password: "$argon2id$v=19$m=65536,t=3,p=4$dzd7vY8OgmK8/QqID5gbjA$LvQdiklyS1AeGvLJqUqUnm6Jy1Nb4nKJAOrJAVcQuQw"
         email: "ashpex@pm.me"
         groups:
           - admins
