@@ -15,7 +15,7 @@ app-template:
             startup:
               enabled: false
           args:
-          - -secrets
+          - --secrets
           - /config/secrets.yaml
           env:
           - name: BASE_URL
