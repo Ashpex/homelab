@@ -54,9 +54,6 @@ pages:
                 url: https://library.ashpex.net/
                 check-url: http://calibre-web.calibre-web.svc.cluster.local:8083/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/calibre-web.svg
-              - title: Romm
-                url: http://server.ashpex.net:8086/
-                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/webp/romm.webp
 
               - title: AdGuard Home
                 url: http://server.ashpex.net:8081/ 
