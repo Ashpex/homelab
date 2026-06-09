@@ -17,6 +17,7 @@ config:
       - auth.ashpex.net
       - adguard.ashpex.net
       - comments.ashpex.net
+      - library.ashpex.net
   cloudflare:apiToken:
     secure: AAABAKU5/lgikYU2E3vMwp7Z+pnmHdUTukQmKP5H6GldzkDmRuTCCB5wtZgNLIwFlEYIzFq+0Ln4hkmrVBF4V4Dct/YFHKOGsE3qeo2Wuc1VakgDwA==
   tailscale:apiKey:
@@ -66,6 +67,12 @@ config:
           secure: AAABAPdYNlj+Ox/4sJ8m4tJuzUiQOThhTgnLpeW9+tm+9QH13czYTismzfhCVMJnAbKAAMd43TtZw8Ob9YcGyJDaZrNnURI1g8anSolI8lEOm3R10T0ZtgIK4Urmos0Y
         COMENTARIO_CLIENT_SECRET_HASH:
           secure: AAABAG12M9VRqLUWe28j68ngT5RCJ7/qCAuKq68X9VqYV3DDCsSR2DHC0AXbca9SlpRXeDxeSKWkZ/+Hw3pB4DnNfpQNsVuk6Mr9vMc+QukQ8kNkxCVKoEHxIF1h9IV98Gwq3B5J6ozHXI4a8kM1Ym596GYpQ37gbyx0hARLBfeL4WK8jjB5LzGwi08GYJqr3Bdf/XDm5KrYZ0121TFDAouZOg==
+        CALIBRE_WEB_CLIENT_ID:
+          secure: AAABAMi5k/gBaadZ6puA6FKesfwlbCCitqTT3QkiHG9eaIcsm6lo
+        CALIBRE_WEB_CLIENT_SECRET:
+          secure: AAABALZVhRLsYQS/MG6uhCaZz+75dwgXDXV3B7pnC9nUsIl6C/pL+xCB6Q/55psMBEq9GeDc7iqSkvSE4A5sTbr2ejGEILczdfVwe2EKZuWnJqbt7ySWfsKGYMdaLGh/
+        CALIBRE_WEB_CLIENT_SECRET_HASH:
+          secure: AAABAHGOXzOQbWTq01gpQIFuJ976V6ld16fzG9Mxg6x3dj5xAErk7qn1OmmyIqeN+iS8usuRhpxR4+5cTcOUmxtpilUvSHLAhkudXKbDCC4XWoeJzTx1/ZETn67vRHY5NCq3XUB2Jw+1dQWvFySUkugbsMpiRqcvohbRpeSNbRiLsSk+Osz4DMXfHITjupTU0FP09xu1LBw1qkSsQ/KfHq3Y8A==
     - name:
         secure: AAABAG6XhpKJ1hv8VVwUSvAbfR2uiRoK6J9gwHR021l2BUoyFIGWOCuMG7hKC7M=
       data:
