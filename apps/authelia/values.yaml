@@ -100,6 +100,24 @@ authelia:
             grant_types:
               - authorization_code
             token_endpoint_auth_method: client_secret_basic
+          - client_id: 'bdcfd230c7881a386c41df727a048470f8c8b2ac08126e59ce05ee0da39954e5'
+            client_name: 'Comentario'
+            client_secret:
+              path: '/secrets/oidc-clients/COMENTARIO_CLIENT_SECRET_HASH'
+            consent_mode: auto
+            public: false
+            authorization_policy: one_factor
+            redirect_uris:
+              - https://comments.ashpex.net/api/oauth/callback/oidc1
+            scopes:
+              - openid
+              - email
+              - profile
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            token_endpoint_auth_method: client_secret_basic
 
   persistence:
     enabled: true
