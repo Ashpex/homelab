@@ -17,6 +17,7 @@ app-template:
           args:
           - --secrets
           - /config/secrets.yaml
+          - --no-signup
           env:
           - name: BASE_URL
             value: https://comments.ashpex.net
