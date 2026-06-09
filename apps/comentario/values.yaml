@@ -15,8 +15,6 @@ app-template:
             startup:
               enabled: false
           args:
-          - -c
-          - /config/config.yaml
           - --secrets
           - /config/secrets.yaml
           env:
@@ -25,20 +23,6 @@ app-template:
           ports:
           - name: http
             containerPort: 80
-  configMaps:
-    config:
-      enabled: true
-      data:
-        config.yaml: |
-          idp:
-            oidc:
-              - id: authelia
-                name: Authelia
-                url: https://auth.ashpex.net
-                scopes:
-                  - openid
-                  - email
-                  - profile
   service:
     main:
       enabled: true
@@ -64,16 +48,6 @@ app-template:
             name: main
             port: http
   persistence:
-    config-file:
-      enabled: true
-      type: configMap
-      name: comentario-config
-      advancedMounts:
-        main:
-          main:
-          - path: "/config/config.yaml"
-            subPath: config.yaml
-            readOnly: true
     secrets:
       enabled: true
       type: secret
