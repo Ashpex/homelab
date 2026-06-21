@@ -20,6 +20,8 @@ spec:
               mkdir -p /data/plugins
               curl -fsSL https://github.com/J0R6IT0/navidrome-lyrics-plugin/releases/latest/download/nd-lyrics.ndp -o /data/plugins/nd-lyrics.ndp.tmp
               mv /data/plugins/nd-lyrics.ndp.tmp /data/plugins/nd-lyrics.ndp
+              chmod 755 /data/plugins
+              chmod 644 /data/plugins/nd-lyrics.ndp
           volumeMounts:
             - name: data
               mountPath: /data
