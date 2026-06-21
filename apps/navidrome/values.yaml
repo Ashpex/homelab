@@ -1,0 +1,70 @@
+app-template:
+  fullnameOverride: navidrome
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: deluan/navidrome
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          - name: ND_MUSICFOLDER
+            value: /music
+          - name: ND_DATAFOLDER
+            value: /data
+          ports:
+          - name: http
+            containerPort: 4533
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 4533
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: music.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            name: main
+            port: http
+  persistence:
+    data:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/infra-data/navidrome"
+      hostPathType: DirectoryOrCreate
+      advancedMounts:
+        main:
+          main:
+          - path: "/data"
+    music:
+      enabled: true
+      type: hostPath
+      hostPath: "/mnt/hdd1/media/music"
+      hostPathType: Directory
+      advancedMounts:
+        main:
+          main:
+          - path: "/music"
+            readOnly: true
