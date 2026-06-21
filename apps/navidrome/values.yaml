@@ -75,4 +75,3 @@ app-template:
         main:
           main:
           - path: "/music"
-            readOnly: true
