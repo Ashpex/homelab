@@ -21,6 +21,12 @@ app-template:
             value: /music
           - name: ND_DATAFOLDER
             value: /data
+          - name: ND_PLUGINS_ENABLED
+            value: "true"
+          - name: ND_PLUGINS_FOLDER
+            value: /data/plugins
+          - name: ND_LYRICSPRIORITY
+            value: ".lrc,nd-lyrics"
           ports:
           - name: http
             containerPort: 4533
