@@ -21,6 +21,8 @@ app-template:
             value: /music
           - name: ND_DATAFOLDER
             value: /data
+          - name: ND_BASEURL
+            value: https://music.ashpex.net
           - name: ND_PLUGINS_ENABLED
             value: "true"
           - name: ND_PLUGINS_FOLDER
