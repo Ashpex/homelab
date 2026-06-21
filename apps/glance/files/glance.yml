@@ -38,10 +38,10 @@ pages:
             cache: 1m
             title: Services
             sites:
-              - title: Jellyfin
-                url: https://media.ashpex.net/
-                check-url: http://jellyfin.jellyfin.svc.cluster.local:8096/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyfin.svg
+              - title: Navidrome
+                url: https://music.ashpex.net/
+                check-url: http://navidrome.navidrome.svc.cluster.local:4533/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/navidrome.svg
               - title: qBittorrent
                 url: https://torrent.ashpex.net/
                 check-url: http://qbittorrent.qbittorrent.svc.cluster.local:8084/
@@ -245,7 +245,7 @@ pages:
           - type: releases
             show-source-icon: true
             repositories:
-            - jellyfin/jellyfin
+            - navidrome/navidrome
             - glanceapp/glance
             - immich-app/immich
             - advplyr/audiobookshelf

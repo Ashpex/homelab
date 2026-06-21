@@ -13,6 +13,7 @@ resources:
   - ntfy/release.yaml
   - immich/release.yaml
   - jellyfin/release.yaml
+  - navidrome/release.yaml
   - qbittorrent/release.yaml
   - sonarr/release.yaml
   - radarr/release.yaml
