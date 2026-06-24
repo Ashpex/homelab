@@ -1,6 +1,6 @@
 apiVersion: v2
-name: qbittorrent
-description: qbittorrent homelab app.
+name: transmission
+description: transmission homelab app.
 type: application
 version: 0.1.0
 dependencies:

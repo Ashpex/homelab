@@ -42,10 +42,10 @@ pages:
                 url: https://music.ashpex.net/
                 check-url: http://navidrome.navidrome.svc.cluster.local:4533/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/navidrome.svg
-              - title: qBittorrent
+              - title: Transmission
                 url: https://torrent.ashpex.net/
-                check-url: http://qbittorrent.qbittorrent.svc.cluster.local:8084/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/qbittorrent.svg
+                check-url: http://transmission.transmission.svc.cluster.local:9091/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/transmission.svg
               - title: Immich
                 url: https://photos.ashpex.net/
                 check-url: http://immich-server.immich.svc.cluster.local:2283/

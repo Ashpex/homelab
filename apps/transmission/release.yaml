@@ -1,15 +1,15 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: qbittorrent
+  name: transmission
   namespace: flux-system
 spec:
   suspend: false 
-  targetNamespace: qbittorrent
+  targetNamespace: transmission
   interval: 30m
   chart:
     spec:
-      chart: ./apps/qbittorrent
+      chart: ./apps/transmission
       sourceRef:
         kind: GitRepository
         name: flux-system
