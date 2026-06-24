@@ -84,7 +84,7 @@ app-template:
     main-downloads:
       enabled: true
       type: hostPath
-      hostPath: "/mnt/ssd/downloads"
+      hostPath: "/mnt/hdd1/downloads"
       hostPathType: Directory
       advancedMounts:
         main:
