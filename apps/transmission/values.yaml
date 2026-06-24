@@ -1,11 +1,11 @@
 app-template:
-  fullnameOverride: qbittorrent
+  fullnameOverride: transmission
   controllers:
     main:
       containers:
         main:
           image:
-            repository: lscr.io/linuxserver/qbittorrent
+            repository: lscr.io/linuxserver/transmission
             tag: latest
           probes:
             liveness:
@@ -21,22 +21,20 @@ app-template:
             value: '1000'
           - name: TZ
             value: Asia/Ho_Chi_Minh
-          - name: WEBUI_PORT
-            value: '8084'
-          - name: TORRENTING_PORT
-            value: '6881'
+          - name: PEERPORT
+            value: '51413'
           ports:
           - name: web
-            containerPort: 8084
-            hostPort: 8084
+            containerPort: 9091
+            hostPort: 9091
           - name: torrent-tcp
-            containerPort: 6881
+            containerPort: 51413
             protocol: TCP
-            hostPort: 6881
+            hostPort: 51413
           - name: torrent-udp
-            containerPort: 6881
+            containerPort: 51413
             protocol: UDP
-            hostPort: 6881
+            hostPort: 51413
   service:
     main:
       enabled: true
@@ -46,17 +44,17 @@ app-template:
         web:
           enabled: true
           primary: true
-          port: 8084
+          port: 9091
           protocol: HTTP
         torrent-tcp:
           enabled: true
           primary: false
-          port: 6881
+          port: 51413
           protocol: TCP
         torrent-udp:
           enabled: true
           primary: false
-          port: 6881
+          port: 51413
           protocol: UDP
         http:
           enabled: false
@@ -77,8 +75,8 @@ app-template:
     main-config:
       enabled: true
       type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/qbittorrent"
-      hostPathType: Directory
+      hostPath: "/mnt/hdd1/infra-data/transmission"
+      hostPathType: DirectoryOrCreate
       advancedMounts:
         main:
           main:
