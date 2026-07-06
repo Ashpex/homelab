@@ -1,6 +1,10 @@
 nfs:
   server: 192.168.1.110
 
+longhorn:
+  storageClassName: longhorn
+  configSize: 1Gi
+
 app-template:
   fullnameOverride: calibre-web
   controllers:
@@ -54,9 +58,8 @@ app-template:
   persistence:
     config:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/calibre-web"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: calibre-web-config
       advancedMounts:
         main:
           main:

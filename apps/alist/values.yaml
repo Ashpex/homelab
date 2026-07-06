@@ -1,6 +1,10 @@
 nfs:
   server: 192.168.1.110
 
+longhorn:
+  storageClassName: longhorn
+  dataSize: 100Mi
+
 app-template:
   fullnameOverride: alist
   controllers:
@@ -54,9 +58,8 @@ app-template:
   persistence:
     main-data:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/alist"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: alist-data
       advancedMounts:
         main:
           main:
