@@ -1,6 +1,6 @@
 longhorn:
   storageClassName: longhorn
-  dataSize: 5Gi
+  dataSize: 1Gi
 
 app-template:
   fullnameOverride: comentario
