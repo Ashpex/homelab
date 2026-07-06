@@ -31,7 +31,6 @@ spec:
               mountPath: /data
       volumes:
         - name: data
-          hostPath:
-            path: /mnt/hdd1/infra-data/navidrome
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: navidrome-data
 {{- end }}
