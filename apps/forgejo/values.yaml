@@ -1,3 +1,7 @@
+longhorn:
+  storageClassName: longhorn
+  dataSize: 2Gi
+
 forgejo:
   fullnameOverride: forgejo
   gitea:
