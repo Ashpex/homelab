@@ -13,7 +13,7 @@
 
 1. Set the storage mount points in `ansible/inventory/home.yml`.
 2. Confirm those mount points and app data paths exist on the host.
-3. Configure K3s on the host:
+3. Configure K3s, NFS media exports, and Longhorn prerequisites on the host:
 
 ```sh
 cd bootstrap

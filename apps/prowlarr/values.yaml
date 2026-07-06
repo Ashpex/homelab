@@ -24,7 +24,6 @@ app-template:
           ports:
           - name: web
             containerPort: 9696
-            hostPort: 9696
   service:
     main:
       enabled: true

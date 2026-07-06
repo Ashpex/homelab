@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: radarr
   controllers:
@@ -24,7 +27,6 @@ app-template:
           ports:
           - name: web
             containerPort: 7878
-            hostPort: 7878
   service:
     main:
       enabled: true
@@ -63,18 +65,16 @@ app-template:
           - path: "/config"
     main-movies:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/media/movies"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: radarr-movies
       advancedMounts:
         main:
           main:
           - path: "/movies"
     main-downloads:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/downloads"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: radarr-downloads
       advancedMounts:
         main:
           main:

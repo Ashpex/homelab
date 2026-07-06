@@ -1,0 +1,5 @@
+{% for export in homelab_nfs_exports %}
+{% for client in homelab_nfs_allowed_clients %}
+{{ export.path }} {{ client }}({{ export.options }})
+{% endfor %}
+{% endfor %}

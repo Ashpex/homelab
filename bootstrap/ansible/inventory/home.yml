@@ -3,6 +3,7 @@ all:
     homeserver:
       ansible_host: localhost
       ansible_connection: local
+      homelab_nfs_enabled: true
   vars:
     timezone: Asia/Ho_Chi_Minh
 
@@ -15,6 +16,12 @@ all:
     homelab_hdd_mount: /mnt/hdd1
     homelab_ssd_mount: /mnt/ssd
     homelab_k8s_hdd_volume_root: /mnt/hdd1/k8s-volumes
+    homelab_longhorn_data_dir: /mnt/hdd1/longhorn
+    homelab_nfs_allowed_clients:
+      - 192.168.1.110/32
+    homelab_nfs_exports:
+      - path: /mnt/hdd1
+        options: rw,sync,no_subtree_check,crossmnt,root_squash
 
     homelab_required_mounts:
       - /mnt/hdd1
@@ -27,3 +34,4 @@ all:
     k3s_node_labels:
       - homelab.node/single=true
       - homelab.storage/hdd=true
+      - node.longhorn.io/create-default-disk=true

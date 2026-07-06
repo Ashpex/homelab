@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: calibre-web
   controllers:
@@ -60,18 +63,16 @@ app-template:
           - path: "/config"
     books:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/media/library/books"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: calibre-web-books
       advancedMounts:
         main:
           main:
           - path: "/calibre-library"
     ingest:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/media/library/books-ingest"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: calibre-web-ingest
       advancedMounts:
         main:
           main:

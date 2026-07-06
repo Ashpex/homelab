@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: alist
   controllers:
@@ -60,18 +63,16 @@ app-template:
           - path: "/opt/alist/data"
     main-archive:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/archive"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: alist-archive
       advancedMounts:
         main:
           main:
           - path: "/archive"
     main-library:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/media/library"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: alist-library
       advancedMounts:
         main:
           main:
