@@ -1,3 +1,7 @@
+longhorn:
+  storageClassName: longhorn
+  dataSize: 100Mi
+
 authelia:
   nameOverride: authelia
   pod:
