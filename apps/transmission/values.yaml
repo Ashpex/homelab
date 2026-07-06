@@ -3,7 +3,7 @@ nfs:
 
 longhorn:
   storageClassName: longhorn
-  configSize: 1Gi
+  configSize: 100Mi
 
 app-template:
   fullnameOverride: transmission
