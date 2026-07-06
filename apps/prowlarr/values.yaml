@@ -35,8 +35,6 @@ app-template:
           primary: true
           port: 9696
           protocol: HTTP
-        http:
-          enabled: false
   ingress:
     main:
       enabled: true
@@ -48,7 +46,7 @@ app-template:
         - path: "/"
           pathType: Prefix
           service:
-            name: main
+            identifier: main
             port: web
   persistence:
     main-config:

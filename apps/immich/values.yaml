@@ -45,7 +45,7 @@ app-template:
         main:
           image:
             repository: docker.io/redis
-            tag: 6.2-alpine
+            tag: 8.8-alpine
           probes:
             liveness:
               enabled: false
@@ -90,8 +90,6 @@ app-template:
           ports:
           - name: postgres
             containerPort: 5432
-    main:
-      enabled: false
   service:
     server:
       enabled: true
@@ -113,8 +111,6 @@ app-template:
           primary: true
           port: 6379
           protocol: TCP
-        http:
-          enabled: false
     postgres:
       enabled: true
       controller: postgres
@@ -125,10 +121,6 @@ app-template:
           primary: true
           port: 5432
           protocol: TCP
-        http:
-          enabled: false
-    main:
-      enabled: false
   ingress:
     main:
       enabled: true
@@ -140,7 +132,7 @@ app-template:
         - path: "/"
           pathType: Prefix
           service:
-            name: server
+            identifier: server
             port: http
   persistence:
     server-upload:
