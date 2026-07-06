@@ -47,10 +47,10 @@ func TestConfigValidate(t *testing.T) {
 		"tunnel missing account id": {
 			cfg: Config{
 				CloudflareTunnel: &CloudflareTunnel{
-					ID:       "9028a97f-35d2-4e2b-828c-fa97a446f48e",
-					Name:     "nas",
-					Hostname: "*.ashpex.net",
-					Service:  "https://localhost:443",
+					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
+					Name:      "nas",
+					Hostnames: []string{"*.ashpex.net"},
+					Service:   "https://localhost:443",
 				},
 			},
 			want: "cloudflareAccountId is required when cloudflareTunnel is set",
@@ -59,9 +59,9 @@ func TestConfigValidate(t *testing.T) {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
 				CloudflareTunnel: &CloudflareTunnel{
-					Name:     "nas",
-					Hostname: "*.ashpex.net",
-					Service:  "https://localhost:443",
+					Name:      "nas",
+					Hostnames: []string{"*.ashpex.net"},
+					Service:   "https://localhost:443",
 				},
 			},
 			want: "cloudflareTunnel.id is required",
@@ -70,9 +70,9 @@ func TestConfigValidate(t *testing.T) {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
 				CloudflareTunnel: &CloudflareTunnel{
-					ID:       "9028a97f-35d2-4e2b-828c-fa97a446f48e",
-					Hostname: "*.ashpex.net",
-					Service:  "https://localhost:443",
+					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
+					Hostnames: []string{"*.ashpex.net"},
+					Service:   "https://localhost:443",
 				},
 			},
 			want: "cloudflareTunnel.name is required",
@@ -86,15 +86,15 @@ func TestConfigValidate(t *testing.T) {
 					Service: "https://localhost:443",
 				},
 			},
-			want: "cloudflareTunnel.hostname is required",
+			want: "cloudflareTunnel.hostnames requires at least one entry",
 		},
 		"tunnel missing service": {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
 				CloudflareTunnel: &CloudflareTunnel{
-					ID:       "9028a97f-35d2-4e2b-828c-fa97a446f48e",
-					Name:     "nas",
-					Hostname: "*.ashpex.net",
+					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
+					Name:      "nas",
+					Hostnames: []string{"*.ashpex.net"},
 				},
 			},
 			want: "cloudflareTunnel.service is required",
@@ -104,10 +104,10 @@ func TestConfigValidate(t *testing.T) {
 				CloudflareAccountID: "account-id",
 				PublicDNSRecords:    []ServiceRecord{{Name: "hub"}},
 				CloudflareTunnel: &CloudflareTunnel{
-					ID:       "9028a97f-35d2-4e2b-828c-fa97a446f48e",
-					Name:     "nas",
-					Hostname: "*.ashpex.net",
-					Service:  "https://localhost:443",
+					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
+					Name:      "nas",
+					Hostnames: []string{"*.ashpex.net"},
+					Service:   "https://localhost:443",
 				},
 				Secrets: []Secret{
 					{Name: "immich.db", Data: map[string]string{"POSTGRES_PASSWORD": "value"}},
@@ -151,8 +151,8 @@ func TestCloudflareTunnelConfigured(t *testing.T) {
 			tunnel: CloudflareTunnel{Name: "nas"},
 			want:   true,
 		},
-		"hostname": {
-			tunnel: CloudflareTunnel{Hostname: "*.ashpex.net"},
+		"hostnames": {
+			tunnel: CloudflareTunnel{Hostnames: []string{"*.ashpex.net"}},
 			want:   true,
 		},
 		"service": {
