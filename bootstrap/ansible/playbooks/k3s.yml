@@ -80,6 +80,13 @@
         state: present
       when: homelab_nfs_enabled | default(false)
 
+    - name: Ensure NFS exports directory exists
+      ansible.builtin.file:
+        path: /etc/exports.d
+        state: directory
+        mode: "0755"
+      when: homelab_nfs_enabled | default(false)
+
     - name: Write NFS exports
       ansible.builtin.template:
         src: ../templates/exports.j2
