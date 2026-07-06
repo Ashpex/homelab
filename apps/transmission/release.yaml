@@ -7,6 +7,9 @@ spec:
   suspend: false
   targetNamespace: transmission
   interval: 30m
+  dependsOn:
+    - name: longhorn
+      namespace: flux-system
   chart:
     spec:
       chart: ./apps/transmission

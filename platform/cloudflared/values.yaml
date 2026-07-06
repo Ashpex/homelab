@@ -27,4 +27,4 @@ app-template:
               enabled: false
             startup:
               enabled: false
-  service:
+  service: {}

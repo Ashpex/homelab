@@ -1,6 +1,10 @@
 nfs:
   server: 192.168.1.110
 
+longhorn:
+  storageClassName: longhorn
+  configSize: 100Mi
+
 app-template:
   fullnameOverride: sonarr
   controllers:
@@ -54,13 +58,19 @@ app-template:
   persistence:
     main-config:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/arr/sonarr"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: sonarr-config
       advancedMounts:
         main:
           main:
           - path: "/config"
+    main-logs:
+      enabled: true
+      type: emptyDir
+      advancedMounts:
+        main:
+          main:
+          - path: "/config/logs"
     main-tv:
       enabled: true
       type: persistentVolumeClaim

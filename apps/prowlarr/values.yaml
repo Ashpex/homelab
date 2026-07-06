@@ -1,3 +1,7 @@
+longhorn:
+  storageClassName: longhorn
+  configSize: 100Mi
+
 app-template:
   fullnameOverride: prowlarr
   controllers:
@@ -51,10 +55,16 @@ app-template:
   persistence:
     main-config:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/arr/prowlarr"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: prowlarr-config
       advancedMounts:
         main:
           main:
           - path: "/config"
+    main-logs:
+      enabled: true
+      type: emptyDir
+      advancedMounts:
+        main:
+          main:
+          - path: "/config/logs"

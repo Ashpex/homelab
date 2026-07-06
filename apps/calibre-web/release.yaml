@@ -10,6 +10,8 @@ spec:
   dependsOn:
     - name: traefik
       namespace: flux-system
+    - name: longhorn
+      namespace: flux-system
   chart:
     spec:
       chart: ./apps/calibre-web
