@@ -1,3 +1,7 @@
+longhorn:
+  storageClassName: longhorn
+  dataSize: 100Mi
+
 app-template:
   fullnameOverride: ntfy
   controllers:
@@ -62,9 +66,8 @@ app-template:
           - path: "/var/cache/ntfy"
     main-data:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/ntfy"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: ntfy-data
       advancedMounts:
         main:
           main:
