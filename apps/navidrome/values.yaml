@@ -3,7 +3,7 @@ nfs:
 
 longhorn:
   storageClassName: longhorn
-  dataSize: 100Mi
+  dataSize: 500Mi
 
 pluginDownload:
   enabled: false
