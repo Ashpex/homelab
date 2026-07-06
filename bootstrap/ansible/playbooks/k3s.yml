@@ -2,6 +2,9 @@
 - name: Bootstrap K3s host
   hosts: homeserver
   gather_facts: true
+  gather_subset:
+    - "!all"
+    - min
   become: true
 
   handlers:
