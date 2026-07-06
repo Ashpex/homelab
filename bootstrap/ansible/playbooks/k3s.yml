@@ -51,6 +51,19 @@
         state: directory
         mode: "0755"
 
+    - name: Raise inotify limits for storage-heavy workloads
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-homelab-inotify.conf
+        mode: "0644"
+        content: |
+          fs.inotify.max_user_watches = 1048576
+          fs.inotify.max_user_instances = 8192
+          fs.inotify.max_queued_events = 65536
+
+    - name: Apply inotify limits
+      ansible.builtin.command: sysctl --system
+      changed_when: false
+
     - name: Install host packages needed for K3s bootstrap
       ansible.builtin.apt:
         name:
