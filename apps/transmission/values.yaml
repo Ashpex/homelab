@@ -58,8 +58,6 @@ app-template:
           primary: false
           port: 51413
           protocol: UDP
-        http:
-          enabled: false
   ingress:
     main:
       enabled: true
@@ -71,7 +69,7 @@ app-template:
         - path: "/"
           pathType: Prefix
           service:
-            name: main
+            identifier: main
             port: web
   persistence:
     main-config:

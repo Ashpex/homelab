@@ -88,8 +88,6 @@ app-template:
           primary: false
           port: 443
           protocol: HTTPS
-        http:
-          enabled: false
   ingress:
     web:
       enabled: true
@@ -101,7 +99,7 @@ app-template:
         - path: "/"
           pathType: Prefix
           service:
-            name: main
+            identifier: main
             port: web
     doh:
       enabled: false

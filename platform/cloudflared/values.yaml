@@ -28,5 +28,3 @@ app-template:
             startup:
               enabled: false
   service:
-    main:
-      enabled: false

@@ -30,6 +30,5 @@ traefik:
   service:
     spec:
       type: LoadBalancer
-  logs:
-    general:
-      level: INFO
+  log:
+    level: INFO
