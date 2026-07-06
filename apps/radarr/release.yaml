@@ -4,7 +4,7 @@ metadata:
   name: radarr
   namespace: flux-system
 spec:
-  suspend: false 
+  suspend: false
   targetNamespace: radarr
   interval: 30m
   dependsOn:
@@ -27,3 +27,4 @@ spec:
   upgrade:
     remediation:
       retries: 3
+    force: true

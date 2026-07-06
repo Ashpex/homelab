@@ -4,7 +4,7 @@ metadata:
   name: immich
   namespace: flux-system
 spec:
-  suspend: false 
+  suspend: false
   targetNamespace: immich
   interval: 30m
   dependsOn:
@@ -29,3 +29,4 @@ spec:
   upgrade:
     remediation:
       retries: 3
+    force: true
