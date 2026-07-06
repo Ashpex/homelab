@@ -18,10 +18,11 @@ spec:
             - -ec
             - |
               mkdir -p /data/plugins
-              curl -fsSL https://github.com/J0R6IT0/navidrome-lyrics-plugin/releases/latest/download/nd-lyrics.ndp -o /data/plugins/nd-lyrics.ndp.tmp
-              mv /data/plugins/nd-lyrics.ndp.tmp /data/plugins/nd-lyrics.ndp
-              curl -fsSL https://github.com/navidrome/discord-rich-presence-plugin/releases/latest/download/discord-rich-presence.ndp -o /data/plugins/discord-rich-presence.ndp.tmp
-              mv /data/plugins/discord-rich-presence.ndp.tmp /data/plugins/discord-rich-presence.ndp
+              tmpdir="$(mktemp -d)"
+              curl -fL --retry 3 --retry-delay 5 https://github.com/J0R6IT0/navidrome-lyrics-plugin/releases/latest/download/nd-lyrics.ndp -o "${tmpdir}/nd-lyrics.ndp"
+              curl -fL --retry 3 --retry-delay 5 https://github.com/navidrome/discord-rich-presence-plugin/releases/latest/download/discord-rich-presence.ndp -o "${tmpdir}/discord-rich-presence.ndp"
+              cp "${tmpdir}/nd-lyrics.ndp" /data/plugins/nd-lyrics.ndp
+              cp "${tmpdir}/discord-rich-presence.ndp" /data/plugins/discord-rich-presence.ndp
               chmod 755 /data/plugins
               chmod 644 /data/plugins/*.ndp
           volumeMounts:
