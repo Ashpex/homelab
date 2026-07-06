@@ -9,7 +9,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/immich-app/immich-server
-            tag: release
+            tag: v3
           probes:
             liveness:
               enabled: false
@@ -60,8 +60,8 @@ app-template:
       containers:
         main:
           image:
-            repository: docker.io/tensorchord/pgvecto-rs
-            tag: pg14-v0.2.0
+            repository: ghcr.io/immich-app/postgres
+            tag: 14-vectorchord0.4.3-pgvectors0.2.0
           probes:
             liveness:
               enabled: false
@@ -75,20 +75,6 @@ app-template:
                 periodSeconds: 30
             startup:
               enabled: false
-          args:
-          - postgres
-          - "-c"
-          - shared_preload_libraries=vectors.so
-          - "-c"
-          - search_path="$user", public, vectors
-          - "-c"
-          - logging_collector=on
-          - "-c"
-          - max_wal_size=2GB
-          - "-c"
-          - shared_buffers=512MB
-          - "-c"
-          - wal_compression=on
           env:
           - name: POSTGRES_PASSWORD
             valueFrom:
