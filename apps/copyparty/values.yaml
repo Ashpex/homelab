@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: copyparty
   controllers:
@@ -72,9 +75,8 @@ app-template:
             readOnly: true
     main-share:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: copyparty-share
       advancedMounts:
         main:
           main:

@@ -1,0 +1,38 @@
+{{- $server := required "nfs.server is required" .Values.nfs.server -}}
+{{- $volumes := list
+  (dict "name" "tv" "path" "/mnt/hdd1/media/tv" "size" "1Gi")
+  (dict "name" "downloads" "path" "/mnt/hdd1/downloads" "size" "1Gi")
+-}}
+{{- range $volume := $volumes }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sonarr-{{ $volume.name }}-nfs
+spec:
+  capacity:
+    storage: {{ $volume.size }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    server: {{ $server | quote }}
+    path: {{ $volume.path | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-{{ $volume.name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ $volume.size }}
+  volumeName: sonarr-{{ $volume.name }}-nfs
+  storageClassName: ""
+{{- end }}

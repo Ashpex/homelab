@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: transmission
   controllers:
@@ -26,7 +29,6 @@ app-template:
           ports:
           - name: web
             containerPort: 9091
-            hostPort: 9091
           - name: torrent-tcp
             containerPort: 51413
             protocol: TCP
@@ -83,9 +85,8 @@ app-template:
           - path: "/config"
     main-downloads:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/downloads"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: transmission-downloads
       advancedMounts:
         main:
           main:

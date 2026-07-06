@@ -1,0 +1,32 @@
+{{- $server := required "nfs.server is required" .Values.nfs.server -}}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: immich-library-nfs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    server: {{ $server | quote }}
+    path: /mnt/hdd1/immich/library
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-library
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: immich-library-nfs
+  storageClassName: ""

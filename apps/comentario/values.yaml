@@ -1,3 +1,7 @@
+longhorn:
+  storageClassName: longhorn
+  dataSize: 5Gi
+
 app-template:
   fullnameOverride: comentario
   controllers:
@@ -60,9 +64,8 @@ app-template:
             readOnly: true
     data:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/comentario"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: comentario-data
       advancedMounts:
         main:
           main:

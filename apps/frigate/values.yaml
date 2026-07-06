@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: frigate
   controllers:
@@ -25,15 +28,12 @@ app-template:
           - name: rtsp
             containerPort: 8554
             protocol: TCP
-            hostPort: 8554
           - name: webrtc-tcp
             containerPort: 8555
             protocol: TCP
-            hostPort: 8555
           - name: webrtc-udp
             containerPort: 8555
             protocol: UDP
-            hostPort: 8555
       pod:
         securityContext: {}
   service:
@@ -72,9 +72,8 @@ app-template:
           - path: "/config"
     main-media:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/nvr/frigate"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: frigate-media
       advancedMounts:
         main:
           main:

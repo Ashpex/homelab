@@ -4,7 +4,6 @@ resources:
   - adguard/release.yaml
   - backrest/release.yaml
   - alist/release.yaml
-  - audiobookshelf/release.yaml
   - authelia/release.yaml
   - copyparty/release.yaml
   - forgejo/release.yaml
@@ -12,7 +11,6 @@ resources:
   - glance/release.yaml
   - ntfy/release.yaml
   - immich/release.yaml
-  - jellyfin/release.yaml
   - navidrome/release.yaml
   - transmission/release.yaml
   - sonarr/release.yaml

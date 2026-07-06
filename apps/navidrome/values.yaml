@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: navidrome
   controllers:
@@ -68,9 +71,8 @@ app-template:
           - path: "/data"
     music:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/media/music"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: navidrome-music
       advancedMounts:
         main:
           main:

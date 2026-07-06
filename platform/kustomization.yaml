@@ -4,6 +4,7 @@ resources:
   - traefik/release.yaml
   - external-secrets/release.yaml
   - local-storage/release.yaml
+  - longhorn/release.yaml
   - global-secrets/release.yaml
   - cert-manager/release.yaml
   - cert-manager-config/release.yaml

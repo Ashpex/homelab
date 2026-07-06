@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: sonarr
   controllers:
@@ -24,7 +27,6 @@ app-template:
           ports:
           - name: web
             containerPort: 8989
-            hostPort: 8989
   service:
     main:
       enabled: true
@@ -63,18 +65,16 @@ app-template:
           - path: "/config"
     main-tv:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/media/tv"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: sonarr-tv
       advancedMounts:
         main:
           main:
           - path: "/tv"
     main-downloads:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/downloads"
-      hostPathType: DirectoryOrCreate
+      type: persistentVolumeClaim
+      existingClaim: sonarr-downloads
       advancedMounts:
         main:
           main:

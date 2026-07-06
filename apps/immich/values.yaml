@@ -1,3 +1,6 @@
+nfs:
+  server: 192.168.1.110
+
 app-template:
   fullnameOverride: immich
   controllers:
@@ -156,9 +159,8 @@ app-template:
   persistence:
     server-upload:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/immich/library"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: immich-library
       advancedMounts:
         server:
           main:

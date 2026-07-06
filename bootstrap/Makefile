@@ -40,16 +40,20 @@ validate-cluster:
 	helm repo add external-secrets https://charts.external-secrets.io --force-update
 	helm repo add traefik https://traefik.github.io/charts --force-update
 	helm repo add bjw-s https://bjw-s-labs.github.io/helm-charts --force-update
+	helm repo add longhorn https://charts.longhorn.io --force-update
 	helm repo update
 	helm dependency build ../platform/external-secrets
 	helm dependency build ../platform/traefik
+	helm dependency build ../platform/longhorn
 	helm lint ../platform/external-secrets
 	helm lint ../platform/traefik
 	helm lint ../platform/local-storage
+	helm lint ../platform/longhorn
 	helm lint ../platform/global-secrets
 	helm template external-secrets ../platform/external-secrets --namespace external-secret >/tmp/homelab-external-secrets-rendered.yaml
 	helm template traefik ../platform/traefik --namespace traefik >/tmp/homelab-traefik-rendered.yaml
 	helm template local-storage ../platform/local-storage --namespace flux-system >/tmp/homelab-local-storage-rendered.yaml
+	helm template longhorn ../platform/longhorn --namespace longhorn-system >/tmp/homelab-longhorn-rendered.yaml
 	helm template global-secrets ../platform/global-secrets --namespace global-secrets >/tmp/homelab-global-secrets-rendered.yaml
 	set -e; for release in ../apps/*/release.yaml; do \
 		name=$$(yq e '.metadata.name' "$$release"); \

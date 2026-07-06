@@ -15,6 +15,15 @@
         state: restarted
       when: k3s_service_exists.stat.exists | default(false)
 
+    - name: Reload NFS exports
+      ansible.builtin.command: exportfs -ra
+
+    - name: Restart NFS server
+      ansible.builtin.systemd:
+        name: nfs-server
+        state: restarted
+      when: homelab_nfs_enabled | default(false)
+
   tasks:
     - name: Assert this playbook is running on a Debian-family host
       ansible.builtin.assert:
@@ -33,13 +42,50 @@
         state: directory
         mode: "0755"
 
+    - name: Ensure Longhorn data root exists
+      ansible.builtin.file:
+        path: "{{ homelab_longhorn_data_dir }}"
+        state: directory
+        mode: "0755"
+
     - name: Install host packages needed for K3s bootstrap
       ansible.builtin.apt:
         name:
           - ca-certificates
           - curl
+          - open-iscsi
+          - nfs-common
         state: present
         update_cache: true
+
+    - name: Install NFS server package
+      ansible.builtin.apt:
+        name: nfs-kernel-server
+        state: present
+      when: homelab_nfs_enabled | default(false)
+
+    - name: Write NFS exports
+      ansible.builtin.template:
+        src: ../templates/exports.j2
+        dest: /etc/exports.d/homelab.exports
+        mode: "0644"
+      when: homelab_nfs_enabled | default(false)
+      notify:
+        - Reload NFS exports
+        - Restart NFS server
+
+    - name: Enable and start NFS server
+      ansible.builtin.systemd:
+        name: nfs-server
+        enabled: true
+        state: started
+      when: homelab_nfs_enabled | default(false)
+
+    - name: Enable and start iSCSI daemon
+      ansible.builtin.systemd:
+        name: iscsid
+        enabled: true
+        state: started
 
     - name: Read current timezone
       ansible.builtin.command: timedatectl show -p Timezone --value
