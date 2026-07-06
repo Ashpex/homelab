@@ -4,7 +4,7 @@ metadata:
   name: copyparty
   namespace: flux-system
 spec:
-  suspend: false 
+  suspend: false
   targetNamespace: copyparty
   interval: 30m
   chart:
@@ -24,3 +24,4 @@ spec:
   upgrade:
     remediation:
       retries: 3
+    force: true

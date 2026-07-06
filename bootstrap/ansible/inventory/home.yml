@@ -21,7 +21,7 @@ all:
       - 192.168.1.110/32
     homelab_nfs_exports:
       - path: /mnt/hdd1
-        options: rw,sync,no_subtree_check,crossmnt,root_squash
+        options: rw,sync,no_subtree_check,crossmnt,no_root_squash
 
     homelab_required_mounts:
       - /mnt/hdd1
