@@ -1,6 +1,10 @@
 nfs:
   server: 192.168.1.110
 
+longhorn:
+  storageClassName: longhorn
+  postgresSize: 5Gi
+
 app-template:
   fullnameOverride: immich
   controllers:
@@ -165,9 +169,8 @@ app-template:
             readOnly: true
     postgres-data:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/immich/postgres"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: immich-postgres
       advancedMounts:
         postgres:
           main:
