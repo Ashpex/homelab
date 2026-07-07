@@ -1,0 +1,9 @@
+apiVersion: longhorn.io/v1beta2
+kind: BackupTarget
+metadata:
+  name: default
+  namespace: {{ .Release.Namespace }}
+spec:
+  backupTargetURL: {{ .Values.longhorn.defaultSettings.backupTarget | quote }}
+  credentialSecret: {{ .Values.longhorn.defaultSettings.backupTargetCredentialSecret | quote }}
+  pollInterval: 5m0s
