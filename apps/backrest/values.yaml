@@ -24,9 +24,9 @@ app-template:
           - name: BACKREST_PORT
             value: "0.0.0.0:9898"
           - name: BACKREST_CONFIG
-            value: /backrest/config
+            value: /data/config/config.json
           - name: BACKREST_DATA
-            value: /backrest/data
+            value: /data/data
           ports:
           - name: http
             containerPort: 9898
@@ -62,7 +62,7 @@ app-template:
       advancedMounts:
         main:
           main:
-          - path: "/backrest"
+          - path: "/data"
     main-cache:
       enabled: true
       type: emptyDir
