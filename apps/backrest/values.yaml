@@ -80,13 +80,3 @@ app-template:
         main:
           main:
           - path: "/hdd1"
-    main-rclone:
-      enabled: true
-      type: hostPath
-      hostPath: "/home/ashpex/.config/rclone"
-      hostPathType: Directory
-      advancedMounts:
-        main:
-          main:
-          - path: "/root/.config/rclone"
-            readOnly: true

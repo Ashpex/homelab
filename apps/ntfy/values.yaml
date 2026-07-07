@@ -55,15 +55,6 @@ app-template:
             identifier: main
             port: http
   persistence:
-    main-cache:
-      enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/ntfy/cache"
-      hostPathType: DirectoryOrCreate
-      advancedMounts:
-        main:
-          main:
-          - path: "/var/cache/ntfy"
     main-data:
       enabled: true
       type: persistentVolumeClaim
@@ -72,3 +63,6 @@ app-template:
         main:
           main:
           - path: "/etc/ntfy"
+            subPath: data
+          - path: "/var/cache/ntfy"
+            subPath: cache
