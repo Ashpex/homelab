@@ -14,6 +14,6 @@ longhorn:
     defaultReplicaCount: '{"v1":"1","v2":"1"}'
     upgradeChecker: false
     backupTarget: s3://longhorn-pvc@us-east-005/
-    backupTargetCredentialSecret: backblaze-bucket-secret
+    backupTargetCredentialSecret: backblaze.bucket
   longhornUI:
     replicas: 1
