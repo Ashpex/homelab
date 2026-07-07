@@ -8,11 +8,12 @@ export HELM_CONFIG_HOME
 export HELM_CACHE_HOME
 export HELM_DATA_HOME
 
-.PHONY: help bootstrap-k3s flux-bootstrap validate-host validate-cluster clean-helm-artifacts
+.PHONY: help bootstrap-k3s bootstrap-worker flux-bootstrap validate-host validate-cluster clean-helm-artifacts
 
 help:
 	@echo "IaC targets"
-	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s"
+	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
+	@echo "  bootstrap-worker  Join a new Ubuntu node as K3s agent (worker)"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply HelmReleases"
 	@echo "  validate-host     Check Ansible host bootstrap syntax"
 	@echo "  validate-cluster  Render Flux release manifests locally"
@@ -21,6 +22,10 @@ help:
 bootstrap-k3s:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/k3s.yml --ask-become-pass
+
+bootstrap-worker:
+	mkdir -p $(ANSIBLE_LOCAL_TEMP)
+	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/k3s-agent.yml --ask-become-pass
 
 flux-bootstrap:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
