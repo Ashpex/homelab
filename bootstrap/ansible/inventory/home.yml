@@ -4,6 +4,24 @@ all:
       ansible_host: localhost
       ansible_connection: local
       homelab_nfs_enabled: true
+      homelab_longhorn_data_dir: /mnt/hdd1/longhorn
+      homelab_required_mounts:
+        - /mnt/hdd1
+      k3s_node_labels:
+        - homelab.storage/hdd=true
+        - node.longhorn.io/create-default-disk=true
+
+    worker:
+      ansible_host: 192.168.1.xxx  # TODO: set M720q LAN IP
+      ansible_user: ubuntu
+      homelab_nfs_enabled: false
+      homelab_longhorn_data_dir: /var/lib/longhorn  # TODO: adjust if using a dedicated disk
+      homelab_required_mounts: []
+      k3s_server_url: https://192.168.1.110:6443
+      k3s_node_labels:
+        - homelab.storage/ssd=true
+        - node.longhorn.io/create-default-disk=true
+
   vars:
     timezone: Asia/Ho_Chi_Minh
 
@@ -16,22 +34,13 @@ all:
     homelab_hdd_mount: /mnt/hdd1
     homelab_ssd_mount: /mnt/ssd
     homelab_k8s_hdd_volume_root: /mnt/hdd1/k8s-volumes
-    homelab_longhorn_data_dir: /mnt/hdd1/longhorn
     homelab_nfs_allowed_clients:
       - 192.168.1.110/32
     homelab_nfs_exports:
       - path: /mnt/hdd1
         options: rw,sync,no_subtree_check,crossmnt,no_root_squash
 
-    homelab_required_mounts:
-      - /mnt/hdd1
-
     tailscale_ip: 100.96.51.117
 
     k3s_disable_components:
       - traefik
-
-    k3s_node_labels:
-      - homelab.node/single=true
-      - homelab.storage/hdd=true
-      - node.longhorn.io/create-default-disk=true

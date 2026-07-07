@@ -1,0 +1,133 @@
+---
+- name: Fetch K3s token from server
+  hosts: homeserver
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Read K3s node token
+      ansible.builtin.slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_node_token_raw
+
+    - name: Expose token as fact for agent nodes
+      ansible.builtin.set_fact:
+        k3s_token: "{{ k3s_node_token_raw.content | b64decode | trim }}"
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ groups['all'] | difference(['homeserver']) }}"
+
+- name: Bootstrap K3s agent node
+  hosts: worker
+  gather_facts: true
+  gather_subset:
+    - "!all"
+    - min
+  become: true
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart k3s-agent
+      ansible.builtin.systemd:
+        name: k3s-agent
+        state: restarted
+      when: k3s_agent_service_exists.stat.exists | default(false)
+
+  tasks:
+    - name: Assert this playbook is running on a Debian-family host
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family == "Debian"
+        fail_msg: "This bootstrap path targets Ubuntu only."
+
+    - name: Raise inotify limits
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-homelab-inotify.conf
+        mode: "0644"
+        content: |
+          fs.inotify.max_user_watches = 1048576
+          fs.inotify.max_user_instances = 8192
+          fs.inotify.max_queued_events = 65536
+
+    - name: Apply inotify limits
+      ansible.builtin.command: sysctl --system
+      changed_when: false
+
+    - name: Install packages
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - open-iscsi
+          - nfs-common
+        state: present
+        update_cache: true
+
+    - name: Enable and start iSCSI daemon
+      ansible.builtin.systemd:
+        name: iscsid
+        enabled: true
+        state: started
+
+    - name: Ensure Longhorn data dir exists
+      ansible.builtin.file:
+        path: "{{ homelab_longhorn_data_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Set host timezone
+      ansible.builtin.command: "timedatectl set-timezone {{ timezone }}"
+      changed_when: false
+
+    - name: Ensure K3s config directory exists
+      ansible.builtin.file:
+        path: "{{ k3s_config_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Write K3s agent config
+      ansible.builtin.template:
+        src: ../templates/k3s-agent-config.yaml.j2
+        dest: "{{ k3s_config_file }}"
+        mode: "0600"
+      notify: Restart k3s-agent
+
+    - name: Download K3s install script
+      ansible.builtin.get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: "0755"
+
+    - name: Check installed K3s version
+      ansible.builtin.command: /usr/local/bin/k3s --version
+      register: installed_k3s_version
+      changed_when: false
+      failed_when: false
+
+    - name: Install or update pinned K3s version (agent)
+      ansible.builtin.shell: |
+        INSTALL_K3S_VERSION="{{ k3s_version }}" INSTALL_K3S_SKIP_START=true sh /tmp/k3s-install.sh agent
+      args:
+        executable: /bin/bash
+      when: installed_k3s_version.rc != 0 or k3s_version not in installed_k3s_version.stdout
+      notify:
+        - Reload systemd
+        - Restart k3s-agent
+
+    - name: Check K3s agent service file exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/k3s-agent.service
+      register: k3s_agent_service_exists
+
+    - name: Enable and start K3s agent
+      ansible.builtin.systemd:
+        name: k3s-agent
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Confirm node joined
+      ansible.builtin.debug:
+        msg: "Worker node joined. Verify with: kubectl get nodes"
