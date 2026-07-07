@@ -23,6 +23,10 @@ app-template:
             value: Asia/Ho_Chi_Minh
           - name: BACKREST_PORT
             value: "0.0.0.0:9898"
+          - name: BACKREST_CONFIG
+            value: /backrest/config
+          - name: BACKREST_DATA
+            value: /backrest/data
           ports:
           - name: http
             containerPort: 9898
@@ -51,15 +55,6 @@ app-template:
             identifier: main
             port: http
   persistence:
-    main-config:
-      enabled: true
-      type: persistentVolumeClaim
-      existingClaim: backrest-data
-      advancedMounts:
-        main:
-          main:
-          - path: "/config"
-            subPath: config
     main-data:
       enabled: true
       type: persistentVolumeClaim
@@ -67,8 +62,7 @@ app-template:
       advancedMounts:
         main:
           main:
-          - path: "/data"
-            subPath: data
+          - path: "/backrest"
     main-cache:
       enabled: true
       type: emptyDir
