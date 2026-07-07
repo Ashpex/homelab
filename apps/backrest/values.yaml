@@ -1,8 +1,6 @@
 longhorn:
   storageClassName: longhorn
-  configSize: 100Mi
-  dataSize: 100Mi
-  cacheSize: 500Mi
+  dataSize: 200Mi
 
 app-template:
   fullnameOverride: backrest
@@ -56,11 +54,12 @@ app-template:
     main-config:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: backrest-config
+      existingClaim: backrest-data
       advancedMounts:
         main:
           main:
           - path: "/config"
+            subPath: config
     main-data:
       enabled: true
       type: persistentVolumeClaim
@@ -69,10 +68,11 @@ app-template:
         main:
           main:
           - path: "/data"
+            subPath: data
     main-cache:
       enabled: true
-      type: persistentVolumeClaim
-      existingClaim: backrest-cache
+      type: emptyDir
+      sizeLimit: 500Mi
       advancedMounts:
         main:
           main:
