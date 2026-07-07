@@ -1,6 +1,10 @@
 nfs:
   server: 192.168.1.110
 
+longhorn:
+  storageClassName: longhorn
+  configSize: 200Mi
+
 app-template:
   fullnameOverride: frigate
   controllers:
@@ -63,9 +67,8 @@ app-template:
   persistence:
     main-config:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/frigate"
-      hostPathType: Directory
+      type: persistentVolumeClaim
+      existingClaim: frigate-config
       advancedMounts:
         main:
           main:
