@@ -86,13 +86,9 @@ pages:
                 url: https://traefik.ashpex.net/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/traefik.svg
               - title: CopyParty
-                url: https://share.ashpex.net/
-                check-url: http://copyparty.copyparty.svc.cluster.local:3923/
-                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/copyparty.svg 
-              - title: Archive
                 url: https://files.ashpex.net/
-                check-url: http://alist.alist.svc.cluster.local:5244/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/files.svg
+                check-url: http://copyparty.copyparty.svc.cluster.local:3923/
+                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/copyparty.svg
               - title: Backrest
                 url: https://backrest.ashpex.net/
                 check-url: http://backrest.backrest.svc.cluster.local:9898/

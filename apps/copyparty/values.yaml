@@ -55,7 +55,7 @@ app-template:
       className: traefik
       annotations: {}
       hosts:
-      - host: share.ashpex.net
+      - host: files.ashpex.net
         paths:
         - path: "/"
           pathType: Prefix
