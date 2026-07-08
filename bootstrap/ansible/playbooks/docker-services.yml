@@ -1,0 +1,28 @@
+---
+- name: Deploy Docker services
+  hosts: homeserver
+  gather_facts: false
+  become: true
+
+  vars:
+    docker_compose_src: "{{ playbook_dir }}/../../../bootstrap/docker/docker-compose.yml"
+    docker_compose_dest: /opt/homelab/docker-compose.yml
+
+  tasks:
+    - name: Ensure destination directory exists
+      ansible.builtin.file:
+        path: /opt/homelab
+        state: directory
+        mode: "0755"
+
+    - name: Copy docker-compose file
+      ansible.builtin.copy:
+        src: "{{ docker_compose_src }}"
+        dest: "{{ docker_compose_dest }}"
+        mode: "0644"
+
+    - name: Deploy Docker services
+      community.docker.docker_compose_v2:
+        project_src: /opt/homelab
+        state: present
+        pull: always

@@ -1,10 +1,11 @@
-.PHONY: help bootstrap-k3s bootstrap-worker flux-bootstrap validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s bootstrap-worker flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
 	@echo "  bootstrap-worker  Join a new Ubuntu node as K3s agent (worker)"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
+	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
 	@echo "  validate-cluster  Render Flux release manifests locally"
 	@echo "  pulumi-test       Compile the Pulumi Go project"
@@ -14,6 +15,9 @@ bootstrap-k3s:
 
 bootstrap-worker:
 	$(MAKE) -C bootstrap bootstrap-worker
+
+docker-services:
+	$(MAKE) -C bootstrap docker-services
 
 flux-bootstrap:
 	$(MAKE) -C bootstrap flux-bootstrap
