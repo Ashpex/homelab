@@ -107,7 +107,7 @@ app-template:
     main-work:
       enabled: true
       type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/adguard/work"
+      hostPath: "/mnt/ssd0/infra-data/adguard/work"
       hostPathType: Directory
       advancedMounts:
         main:
@@ -116,7 +116,7 @@ app-template:
     main-config:
       enabled: true
       type: hostPath
-      hostPath: "/mnt/hdd1/infra-data/adguard/config"
+      hostPath: "/mnt/ssd0/infra-data/adguard/config"
       hostPathType: Directory
       advancedMounts:
         main:

@@ -69,12 +69,12 @@ app-template:
     hdd:
       enabled: true
       type: hostPath
-      hostPath: "/mnt/hdd1"
+      hostPath: "/mnt/ssd0"
       hostPathType: Directory
       advancedMounts:
         main:
           main:
-          - path: "/mnt/hdd1"
+          - path: "/mnt/ssd0"
             readOnly: true
     # main-timezone:
     #   enabled: true
