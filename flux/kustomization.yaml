@@ -9,7 +9,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./platform
-  prune: false
+  prune: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -22,6 +22,6 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./apps
-  prune: false
+  prune: true
   dependsOn:
     - name: platform
