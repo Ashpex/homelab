@@ -10,7 +10,7 @@ config:
     service: https://traefik.traefik.svc.cluster.local:443
     noTLSVerify: true
     hostnames:
-      - files.ashpex.net
+      - share.ashpex.net
       - hub.ashpex.net
       - git.ashpex.net
       - auth.ashpex.net
