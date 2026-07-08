@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - adguard/release.yaml
   - backrest/release.yaml
-  - alist/release.yaml
   - authelia/release.yaml
   - copyparty/release.yaml
   - forgejo/release.yaml
