@@ -1,7 +1,7 @@
 name: hdd-local
 isDefaultClass: false
 provisioner: rancher.io/local-path
-nodePath: /mnt/hdd1/k8s-volumes
+nodePath: /mnt/ssd0/k8s-volumes
 pathPattern: "{{ .PVC.Namespace }}/{{ .PVC.Name }}"
 volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Retain

@@ -1,7 +1,7 @@
 {{- $server := required "nfs.server is required" .Values.nfs.server -}}
 {{- $volumes := list
-  (dict "name" "archive" "path" "/mnt/hdd1/archive" "size" "1Gi")
-  (dict "name" "library" "path" "/mnt/hdd1/media/library" "size" "1Gi")
+  (dict "name" "archive" "path" "/mnt/ssd0/archive" "size" "1Gi")
+  (dict "name" "library" "path" "/mnt/ssd0/media/library" "size" "1Gi")
 -}}
 {{- range $volume := $volumes }}
 ---

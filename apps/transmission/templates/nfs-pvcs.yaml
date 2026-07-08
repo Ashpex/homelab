@@ -15,7 +15,7 @@ spec:
     - nfsvers=4.1
   nfs:
     server: {{ $server | quote }}
-    path: /mnt/hdd1/downloads
+    path: /mnt/ssd0/downloads
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

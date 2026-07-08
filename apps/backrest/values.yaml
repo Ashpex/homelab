@@ -74,7 +74,7 @@ app-template:
     main-hdd1:
       enabled: true
       type: hostPath
-      hostPath: "/mnt/hdd1"
+      hostPath: "/mnt/ssd0"
       hostPathType: Directory
       advancedMounts:
         main:
