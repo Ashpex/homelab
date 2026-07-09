@@ -11,6 +11,7 @@ config:
     noTLSVerify: true
     hostnames:
       - share.ashpex.net
+      - gallery.ashpex.net
       - hub.ashpex.net
       - git.ashpex.net
       - auth.ashpex.net

@@ -11,6 +11,7 @@ resources:
   - glance/release.yaml
   - ntfy/release.yaml
   - immich/release.yaml
+  - immich-public-proxy/release.yaml
   - navidrome/release.yaml
   - transmission/release.yaml
   - sonarr/release.yaml
