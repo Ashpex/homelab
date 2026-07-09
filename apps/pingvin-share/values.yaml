@@ -59,7 +59,7 @@ app-template:
             appName: Pingvin Share
             appUrl: https://share.ashpex.net
             secureCookies: "true"
-            showHomePage: "true"
+            showHomePage: "false"
             sessionDuration: 3 months
           share:
             allowRegistration: "false"
@@ -71,12 +71,12 @@ app-template:
             allowRegistration: "false"
             ignoreTotp: "true"
             disablePassword: "false"
-            oidc-enabled: "false"
+            oidc-enabled: "true"
             oidc-discoveryUri: "https://auth.ashpex.net/.well-known/openid-configuration"
             oidc-signOut: "true"
             oidc-scope: openid email profile
-            oidc-clientId: ""
-            oidc-clientSecret: ""
+            oidc-clientId: "pingvin-share"
+            oidc-clientSecret: "PLACEHOLDER"
           initUser:
             enabled: false
   persistence:
