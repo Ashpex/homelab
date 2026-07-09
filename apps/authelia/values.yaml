@@ -82,6 +82,12 @@ authelia:
           access_token: 1h
           authorize_code: 1m
           id_token: 1h
+        claims_policies:
+          profile_in_id_token:
+            id_token:
+              - 'name'
+              - 'preferred_username'
+              - 'email'
         clients:
           - client_id: '35ad937b9ec69fcc3a8a747ea18adc6fb95217684e9c65eb0da390bd17e0d18b'
             client_name: 'Forgejo'
@@ -173,6 +179,7 @@ authelia:
             client_name: 'Pingvin Share'
             client_secret:
               path: '/secrets/oidc-clients/PINGVIN_SHARE_CLIENT_SECRET_HASH'
+            claims_policy: 'profile_in_id_token'
             consent_mode: auto
             public: false
             authorization_policy: one_factor
