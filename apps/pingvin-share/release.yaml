@@ -10,7 +10,7 @@ spec:
   dependsOn:
     - name: traefik
       namespace: flux-system
-    - name: longhorn
+    - name: global-secrets
       namespace: flux-system
   chart:
     spec:
