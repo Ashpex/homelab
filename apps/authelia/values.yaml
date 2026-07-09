@@ -179,7 +179,7 @@ authelia:
             require_pkce: false
             pkce_challenge_method: ''
             redirect_uris:
-              - https://share.ashpex.net/api/v1/oauth/callback
+              - https://share.ashpex.net/api/oauth/callback/oidc
             scopes:
               - openid
               - email
