@@ -30,7 +30,5 @@ traefik:
   service:
     spec:
       type: LoadBalancer
-  ping:
-    enabled: true
   log:
     level: INFO
