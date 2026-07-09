@@ -57,7 +57,7 @@ app-template:
       advancedMounts:
         main:
           main:
-          - path: "/opt/app/data"
+          - path: "/opt/app/backend/data"
     main-config:
       enabled: true
       type: secret
