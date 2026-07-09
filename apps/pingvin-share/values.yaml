@@ -1,6 +1,5 @@
-longhorn:
-  storageClassName: longhorn
-  dataSize: 10Gi
+nfs:
+  server: 192.168.1.110
 
 app-template:
   fullnameOverride: pingvin-share
@@ -50,35 +49,6 @@ app-template:
           service:
             identifier: main
             port: http
-  configMaps:
-    config:
-      enabled: true
-      data:
-        config.yaml: |
-          general:
-            appName: Pingvin Share
-            appUrl: https://share.ashpex.net
-            secureCookies: "true"
-            showHomePage: "false"
-            sessionDuration: 3 months
-          share:
-            allowRegistration: "false"
-            allowUnauthenticatedShares: "false"
-            maxExpiration: 0 days
-            maxSize: "5000000000"
-            chunkSize: "10000000"
-          oauth:
-            allowRegistration: "false"
-            ignoreTotp: "true"
-            disablePassword: "false"
-            oidc-enabled: "true"
-            oidc-discoveryUri: "https://auth.ashpex.net/.well-known/openid-configuration"
-            oidc-signOut: "true"
-            oidc-scope: openid email profile
-            oidc-clientId: "pingvin-share"
-            oidc-clientSecret: "PLACEHOLDER"
-          initUser:
-            enabled: false
   persistence:
     main-data:
       enabled: true
@@ -90,7 +60,7 @@ app-template:
           - path: "/opt/app/data"
     main-config:
       enabled: true
-      type: configMap
+      type: secret
       name: pingvin-share-config
       advancedMounts:
         main:
