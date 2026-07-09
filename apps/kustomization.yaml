@@ -5,6 +5,7 @@ resources:
   - backrest/release.yaml
   - authelia/release.yaml
   - copyparty/release.yaml
+  - pingvin-share/release.yaml
   - forgejo/release.yaml
   - frigate/release.yaml
   - glance/release.yaml

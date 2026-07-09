@@ -1,0 +1,100 @@
+longhorn:
+  storageClassName: longhorn
+  dataSize: 10Gi
+
+app-template:
+  fullnameOverride: pingvin-share
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: stonith404/pingvin-share
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          - name: TRUST_PROXY
+            value: "true"
+          ports:
+          - name: http
+            containerPort: 3000
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 3000
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: share.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            identifier: main
+            port: http
+  configMaps:
+    config:
+      enabled: true
+      data:
+        config.yaml: |
+          general:
+            appName: Pingvin Share
+            appUrl: https://share.ashpex.net
+            secureCookies: "true"
+            showHomePage: "true"
+            sessionDuration: 3 months
+          share:
+            allowRegistration: "false"
+            allowUnauthenticatedShares: "false"
+            maxExpiration: 0 days
+            maxSize: "5000000000"
+            chunkSize: "10000000"
+          oauth:
+            allowRegistration: "false"
+            ignoreTotp: "true"
+            disablePassword: "false"
+            oidc-enabled: "false"
+            oidc-discoveryUri: "https://auth.ashpex.net/.well-known/openid-configuration"
+            oidc-signOut: "true"
+            oidc-scope: openid email profile
+            oidc-clientId: ""
+            oidc-clientSecret: ""
+          initUser:
+            enabled: false
+  persistence:
+    main-data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: pingvin-share-data
+      advancedMounts:
+        main:
+          main:
+          - path: "/opt/app/data"
+    main-config:
+      enabled: true
+      type: configMap
+      name: pingvin-share-config
+      advancedMounts:
+        main:
+          main:
+          - path: "/opt/app/config.yaml"
+            subPath: config.yaml
+            readOnly: true
