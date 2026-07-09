@@ -169,6 +169,26 @@ authelia:
             access_token_signed_response_alg: none
             userinfo_signed_response_alg: none
             token_endpoint_auth_method: client_secret_post
+          - client_id: 'pingvin-share'
+            client_name: 'Pingvin Share'
+            client_secret:
+              path: '/secrets/oidc-clients/PINGVIN_SHARE_CLIENT_SECRET_HASH'
+            consent_mode: auto
+            public: false
+            authorization_policy: one_factor
+            require_pkce: false
+            pkce_challenge_method: ''
+            redirect_uris:
+              - https://share.ashpex.net/api/v1/oauth/callback
+            scopes:
+              - openid
+              - email
+              - profile
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            token_endpoint_auth_method: client_secret_basic
 
   persistence:
     enabled: true
