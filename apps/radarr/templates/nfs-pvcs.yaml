@@ -18,6 +18,8 @@ spec:
   storageClassName: ""
   mountOptions:
     - nfsvers=4.1
+    - timeo=30
+    - retrans=3
   nfs:
     server: {{ $server | quote }}
     path: {{ $volume.path | quote }}
