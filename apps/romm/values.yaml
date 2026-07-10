@@ -67,6 +67,8 @@ app-template:
               secretKeyRef:
                 name: romm-secrets
                 key: IGDB_CLIENT_SECRET
+          - name: PLAYMATCH_API_ENABLED
+            value: 'true'
           ports:
           - name: web
             containerPort: 8080
