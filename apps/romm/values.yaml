@@ -57,6 +57,16 @@ app-template:
                 key: ROMM_CLIENT_SECRET
           - name: OIDC_SERVER_APPLICATION_URL
             value: https://romm.ashpex.net
+          - name: IGDB_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: IGDB_CLIENT_ID
+          - name: IGDB_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: IGDB_CLIENT_SECRET
           ports:
           - name: web
             containerPort: 8080
