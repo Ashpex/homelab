@@ -46,6 +46,8 @@ app-template:
             value: 'true'
           - name: OIDC_ENABLED
             value: 'true'
+          - name: OIDC_PROVIDER
+            value: authelia
           - name: OIDC_CLIENT_ID
             value: romm
           - name: OIDC_CLIENT_SECRET
