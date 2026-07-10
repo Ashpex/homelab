@@ -46,8 +46,6 @@ app-template:
             value: 'true'
           - name: OIDC_ENABLED
             value: 'true'
-          - name: OIDC_PROVIDER_URL
-            value: https://auth.ashpex.net
           - name: OIDC_CLIENT_ID
             value: romm
           - name: OIDC_CLIENT_SECRET
@@ -56,7 +54,7 @@ app-template:
                 name: romm-secrets
                 key: ROMM_CLIENT_SECRET
           - name: OIDC_SERVER_APPLICATION_URL
-            value: https://romm.ashpex.net
+            value: https://auth.ashpex.net
           - name: IGDB_CLIENT_ID
             valueFrom:
               secretKeyRef:
