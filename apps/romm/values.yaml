@@ -1,0 +1,160 @@
+nfs:
+  server: 192.168.1.110
+
+longhorn:
+  storageClassName: longhorn
+  resourcesSize: 5Gi
+  assetsSize: 1Gi
+  mariadbSize: 2Gi
+
+app-template:
+  fullnameOverride: romm
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: rommapp/romm
+            tag: latest
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: DB_HOST
+            value: romm-mariadb
+          - name: DB_PORT
+            value: '3306'
+          - name: DB_USER
+            value: romm
+          - name: DB_NAME
+            value: romm
+          - name: DB_PASSWD
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: ROMM_DB_PASSWORD
+          - name: ROMM_AUTH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: ROMM_AUTH_SECRET_KEY
+          - name: ROMM_AUTH_ENABLED
+            value: 'true'
+          - name: OIDC_ENABLED
+            value: 'true'
+          - name: OIDC_PROVIDER_URL
+            value: https://auth.ashpex.net
+          - name: OIDC_CLIENT_ID
+            value: romm
+          - name: OIDC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: ROMM_CLIENT_SECRET
+          - name: OIDC_SERVER_APPLICATION_URL
+            value: https://romm.ashpex.net
+          ports:
+          - name: web
+            containerPort: 8080
+    mariadb:
+      containers:
+        main:
+          image:
+            repository: mariadb
+            tag: '11'
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: MARIADB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: ROMM_DB_PASSWORD
+          - name: MARIADB_DATABASE
+            value: romm
+          - name: MARIADB_USER
+            value: romm
+          - name: MARIADB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: romm-secrets
+                key: ROMM_DB_PASSWORD
+          ports:
+          - name: mysql
+            containerPort: 3306
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        web:
+          enabled: true
+          primary: true
+          port: 8080
+          protocol: HTTP
+    mariadb:
+      enabled: true
+      controller: mariadb
+      type: ClusterIP
+      ports:
+        mysql:
+          enabled: true
+          primary: true
+          port: 3306
+          protocol: TCP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: romm.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            identifier: main
+            port: web
+  persistence:
+    main-library:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: romm-library
+      advancedMounts:
+        main:
+          main:
+          - path: "/romm/library"
+    main-resources:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: romm-resources
+      advancedMounts:
+        main:
+          main:
+          - path: "/romm/resources"
+    main-assets:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: romm-assets
+      advancedMounts:
+        main:
+          main:
+          - path: "/romm/assets"
+    mariadb-data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: romm-mariadb-data
+      advancedMounts:
+        mariadb:
+          main:
+          - path: "/var/lib/mysql"

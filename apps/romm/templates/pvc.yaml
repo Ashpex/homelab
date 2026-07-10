@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-resources
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.longhorn.resourcesSize }}
+  storageClassName: {{ .Values.longhorn.storageClassName | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-assets
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.longhorn.assetsSize }}
+  storageClassName: {{ .Values.longhorn.storageClassName | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-mariadb-data
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.longhorn.mariadbSize }}
+  storageClassName: {{ .Values.longhorn.storageClassName | quote }}
