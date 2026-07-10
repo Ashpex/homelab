@@ -1,0 +1,34 @@
+{{- $server := required "nfs.server is required" .Values.nfs.server -}}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: romm-library-nfs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: ""
+  mountOptions:
+    - nfsvers=4.1
+    - timeo=30
+    - retrans=3
+  nfs:
+    server: {{ $server | quote }}
+    path: /mnt/ssd0/media/roms
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-library
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: romm-library-nfs
+  storageClassName: ""
