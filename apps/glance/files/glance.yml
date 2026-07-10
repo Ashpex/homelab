@@ -94,6 +94,10 @@ pages:
                 url: https://share.ashpex.net/
                 check-url: http://pingvin-share.pingvin-share.svc.cluster.local:3000/
                 icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/pingvin-share.svg
+              - title: RomM
+                url: https://romm.ashpex.net/
+                check-url: http://romm.romm.svc.cluster.local:8080/
+                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/romm.svg
               - title: Backrest
                 url: https://backrest.ashpex.net/
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
