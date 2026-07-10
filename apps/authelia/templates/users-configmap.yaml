@@ -10,5 +10,6 @@ data:
         displayname: "Ashpex"
         password: "$argon2id$v=19$m=65536,t=3,p=4$0mhgu6BPuv7Jg/kagt8FTg$XDopRW+aT63I4TAsn7qRf9ViMEIbC974WQ2bAL/sAjQ"
         email: "ashpex@pm.me"
+        email_verified: true
         groups:
           - admins
