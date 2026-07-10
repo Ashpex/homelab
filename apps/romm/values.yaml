@@ -47,7 +47,7 @@ app-template:
           - name: OIDC_ENABLED
             value: 'true'
           - name: OIDC_AUTOLOGIN
-            value: 'true'
+            value: 'false'
           - name: DISABLE_USERPASS_LOGIN
             value: 'true'
           - name: OIDC_PROVIDER
