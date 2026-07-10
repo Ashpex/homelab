@@ -46,6 +46,10 @@ app-template:
             value: 'true'
           - name: OIDC_ENABLED
             value: 'true'
+          - name: OIDC_AUTOLOGIN
+            value: 'true'
+          - name: DISABLE_USERPASS_LOGIN
+            value: 'true'
           - name: OIDC_PROVIDER
             value: authelia
           - name: OIDC_CLIENT_ID
