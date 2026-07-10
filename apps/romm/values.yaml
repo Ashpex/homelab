@@ -55,6 +55,8 @@ app-template:
                 key: ROMM_CLIENT_SECRET
           - name: OIDC_SERVER_APPLICATION_URL
             value: https://auth.ashpex.net
+          - name: OIDC_REDIRECT_URI
+            value: https://romm.ashpex.net/api/oauth/openid
           - name: IGDB_CLIENT_ID
             valueFrom:
               secretKeyRef:
