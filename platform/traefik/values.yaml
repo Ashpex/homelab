@@ -4,6 +4,7 @@ traefik:
     replicas: 1
   api:
     dashboard: true
+    insecure: true
   ingressRoute:
     dashboard:
       enabled: true
