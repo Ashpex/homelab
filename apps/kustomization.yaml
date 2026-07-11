@@ -14,9 +14,6 @@ resources:
   - immich-public-proxy/release.yaml
   - navidrome/release.yaml
   - transmission/release.yaml
-  - sonarr/release.yaml
-  - radarr/release.yaml
-  - prowlarr/release.yaml
   - comentario/release.yaml
   - romm/release.yaml
   - calibre-web/release.yaml

@@ -66,10 +66,6 @@ pages:
                 url: https://git.ashpex.net/
                 check-url: http://forgejo-http.forgejo.svc.cluster.local:3000/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/forgejo.svg
-              - title: Prowlarr
-                url: https://prowlarr.ashpex.net/
-                check-url: http://prowlarr.prowlarr.svc.cluster.local:9696/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prowlarr.svg
               - title: ntfy
                 url: https://notify.ashpex.net/
                 check-url: http://ntfy.ntfy.svc.cluster.local:80/
@@ -103,15 +99,6 @@ pages:
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
 
-              - title: Sonarr
-                url: https://sonarr.ashpex.net/
-                check-url: http://sonarr.sonarr.svc.cluster.local:8989/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sonarr.svg
-              - title: Radarr
-                url: https://radarr.ashpex.net/
-                check-url: http://radarr.radarr.svc.cluster.local:7878/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/radarr.svg
-                
           - type: bookmarks
             groups:
               - title: General
