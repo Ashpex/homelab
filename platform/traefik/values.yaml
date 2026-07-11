@@ -2,6 +2,14 @@ traefik:
   fullnameOverride: traefik
   deployment:
     replicas: 1
+  api:
+    dashboard: true
+  ingressRoute:
+    dashboard:
+      enabled: true
+      entryPoints:
+        - websecure
+      matchRule: Host(`traefik.ashpex.net`)
   ingressClass:
     name: traefik
     enabled: true
