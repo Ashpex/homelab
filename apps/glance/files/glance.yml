@@ -96,7 +96,7 @@ pages:
                 icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/pingvin-share.svg
               - title: RomM
                 url: https://romm.ashpex.net/
-                check-url: http://romm.romm.svc.cluster.local:8080/api/heartbeat
+                check-url: http://romm-main.romm.svc.cluster.local:8080/api/heartbeat
                 icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/romm.svg
               - title: Backrest
                 url: https://backrest.ashpex.net/
