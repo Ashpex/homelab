@@ -93,7 +93,7 @@ app-template:
       enabled: true
       type: emptyDir
       medium: Memory
-      sizeLimit: 100Mi
+      sizeLimit: 512Mi
       advancedMounts:
         main:
           main:
