@@ -3,10 +3,10 @@ module github.com/Ashpex/homelab/pulumi
 go 1.25.11
 
 require (
-	github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.17.0
+	github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.18.0
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.33.0
 	github.com/pulumi/pulumi-tailscale/sdk v0.28.0
-	github.com/pulumi/pulumi/sdk/v3 v3.251.0
+	github.com/pulumi/pulumi/sdk/v3 v3.252.0
 )
 
 require (
