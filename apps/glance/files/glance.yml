@@ -86,10 +86,6 @@ pages:
                 url: https://files.ashpex.net/
                 check-url: http://copyparty.copyparty.svc.cluster.local:3923/
                 icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/copyparty.svg
-              - title: Pingvin Share
-                url: https://share.ashpex.net/
-                check-url: http://pingvin-share.pingvin-share.svc.cluster.local:3000/
-                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/pingvin-share.svg
               - title: RomM
                 url: https://romm.ashpex.net/
                 check-url: http://romm-main.romm.svc.cluster.local:8080/api/heartbeat
