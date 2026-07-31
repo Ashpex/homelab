@@ -49,7 +49,7 @@ app-template:
         main:
           image:
             repository: docker.io/redis
-            tag: 8.8-alpine
+            tag: 8.10-alpine
           probes:
             liveness:
               enabled: false
