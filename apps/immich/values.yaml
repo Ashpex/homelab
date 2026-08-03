@@ -13,7 +13,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/immich-app/immich-server
-            tag: v3.0.3
+            tag: v3.1.0
           probes:
             liveness:
               enabled: false
