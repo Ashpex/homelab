@@ -1,0 +1,21 @@
+services:
+  dnsmasq:
+    image: alpine:3.20
+    container_name: homelab-pxe-dnsmasq
+    command: sh -c "apk --no-cache add dnsmasq && exec dnsmasq -k --conf-file=/etc/dnsmasq.conf"
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - {{ pxe_compose_root }}/dnsmasq.conf:/etc/dnsmasq.conf:ro
+      - {{ pxe_tftp_root }}:/tftp:ro
+    restart: unless-stopped
+
+  http:
+    image: nginx:1.27-alpine
+    container_name: homelab-pxe-http
+    network_mode: host
+    volumes:
+      - {{ pxe_http_root }}:/usr/share/nginx/html:ro
+      - {{ pxe_compose_root }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped

@@ -1,8 +1,8 @@
-# Homelab IaC
+# Homelab Bootstrap
 
 ## Layers
 
-- `ansible/`: Ubuntu host bootstrap for K3s and local storage assumptions.
+- `ansible/`: host bootstrap for K3s, storage assumptions, and PXE-based NixOS installs.
 - `../flux`: Flux source object applied by Ansible.
 - `../platform`: platform Helm charts and HelmRelease objects.
 - `../apps`: app Helm charts and HelmRelease objects.
@@ -28,6 +28,42 @@ make flux-bootstrap
 ```
 
 This installs `source-controller` and `helm-controller`.
+
+## NixOS Node Bootstrap
+
+Start the local PXE server for the guarded NixOS auto-installer:
+
+```sh
+cd bootstrap
+make pxe-nixos
+```
+
+Then boot the node from network/PXE. The per-host PXE boot script passes:
+
+```text
+homelab.install=1 homelab.host=m720q homelab.baseUrl=http://192.168.1.110:8082
+```
+
+Nodes are defined in the `nixos_nodes` inventory group. If `pxe_mac` is set for
+a node, iPXE selects the right host config automatically by MAC address. If
+`pxe_mac` is empty, the boot script shows an iPXE menu so you can choose the
+host manually.
+
+The NixOS netboot image only auto-installs when `homelab.install=1` is present.
+It downloads the host repo tarball and k3s node token from the local bootstrap
+HTTP server, runs `disko`, runs `nixos-install`, and reboots.
+
+After the reboot, verify the node joined:
+
+```sh
+kubectl --context homelab-nas wait node/m720q --for=condition=Ready --timeout=10m
+```
+
+The PXE bootstrap target serves the k3s node token from the local bootstrap HTTP
+server while PXE is running. The token is fetched live from `homeserver` and is
+not stored in Git. SOPS is still the better tool for long-lived repository
+secrets, but it does not remove the need for a bootstrap secret source unless
+the installer already has an age key.
 
 ## Local Validation
 
