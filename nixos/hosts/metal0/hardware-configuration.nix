@@ -1,4 +1,4 @@
-# Hardware-specific settings for the Lenovo ThinkCentre M720q class nodes.
+# Hardware-specific settings for mini PC class nodes.
 #
 # Disk layout is managed by disko, so this file intentionally does not define
 # `fileSystems` entries for `/` or `/boot`.

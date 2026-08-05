@@ -36,7 +36,7 @@ all:
   children:
     nixos_nodes:
       hosts:
-        m720q:
+        metal1:
           ansible_host: 192.168.1.111
           pxe_mac: ""
           pxe_role: worker

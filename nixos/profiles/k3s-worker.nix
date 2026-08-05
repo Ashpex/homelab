@@ -1,12 +1,6 @@
 { ... }:
 
 {
-  imports = [
-    ./hardware-configuration.nix
-  ];
-
-  networking.hostName = "m720q";
-
   homelab.kubernetes = {
     enable = true;
     role = "agent";
