@@ -19,7 +19,7 @@ This script is intended to run from the NixOS installer.
 
 It will:
   1. apply the host disko layout
-  2. copy this repo into /mnt/etc/nixos/homelab
+  2. copy this repo into /mnt/opt/homelab
   3. install the k3s node token into the target system
   4. run nixos-install with the host flake output
 
@@ -70,7 +70,7 @@ fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 nixos_dir="$(cd "$script_dir/.." && pwd)"
 repo_root="$(cd "$nixos_dir/.." && pwd)"
-target_repo="/mnt/etc/nixos/homelab"
+target_repo="/mnt/opt/homelab"
 target_flake="$target_repo/nixos#$host"
 
 echo "Host: $host"
@@ -94,8 +94,10 @@ fi
   --mode disko \
   --flake "$nixos_dir#$host"
 
-"${sudo_cmd[@]}" install -d -m 0755 "$target_repo"
+"${sudo_cmd[@]}" install -d -m 0775 -g wheel "$target_repo"
 tar --exclude='.git' -C "$repo_root" -cf - . | "${sudo_cmd[@]}" tar -C "$target_repo" -xf -
+"${sudo_cmd[@]}" chgrp -R wheel "$target_repo"
+"${sudo_cmd[@]}" chmod -R g+rwX "$target_repo"
 
 "${sudo_cmd[@]}" install -d -m 0700 /mnt/etc/rancher/k3s
 "${sudo_cmd[@]}" install -m 0600 "$token_file" /mnt/etc/rancher/k3s/node-token
