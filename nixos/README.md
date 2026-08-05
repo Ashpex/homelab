@@ -18,13 +18,13 @@ leaving Kubernetes workloads in `apps/` and `platform/`.
 The initial M720q worker is defined at:
 
 ```sh
-nixos/hosts/m720q/configuration.nix
+nixos/hosts/metal1/configuration.nix
 ```
 
 Its disk layout is defined with `disko` at:
 
 ```sh
-nixos/hosts/m720q/disk.nix
+nixos/hosts/metal1/disk.nix
 ```
 
 The default target disk is `/dev/nvme0n1`. Verify this in the installer with:
@@ -37,7 +37,7 @@ Then partition, format, and mount the target disk:
 
 ```sh
 ./nixos/scripts/install-node.sh \
-  --host m720q \
+  --host metal1 \
   --token-file /path/to/node-token
 ```
 
@@ -55,12 +55,12 @@ from this flake:
 ```sh
 sudo nix run ./nixos#disko -- \
   --mode disko \
-  --flake ./nixos#m720q
+  --flake ./nixos#metal1
 
 sudo install -d -m 0700 /mnt/etc/rancher/k3s
 sudo install -m 0600 /path/to/node-token /mnt/etc/rancher/k3s/node-token
 
-sudo nixos-install --flake ./nixos#m720q
+sudo nixos-install --flake ./nixos#metal1
 ```
 
 Verify from an existing kubeconfig:
@@ -71,7 +71,7 @@ kubectl --context homelab-nas get nodes -o wide
 
 ## Adding More Nodes
 
-1. Copy `hosts/m720q` to `hosts/<hostname>`.
+1. Copy `hosts/metal1` to `hosts/<hostname>`.
 2. Update `networking.hostName`, k3s labels, disk device, and any node-specific
    storage.
 3. Add the host to `flake.nix` under `nixosConfigurations`.

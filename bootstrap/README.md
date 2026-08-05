@@ -41,7 +41,7 @@ make pxe-nixos
 Then boot the node from network/PXE. The per-host PXE boot script passes:
 
 ```text
-homelab.install=1 homelab.host=m720q homelab.baseUrl=http://192.168.1.110:8082
+homelab.install=1 homelab.host=metal1 homelab.baseUrl=http://192.168.1.110:8082
 ```
 
 Nodes are defined in the `nixos_nodes` inventory group. If `pxe_mac` is set for
@@ -56,7 +56,7 @@ HTTP server, runs `disko`, runs `nixos-install`, and reboots.
 After the reboot, verify the node joined:
 
 ```sh
-kubectl --context homelab-nas wait node/m720q --for=condition=Ready --timeout=10m
+kubectl --context homelab-nas wait node/metal1 --for=condition=Ready --timeout=10m
 ```
 
 The PXE bootstrap target serves the k3s node token from the local bootstrap HTTP
