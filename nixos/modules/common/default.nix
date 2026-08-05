@@ -30,12 +30,32 @@
 
   environment.systemPackages = with pkgs; [
     curl
+    dnsutils
+    ethtool
+    file
     git
     htop
+    iperf3
     jq
+    k9s
+    kubectl
+    lsof
+    neovim
     nfs-utils
+    pciutils
+    ripgrep
+    rsync
+    smartmontools
+    tcpdump
+    tree
+    unzip
     util-linux
-    vim
+    usbutils
+    wget
+  ];
+
+  systemd.tmpfiles.rules = [
+    "d /opt/homelab 0775 root wheel - -"
   ];
 
   boot.kernel.sysctl = {

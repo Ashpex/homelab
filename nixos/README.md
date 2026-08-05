@@ -60,7 +60,12 @@ sudo nix run ./nixos#disko -- \
 sudo install -d -m 0700 /mnt/etc/rancher/k3s
 sudo install -m 0600 /path/to/node-token /mnt/etc/rancher/k3s/node-token
 
-sudo nixos-install --flake ./nixos#metal1
+sudo install -d -m 0775 -g wheel /mnt/opt/homelab
+sudo rsync -a --exclude .git ./ /mnt/opt/homelab/
+sudo chgrp -R wheel /mnt/opt/homelab
+sudo chmod -R g+rwX /mnt/opt/homelab
+
+sudo nixos-install --flake /mnt/opt/homelab/nixos#metal1
 ```
 
 Verify from an existing kubeconfig:
@@ -74,8 +79,14 @@ kubectl --context homelab-nas get nodes -o wide
 1. Copy `hosts/metal1` to `hosts/<hostname>`.
 2. Update `networking.hostName`, k3s labels, disk device, and any node-specific
    storage.
-3. Add the host to `flake.nix` under `nixosConfigurations`.
-4. Run `./nixos/scripts/install-node.sh --host <hostname> --token-file <path>`.
+3. Run `./nixos/scripts/install-node.sh --host <hostname> --token-file <path>`.
+
+After install, the node keeps this repo snapshot at `/opt/homelab`. Rebuild an
+installed node with:
+
+```sh
+sudo nixos-rebuild switch --flake /opt/homelab/nixos#metal1
+```
 
 ## Notes
 
