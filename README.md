@@ -13,6 +13,7 @@ Server dashboard: [hub.ashpex.net](https://hub.ashpex.net)
 - `flux/`: Flux GitRepository source.
 - `platform/`: platform Helm charts and HelmReleases.
 - `apps/`: app Helm charts and HelmReleases.
+- `nixos/`: NixOS host definitions for Kubernetes nodes.
 - `pulumi/`: Pulumi Go project for Cloudflare, Tailscale, and global secrets.
 - `docs/`: migration, secrets, and operations notes.
 

@@ -1,9 +1,9 @@
-.PHONY: help bootstrap-k3s bootstrap-worker flux-bootstrap docker-services validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s pxe-nixos flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
-	@echo "  bootstrap-worker  Join a new Ubuntu node as K3s agent (worker)"
+	@echo "  pxe-nixos         Start local PXE server for guarded NixOS install"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
 	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
@@ -13,8 +13,8 @@ help:
 bootstrap-k3s:
 	$(MAKE) -C bootstrap bootstrap-k3s
 
-bootstrap-worker:
-	$(MAKE) -C bootstrap bootstrap-worker
+pxe-nixos:
+	$(MAKE) -C bootstrap pxe-nixos
 
 docker-services:
 	$(MAKE) -C bootstrap docker-services

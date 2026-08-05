@@ -1,0 +1,10 @@
+server {
+    listen {{ pxe_http_port }};
+    server_name _;
+
+    root /usr/share/nginx/html;
+
+    location / {
+        autoindex on;
+    }
+}
