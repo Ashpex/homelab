@@ -1,0 +1,22 @@
+# Disable DNS service; this dnsmasq instance only handles PXE.
+port=0
+
+# Proxy DHCP: keep the existing LAN DHCP server authoritative for addresses.
+dhcp-range={{ pxe_server_address }},proxy
+
+# Identify iPXE and UEFI x86_64 clients.
+dhcp-userclass=set:ipxe,iPXE
+dhcp-match=set:efi-x86_64,option:client-arch,7
+dhcp-match=set:efi-x86_64,option:client-arch,9
+
+# Firmware gets iPXE over TFTP; iPXE then gets the real boot script over HTTP.
+dhcp-boot=tag:ipxe,http://{{ pxe_server_address }}:{{ pxe_http_port }}/boot.ipxe
+dhcp-boot=tag:efi-x86_64,ipxe.efi
+pxe-service=tag:efi-x86_64,X86-64_EFI,"NixOS installer",ipxe.efi
+
+enable-tftp
+tftp-root=/tftp
+
+log-dhcp
+log-queries
+log-facility=-
