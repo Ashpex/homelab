@@ -10,18 +10,6 @@ all:
       k3s_node_labels:
         - homelab.storage/ssd=true
         - node.longhorn.io/create-default-disk=true
-
-    worker:
-      ansible_host: 192.168.1.xxx  # TODO: set M720q LAN IP
-      ansible_user: ubuntu
-      homelab_nfs_enabled: false
-      homelab_longhorn_data_dir: /var/lib/longhorn  # TODO: adjust if using a dedicated disk
-      homelab_required_mounts: []
-      k3s_server_url: https://192.168.1.110:6443
-      k3s_node_labels:
-        - homelab.storage/ssd=true
-        - node.longhorn.io/create-default-disk=true
-
   vars:
     timezone: Asia/Ho_Chi_Minh
 
@@ -44,3 +32,11 @@ all:
 
     k3s_disable_components:
       - traefik
+
+  children:
+    nixos_nodes:
+      hosts:
+        metal1:
+          ansible_host: 192.168.1.111
+          pxe_mac: ""
+          pxe_role: worker
