@@ -1,39 +1,57 @@
-# NixOS Kubernetes Nodes
+# NixOS Nodes
 
-NixOS host definitions for Kubernetes nodes in this homelab.
-
-The intent is to keep node operating-system configuration reproducible while
-leaving Kubernetes workloads in `apps/` and `platform/`.
+Reproducible NixOS configs for homelab Kubernetes nodes.
 
 ## Layout
 
-- `flake.nix`: entrypoint for all NixOS node builds.
-- `hosts/`: one directory per physical node.
-- `modules/common`: baseline OS settings shared by every node.
-- `modules/kubernetes`: k3s node roles and Kubernetes host prerequisites.
-- `modules/storage`: Longhorn and NFS client prerequisites.
+- `flake.nix`: builds host configs and the PXE netboot installer.
+- `hosts/<name>`: per-machine config, disk layout, and hardware config.
+- `profiles/`: reusable k3s roles.
+- `modules/`: shared OS, Kubernetes, and storage settings.
+- `scripts/install-node.sh`: installer script used by PXE and manual installs.
 
-## First Worker Node
+## Hosts
 
-The initial M720q worker is defined at:
+- `metal0`: NixOS k3s server/control-plane config.
+- `metal1`: NixOS k3s worker.
 
-```sh
-nixos/hosts/metal1/configuration.nix
-```
-
-Its disk layout is defined with `disko` at:
-
-```sh
-nixos/hosts/metal1/disk.nix
-```
-
-The default target disk is `/dev/nvme0n1`. Verify this in the installer with:
+Before installing a host, check its disk name with:
 
 ```sh
 lsblk
 ```
 
-Then partition, format, and mount the target disk:
+Then update `hosts/<name>/disk.nix` if needed. The current example uses
+`/dev/nvme0n1`.
+
+## PXE Install
+
+Run this from the Linux machine on the same LAN:
+
+```sh
+make pxe-nixos
+```
+
+Then PXE boot the target machine and pick the host, for example `metal1`.
+
+The PXE installer will:
+
+1. download this repo snapshot and the k3s node token,
+2. run `disko`,
+3. install NixOS,
+4. reboot,
+5. join the k3s cluster.
+
+After the node is installed:
+
+```sh
+make pxe-clean
+kubectl --context homelab-nas get nodes -o wide
+```
+
+## Manual Install
+
+From a NixOS installer shell:
 
 ```sh
 ./nixos/scripts/install-node.sh \
@@ -41,57 +59,25 @@ Then partition, format, and mount the target disk:
   --token-file /path/to/node-token
 ```
 
-This destroys existing data on the target disk.
-
-The token can be read from the existing server:
+The token comes from the existing k3s server:
 
 ```sh
 sudo cat /var/lib/rancher/k3s/server/node-token
 ```
 
-If you want to run the lower-level steps manually, use the pinned `disko` app
-from this flake:
+This destroys existing data on the disk configured in `hosts/<name>/disk.nix`.
 
-```sh
-sudo nix run ./nixos#disko -- \
-  --mode disko \
-  --flake ./nixos#metal1
+## Rebuild
 
-sudo install -d -m 0700 /mnt/etc/rancher/k3s
-sudo install -m 0600 /path/to/node-token /mnt/etc/rancher/k3s/node-token
-
-sudo install -d -m 0775 -g wheel /mnt/opt/homelab
-sudo rsync -a --exclude .git ./ /mnt/opt/homelab/
-sudo chgrp -R wheel /mnt/opt/homelab
-sudo chmod -R g+rwX /mnt/opt/homelab
-
-sudo nixos-install --flake /mnt/opt/homelab/nixos#metal1
-```
-
-Verify from an existing kubeconfig:
-
-```sh
-kubectl --context homelab-nas get nodes -o wide
-```
-
-## Adding More Nodes
-
-1. Copy `hosts/metal1` to `hosts/<hostname>`.
-2. Update `networking.hostName`, k3s labels, disk device, and any node-specific
-   storage.
-3. Run `./nixos/scripts/install-node.sh --host <hostname> --token-file <path>`.
-
-After install, the node keeps this repo snapshot at `/opt/homelab`. Rebuild an
-installed node with:
+After install, the repo snapshot lives at `/opt/homelab` on the node.
 
 ```sh
 sudo nixos-rebuild switch --flake /opt/homelab/nixos#metal1
 ```
 
-## Notes
+To add another node, copy `hosts/metal1` to a new host directory and adjust:
 
-- Keep secrets out of Git. Use `tokenFile` or a secrets manager, not inline k3s
-  tokens.
-- Worker nodes that consume NFS exports from `nas` should carry the
-  `homelab.storage/nfs-client=true` node label.
-- The `nas` storage/server node should carry `homelab.storage/nfs-server=true`.
+- `networking.hostName`
+- disk device in `disk.nix`
+- k3s labels or role profile
+- inventory entry in `bootstrap/ansible/inventory/home.yml`
