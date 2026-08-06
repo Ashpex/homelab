@@ -70,6 +70,13 @@ After the reboot, verify the node joined:
 kubectl --context homelab-nas wait node/metal1 --for=condition=Ready --timeout=10m
 ```
 
+Then stop the local PXE services and remove temporary artifacts, including the
+served k3s node token:
+
+```sh
+make pxe-clean
+```
+
 The PXE bootstrap target serves the k3s node token from the local bootstrap HTTP
 server while PXE is running. The token is fetched live from `metal0` and is
 not stored in Git. SOPS is still the better tool for long-lived repository

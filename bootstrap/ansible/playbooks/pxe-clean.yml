@@ -1,0 +1,27 @@
+---
+- name: Clean local NixOS PXE server artifacts
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+
+  vars:
+    pxe_root: /opt/homelab/pxe
+    pxe_compose_root: "{{ pxe_root }}/compose"
+
+  tasks:
+    - name: Check PXE Docker Compose file
+      ansible.builtin.stat:
+        path: "{{ pxe_compose_root }}/docker-compose.yml"
+      register: pxe_compose_file
+
+    - name: Stop PXE services
+      community.docker.docker_compose_v2:
+        project_src: "{{ pxe_compose_root }}"
+        state: absent
+      when: pxe_compose_file.stat.exists
+
+    - name: Remove PXE artifacts and temporary secrets
+      ansible.builtin.file:
+        path: "{{ pxe_root }}"
+        state: absent
