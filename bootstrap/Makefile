@@ -8,12 +8,13 @@ export HELM_CONFIG_HOME
 export HELM_CACHE_HOME
 export HELM_DATA_HOME
 
-.PHONY: help bootstrap-k3s pxe-nixos flux-bootstrap docker-services validate-host validate-cluster clean-helm-artifacts
+.PHONY: help bootstrap-k3s pxe-nixos pxe-clean flux-bootstrap docker-services validate-host validate-cluster clean-helm-artifacts
 
 help:
 	@echo "IaC targets"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
 	@echo "  pxe-nixos         Start local PXE server for the NixOS installer"
+	@echo "  pxe-clean         Stop local PXE server and remove temporary artifacts"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply HelmReleases"
 	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible host bootstrap syntax"
@@ -28,6 +29,10 @@ pxe-nixos:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-nixos.yml --ask-become-pass
 
+pxe-clean:
+	mkdir -p $(ANSIBLE_LOCAL_TEMP)
+	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-clean.yml --ask-become-pass
+
 docker-services:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/docker-services.yml --ask-become-pass
@@ -40,6 +45,7 @@ validate-host:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/k3s.yml --syntax-check
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-nixos.yml --syntax-check
+	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-clean.yml --syntax-check
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/flux-helm.yml --syntax-check
 
 validate-cluster:
