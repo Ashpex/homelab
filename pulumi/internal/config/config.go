@@ -19,7 +19,7 @@ type Config struct {
 	CloudflareZoneID       string
 	CloudflareTarget       string
 	CloudflareRecordType   string
-	CloudflareTunnel       *CloudflareTunnel
+	CloudflareTunnels      []CloudflareTunnel
 	Secrets                []Secret
 	CreateTailscaleAuthKey bool
 }
@@ -36,11 +36,12 @@ type Secret struct {
 }
 
 type CloudflareTunnel struct {
-	ID          string               `json:"id"`
-	Name        string               `json:"name"`
-	Service     string               `json:"service"`
-	NoTLSVerify bool                 `json:"noTLSVerify,omitempty"`
-	Hostnames   []string             `json:"hostnames"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	TunnelName  string   `json:"tunnelName,omitempty"`
+	Service     string   `json:"service"`
+	NoTLSVerify bool     `json:"noTLSVerify,omitempty"`
+	Hostnames   []string `json:"hostnames"`
 }
 
 func Load(ctx *pulumi.Context) (*Config, error) {
@@ -56,21 +57,18 @@ func Load(ctx *pulumi.Context) (*Config, error) {
 		return nil, fmt.Errorf("read secrets config: %w", err)
 	}
 
-	var tunnel CloudflareTunnel
-	if err := cfg.GetObject("cloudflareTunnel", &tunnel); err != nil {
-		return nil, fmt.Errorf("read cloudflareTunnel config: %w", err)
+	tunnels, err := loadCloudflareTunnels(cfg)
+	if err != nil {
+		return nil, err
 	}
 
 	stack := &Config{
 		PublicDNSRecords:       publicRecords,
 		CloudflareAccountID:    cfg.Get("cloudflareAccountId"),
 		CloudflareRecordType:   cfg.Get("cloudflareRecordType"),
+		CloudflareTunnels:      tunnels,
 		Secrets:                secrets,
 		CreateTailscaleAuthKey: cfg.GetBool("createTailscaleAuthKey"),
-	}
-
-	if tunnel.configured() {
-		stack.CloudflareTunnel = &tunnel
 	}
 
 	if stack.CloudflareRecordType == "" {
@@ -89,6 +87,23 @@ func Load(ctx *pulumi.Context) (*Config, error) {
 	return stack, nil
 }
 
+func loadCloudflareTunnels(cfg *pulumiconfig.Config) ([]CloudflareTunnel, error) {
+	var tunnels []CloudflareTunnel
+	if err := cfg.GetObject("cloudflareTunnels", &tunnels); err != nil {
+		return nil, fmt.Errorf("read cloudflareTunnels config: %w", err)
+	}
+
+	var legacyTunnel CloudflareTunnel
+	if err := cfg.GetObject("cloudflareTunnel", &legacyTunnel); err != nil {
+		return nil, fmt.Errorf("read cloudflareTunnel config: %w", err)
+	}
+	if legacyTunnel.configured() {
+		tunnels = append(tunnels, legacyTunnel)
+	}
+
+	return tunnels, nil
+}
+
 func (cfg Config) validate() error {
 	for _, record := range cfg.PublicDNSRecords {
 		if strings.TrimSpace(record.Name) == "" {
@@ -96,22 +111,11 @@ func (cfg Config) validate() error {
 		}
 	}
 
-	if cfg.CloudflareTunnel != nil {
-		if strings.TrimSpace(cfg.CloudflareAccountID) == "" {
-			return fmt.Errorf("cloudflareAccountId is required when cloudflareTunnel is set")
-		}
-		if strings.TrimSpace(cfg.CloudflareTunnel.ID) == "" {
-			return fmt.Errorf("cloudflareTunnel.id is required")
-		}
-		if strings.TrimSpace(cfg.CloudflareTunnel.Name) == "" {
-			return fmt.Errorf("cloudflareTunnel.name is required")
-		}
-		if len(cfg.CloudflareTunnel.Hostnames) == 0 {
-			return fmt.Errorf("cloudflareTunnel.hostnames requires at least one entry")
-		}
-		if strings.TrimSpace(cfg.CloudflareTunnel.Service) == "" {
-			return fmt.Errorf("cloudflareTunnel.service is required")
-		}
+	if len(cfg.CloudflareTunnels) > 0 && strings.TrimSpace(cfg.CloudflareAccountID) == "" {
+		return fmt.Errorf("cloudflareAccountId is required when cloudflareTunnels is set")
+	}
+	if err := validateCloudflareTunnels(cfg.CloudflareTunnels); err != nil {
+		return err
 	}
 
 	for _, secret := range cfg.Secrets {
@@ -125,6 +129,31 @@ func (cfg Config) validate() error {
 			if strings.TrimSpace(key) == "" {
 				return fmt.Errorf("secret %q contains an empty data key", secret.Name)
 			}
+		}
+	}
+
+	return nil
+}
+
+func validateCloudflareTunnels(tunnels []CloudflareTunnel) error {
+	seenNames := map[string]struct{}{}
+
+	for _, tunnel := range tunnels {
+		if strings.TrimSpace(tunnel.ID) == "" {
+			return fmt.Errorf("cloudflareTunnel.id is required")
+		}
+		if strings.TrimSpace(tunnel.Name) == "" {
+			return fmt.Errorf("cloudflareTunnel.name is required")
+		}
+		if _, exists := seenNames[tunnel.Name]; exists {
+			return fmt.Errorf("cloudflareTunnel.name %q is duplicated", tunnel.Name)
+		}
+		seenNames[tunnel.Name] = struct{}{}
+		if len(tunnel.Hostnames) == 0 {
+			return fmt.Errorf("cloudflareTunnel.hostnames requires at least one entry")
+		}
+		if strings.TrimSpace(tunnel.Service) == "" {
+			return fmt.Errorf("cloudflareTunnel.service is required")
 		}
 	}
 
