@@ -1,6 +1,24 @@
 ---
+- name: Fetch K3s join token from existing server
+  hosts: metal0
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Read K3s node token
+      ansible.builtin.slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_node_token_raw
+      no_log: true
+
+    - name: Expose K3s node token to PXE bootstrap play
+      ansible.builtin.set_fact:
+        k3s_node_token: "{{ k3s_node_token_raw.content | b64decode | trim }}"
+      no_log: true
+
 - name: Bootstrap local NixOS PXE server
-  hosts: homeserver
+  hosts: localhost
+  connection: local
   gather_facts: true
   become: true
 
@@ -9,7 +27,7 @@
     pxe_tftp_root: "{{ pxe_root }}/tftp"
     pxe_http_root: "{{ pxe_root }}/http"
     pxe_compose_root: "{{ pxe_root }}/compose"
-    pxe_server_address: 192.168.1.110
+    pxe_server_address: "{{ ansible_default_ipv4.address }}"
     pxe_http_port: 8082
     pxe_ipxe_url: https://boot.ipxe.org/ipxe.efi
     nixos_flake_dir: "{{ playbook_dir }}/../../../nixos"
@@ -18,6 +36,12 @@
     pxe_install_base_url: "http://{{ pxe_server_address }}:{{ pxe_http_port }}"
 
   tasks:
+    - name: Ensure PXE server is running on Linux
+      ansible.builtin.assert:
+        that:
+          - ansible_system == "Linux"
+        fail_msg: "PXE services must run on a Linux host with Docker host networking."
+
     - name: Ensure NixOS PXE inventory has at least one node
       ansible.builtin.assert:
         that:
@@ -37,12 +61,6 @@
           - item.stat.exists
         fail_msg: "Missing nixos/hosts/{{ item.item }}/configuration.nix for inventory host {{ item.item }}."
       loop: "{{ nixos_host_config_stats.results }}"
-
-    - name: Read K3s node token
-      ansible.builtin.slurp:
-        src: /var/lib/rancher/k3s/server/node-token
-      register: k3s_node_token_raw
-      no_log: true
 
     - name: Ensure Nix is available to build netboot artifacts
       ansible.builtin.command: nix --version
@@ -107,7 +125,7 @@
       ansible.builtin.copy:
         dest: "{{ pxe_http_root }}/install/{{ item }}/node-token"
         mode: "0644"
-        content: "{{ k3s_node_token_raw.content | b64decode | trim }}"
+        content: "{{ hostvars['metal0'].k3s_node_token }}"
       no_log: true
       loop: "{{ pxe_install_hosts }}"
 

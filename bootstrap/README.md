@@ -38,10 +38,21 @@ cd bootstrap
 make pxe-nixos
 ```
 
+Run this from the Linux machine that should serve PXE. The playbook SSHes to
+`metal0` at `192.168.1.110` to read the k3s token, then starts dnsmasq and
+nginx locally on the Linux PXE machine. By default the PXE HTTP URL uses that
+machine's detected LAN IP. Override it if Ansible picks the wrong interface:
+
+```sh
+ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-nixos.yml \
+  --ask-become-pass \
+  -e pxe_server_address=192.168.1.x
+```
+
 Then boot the node from network/PXE. The per-host PXE boot script passes:
 
 ```text
-homelab.install=1 homelab.host=metal1 homelab.baseUrl=http://192.168.1.110:8082
+homelab.install=1 homelab.host=metal1 homelab.baseUrl=http://<pxe-server-ip>:8082
 ```
 
 Nodes are defined in the `nixos_nodes` inventory group. If `pxe_mac` is set for
@@ -60,7 +71,7 @@ kubectl --context homelab-nas wait node/metal1 --for=condition=Ready --timeout=1
 ```
 
 The PXE bootstrap target serves the k3s node token from the local bootstrap HTTP
-server while PXE is running. The token is fetched live from `homeserver` and is
+server while PXE is running. The token is fetched live from `metal0` and is
 not stored in Git. SOPS is still the better tool for long-lived repository
 secrets, but it does not remove the need for a bootstrap secret source unless
 the installer already has an age key.
