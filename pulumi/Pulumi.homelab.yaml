@@ -4,7 +4,18 @@ config:
   homelab:cloudflareZoneId: 2afa48a079be5f4e385275c44dc79dd9
   homelab:cloudflareTarget: 9028a97f-35d2-4e2b-828c-fa97a446f48e.cfargotunnel.com
   homelab:cloudflareRecordType: CNAME
-  homelab:cloudflareTunnel: '{"hostnames": ["gallery.ashpex.net", "hub.ashpex.net", "git.ashpex.net", "auth.ashpex.net", "comments.ashpex.net", "library.ashpex.net"], "id": "9028a97f-35d2-4e2b-828c-fa97a446f48e", "name": "nas", "noTLSVerify": true, "service": "https://traefik.traefik.svc.cluster.local:443"}'
+  homelab:cloudflareTunnels:
+    - id: 9028a97f-35d2-4e2b-828c-fa97a446f48e
+      name: homelab
+      noTLSVerify: true
+      service: https://traefik.traefik.svc.cluster.local:443
+      hostnames:
+        - gallery.ashpex.net
+        - hub.ashpex.net
+        - git.ashpex.net
+        - auth.ashpex.net
+        - comments.ashpex.net
+        - library.ashpex.net
   cloudflare:apiToken:
     secure: AAABAKU5/lgikYU2E3vMwp7Z+pnmHdUTukQmKP5H6GldzkDmRuTCCB5wtZgNLIwFlEYIzFq+0Ln4hkmrVBF4V4Dct/YFHKOGsE3qeo2Wuc1VakgDwA==
   tailscale:apiKey:

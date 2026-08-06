@@ -46,69 +46,89 @@ func TestConfigValidate(t *testing.T) {
 		},
 		"tunnel missing account id": {
 			cfg: Config{
-				CloudflareTunnel: &CloudflareTunnel{
+				CloudflareTunnels: []CloudflareTunnel{{
 					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
 					Name:      "nas",
 					Hostnames: []string{"*.ashpex.net"},
 					Service:   "https://localhost:443",
-				},
+				}},
 			},
-			want: "cloudflareAccountId is required when cloudflareTunnel is set",
+			want: "cloudflareAccountId is required when cloudflareTunnels is set",
 		},
 		"tunnel missing id": {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
-				CloudflareTunnel: &CloudflareTunnel{
+				CloudflareTunnels: []CloudflareTunnel{{
 					Name:      "nas",
 					Hostnames: []string{"*.ashpex.net"},
 					Service:   "https://localhost:443",
-				},
+				}},
 			},
 			want: "cloudflareTunnel.id is required",
 		},
 		"tunnel missing name": {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
-				CloudflareTunnel: &CloudflareTunnel{
+				CloudflareTunnels: []CloudflareTunnel{{
 					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
 					Hostnames: []string{"*.ashpex.net"},
 					Service:   "https://localhost:443",
-				},
+				}},
 			},
 			want: "cloudflareTunnel.name is required",
 		},
 		"tunnel missing hostname": {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
-				CloudflareTunnel: &CloudflareTunnel{
+				CloudflareTunnels: []CloudflareTunnel{{
 					ID:      "9028a97f-35d2-4e2b-828c-fa97a446f48e",
 					Name:    "nas",
 					Service: "https://localhost:443",
-				},
+				}},
 			},
 			want: "cloudflareTunnel.hostnames requires at least one entry",
 		},
 		"tunnel missing service": {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
-				CloudflareTunnel: &CloudflareTunnel{
+				CloudflareTunnels: []CloudflareTunnel{{
 					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
 					Name:      "nas",
 					Hostnames: []string{"*.ashpex.net"},
-				},
+				}},
 			},
 			want: "cloudflareTunnel.service is required",
+		},
+		"duplicate tunnel name": {
+			cfg: Config{
+				CloudflareAccountID: "account-id",
+				CloudflareTunnels: []CloudflareTunnel{
+					{
+						ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
+						Name:      "homelab",
+						Hostnames: []string{"hub.ashpex.net"},
+						Service:   "https://localhost:443",
+					},
+					{
+						ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48f",
+						Name:      "homelab",
+						Hostnames: []string{"git.ashpex.net"},
+						Service:   "https://localhost:443",
+					},
+				},
+			},
+			want: `cloudflareTunnel.name "homelab" is duplicated`,
 		},
 		"valid": {
 			cfg: Config{
 				CloudflareAccountID: "account-id",
 				PublicDNSRecords:    []ServiceRecord{{Name: "hub"}},
-				CloudflareTunnel: &CloudflareTunnel{
+				CloudflareTunnels: []CloudflareTunnel{{
 					ID:        "9028a97f-35d2-4e2b-828c-fa97a446f48e",
 					Name:      "nas",
 					Hostnames: []string{"*.ashpex.net"},
 					Service:   "https://localhost:443",
-				},
+				}},
 				Secrets: []Secret{
 					{Name: "immich.db", Data: map[string]string{"POSTGRES_PASSWORD": "value"}},
 				},

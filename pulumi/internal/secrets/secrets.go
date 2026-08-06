@@ -36,6 +36,11 @@ func Create(ctx *pulumi.Context, secrets []config.Secret) error {
 		}
 
 		namespace := secret.TargetNamespace()
+		opts := []pulumi.ResourceOption{
+			pulumi.DependsOn([]pulumi.Resource{namespaces[namespace]}),
+			pulumi.DeleteBeforeReplace(true),
+		}
+
 		_, err := corev1.NewSecret(ctx, naming.Resource("secret", namespace+"-"+secret.Name), &corev1.SecretArgs{
 			Metadata: &metav1.ObjectMetaArgs{
 				Name:      pulumi.String(secret.Name),
@@ -47,7 +52,7 @@ func Create(ctx *pulumi.Context, secrets []config.Secret) error {
 			},
 			StringData: stringData,
 			Type:       pulumi.String("Opaque"),
-		}, pulumi.DependsOn([]pulumi.Resource{namespaces[namespace]}))
+		}, opts...)
 		if err != nil {
 			return err
 		}
