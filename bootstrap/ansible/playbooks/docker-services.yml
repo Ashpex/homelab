@@ -1,6 +1,6 @@
 ---
 - name: Deploy Docker services
-  hosts: homeserver
+  hosts: metal0
   gather_facts: false
   become: true
 
