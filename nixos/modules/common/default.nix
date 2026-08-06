@@ -28,6 +28,16 @@
     };
   };
 
+  services.tailscale.enable = true;
+
+  users.users.ashpex = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKmkmdTLGl2RgiYVQ1qVtWR5njuvDMaeZeEMxu5QHBzC mail@ashpex.net"
+    ];
+  };
+
   environment.systemPackages = with pkgs; [
     curl
     dnsutils
@@ -47,6 +57,7 @@
     rsync
     smartmontools
     tcpdump
+    tailscale
     tree
     unzip
     util-linux
