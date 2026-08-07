@@ -83,7 +83,7 @@ app-template:
         main:
           image:
             repository: mariadb
-            tag: '11'
+            tag: '12'
           probes:
             liveness:
               enabled: false
