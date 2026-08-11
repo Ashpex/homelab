@@ -112,7 +112,7 @@
       packages.${system} = {
         netboot = nixpkgs.legacyPackages.${system}.runCommand "homelab-nixos-netboot" { } ''
           mkdir -p "$out"
-          cp ${netbootSystem.config.system.build.kernel}/${nixpkgs.legacyPackages.${system}.stdenv.hostPlatform.linux-kernel.target} "$out/bzImage"
+          cp ${netbootSystem.config.system.build.kernel}/${netbootSystem.config.system.boot.loader.kernelFile} "$out/bzImage"
           cp ${netbootSystem.config.system.build.netbootRamdisk}/initrd "$out/initrd"
           printf '%s\n' \
             '#!ipxe' \
