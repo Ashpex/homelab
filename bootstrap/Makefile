@@ -27,7 +27,7 @@ bootstrap-k3s:
 
 pxe-nixos:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
-	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-nixos.yml --ask-become-pass
+	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-nixos.yml --ask-pass --ask-become-pass
 
 pxe-clean:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
