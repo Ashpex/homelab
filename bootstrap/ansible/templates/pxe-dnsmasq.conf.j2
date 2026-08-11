@@ -2,7 +2,7 @@
 port=0
 
 # Proxy DHCP: keep the existing LAN DHCP server authoritative for addresses.
-dhcp-range={{ pxe_server_address }},proxy
+dhcp-range={{ pxe_proxy_subnet }},proxy
 
 # Identify iPXE and UEFI x86_64 clients.
 dhcp-userclass=set:ipxe,iPXE

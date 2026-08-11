@@ -8,7 +8,7 @@ chain ${base-url}/boot/${client-mac}.ipxe || goto menu
 :menu
 menu Homelab NixOS installer
 {% for host in pxe_install_hosts %}
-item {{ host }} {{ host }}{% if hostvars[host].pxe_role is defined %} ({{ hostvars[host].pxe_role }}){% endif %}
+item {{ host }} {{ host }}{{ " (" ~ hostvars[host].pxe_role ~ ")" if hostvars[host].pxe_role is defined else "" }}
 {% endfor %}
 choose selected_host || shell
 chain ${base-url}/boot/${selected_host}.ipxe
