@@ -7,7 +7,6 @@
     serverAddr = "https://192.168.1.110:6443";
     tokenFile = "/etc/rancher/k3s/node-token";
     nodeLabels = [
-      "node-role.kubernetes.io/worker=true"
       "homelab.node/role=worker"
       "homelab.storage/ssd=true"
       "homelab.storage/nfs-client=true"
