@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -55,6 +55,7 @@ in
   config = mkIf cfg.enable {
     services.k3s = {
       enable = true;
+      package = pkgs.k3s_1_35;
       role = cfg.role;
       tokenFile = cfg.tokenFile;
       extraFlags =
