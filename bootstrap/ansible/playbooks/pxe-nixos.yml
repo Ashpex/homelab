@@ -42,6 +42,7 @@
     pxe_http_root: "{{ pxe_root }}/http"
     pxe_compose_root: "{{ pxe_root }}/compose"
     pxe_server_address: "{{ ansible_default_ipv4.address }}"
+    pxe_proxy_subnet: "{{ ansible_default_ipv4.network }}"
     pxe_http_port: 8082
     pxe_ipxe_url: https://boot.ipxe.org/x86_64-efi/ipxe.efi
     nixos_flake_dir: "{{ playbook_dir }}/../../../nixos"
