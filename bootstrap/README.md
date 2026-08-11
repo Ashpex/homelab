@@ -45,7 +45,6 @@ machine's detected LAN IP. Override it if Ansible picks the wrong interface:
 
 ```sh
 ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/pxe-nixos.yml \
-  --ask-pass \
   --ask-become-pass \
   -e pxe_server_address=192.168.1.x
 ```
