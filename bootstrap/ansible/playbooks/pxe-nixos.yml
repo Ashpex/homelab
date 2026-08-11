@@ -4,6 +4,14 @@
   gather_facts: false
   become: true
 
+  vars_prompt:
+    - name: metal0_become_password
+      prompt: "Sudo password for metal0"
+      private: true
+
+  vars:
+    ansible_become_password: "{{ metal0_become_password }}"
+
   tasks:
     - name: Read K3s node token
       ansible.builtin.slurp:
@@ -22,7 +30,13 @@
   gather_facts: true
   become: true
 
+  vars_prompt:
+    - name: local_become_password
+      prompt: "Sudo password for local PXE desktop"
+      private: true
+
   vars:
+    ansible_become_password: "{{ local_become_password }}"
     pxe_root: /opt/homelab/pxe
     pxe_tftp_root: "{{ pxe_root }}/tftp"
     pxe_http_root: "{{ pxe_root }}/http"
