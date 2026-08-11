@@ -3,6 +3,7 @@ all:
     metal0:
       ansible_host: 192.168.1.110
       ansible_user: ashpex
+      ansible_ssh_common_args: -o StrictHostKeyChecking=accept-new
       homelab_nfs_enabled: true
       homelab_longhorn_data_dir: /mnt/ssd0/longhorn
       homelab_required_mounts:
