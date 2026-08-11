@@ -43,7 +43,7 @@
     pxe_compose_root: "{{ pxe_root }}/compose"
     pxe_server_address: "{{ ansible_default_ipv4.address }}"
     pxe_http_port: 8082
-    pxe_ipxe_url: https://boot.ipxe.org/ipxe.efi
+    pxe_ipxe_url: https://boot.ipxe.org/x86_64-efi/ipxe.efi
     nixos_flake_dir: "{{ playbook_dir }}/../../../nixos"
     homelab_repo_dir: "{{ playbook_dir }}/../../.."
     pxe_install_hosts: "{{ groups['nixos_nodes'] | default([]) }}"
