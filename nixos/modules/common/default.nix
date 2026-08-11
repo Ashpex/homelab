@@ -30,6 +30,8 @@
 
   services.tailscale.enable = true;
 
+  security.sudo.wheelNeedsPassword = false;
+
   users.users.ashpex = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
