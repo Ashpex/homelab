@@ -15,7 +15,7 @@ all:
   vars:
     timezone: Asia/Ho_Chi_Minh
 
-    k3s_version: v1.33.12+k3s1
+    k3s_version: v1.35.7+k3s1
     k3s_config_dir: /etc/rancher/k3s
     k3s_config_file: /etc/rancher/k3s/config.yaml
     k3s_data_dir: /var/lib/rancher/k3s
