@@ -165,16 +165,26 @@
         dest: "{{ pxe_http_root }}/boot.ipxe"
         mode: "0644"
 
-    - name: Install per-host iPXE boot scripts
-      ansible.builtin.shell: |
-        set -euo pipefail
-        sed \
-          -e "s|@@BASE_URL@@|{{ pxe_install_base_url }}|g" \
-          -e "s|@@INSTALL_ARGS@@|homelab.install=1 homelab.host={{ item }} homelab.baseUrl={{ pxe_install_base_url }}|g" \
-          /tmp/homelab-nixos-netboot/boot.ipxe > "{{ pxe_http_root }}/boot/{{ item }}.ipxe"
-      args:
-        executable: /bin/bash
-      changed_when: true
+    - name: Install per-host iPXE boot script templates
+      ansible.builtin.copy:
+        src: /tmp/homelab-nixos-netboot/boot.ipxe
+        dest: "{{ pxe_http_root }}/boot/{{ item }}.ipxe"
+        mode: "0644"
+        remote_src: true
+      loop: "{{ pxe_install_hosts }}"
+
+    - name: Set per-host iPXE base URL
+      ansible.builtin.replace:
+        path: "{{ pxe_http_root }}/boot/{{ item }}.ipxe"
+        regexp: "@@BASE_URL@@"
+        replace: "{{ pxe_install_base_url }}"
+      loop: "{{ pxe_install_hosts }}"
+
+    - name: Set per-host iPXE install arguments
+      ansible.builtin.replace:
+        path: "{{ pxe_http_root }}/boot/{{ item }}.ipxe"
+        regexp: "@@INSTALL_ARGS@@"
+        replace: "homelab.install=1 homelab.host={{ item }} homelab.baseUrl={{ pxe_install_base_url }}"
       loop: "{{ pxe_install_hosts }}"
 
     - name: Install per-MAC iPXE boot script aliases
