@@ -91,6 +91,12 @@
               wantedBy = [ "multi-user.target" ];
               after = [ "network-online.target" ];
               wants = [ "network-online.target" ];
+              path = with pkgs; [
+                coreutils
+                curl
+                gnutar
+                systemd
+              ];
               serviceConfig = {
                 Type = "oneshot";
                 ExecStart = autoInstall;
