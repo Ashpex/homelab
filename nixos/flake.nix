@@ -92,10 +92,14 @@
               after = [ "network-online.target" ];
               wants = [ "network-online.target" ];
               path = with pkgs; [
+                bash
                 coreutils
                 curl
                 gnutar
+                nix
                 systemd
+                util-linux
+                config.system.build.nixos-install
               ];
               serviceConfig = {
                 Type = "oneshot";
