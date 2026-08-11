@@ -5,6 +5,7 @@ port=0
 dhcp-range={{ pxe_proxy_subnet }},proxy
 
 # Identify iPXE and UEFI x86_64 clients.
+dhcp-vendorclass=set:ipxe,iPXE
 dhcp-userclass=set:ipxe,iPXE
 dhcp-match=set:ipxe,175
 dhcp-match=set:efi-x86_64,option:client-arch,7
