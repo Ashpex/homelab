@@ -117,6 +117,7 @@
           })
         ];
       };
+      diskoPackage = disko.packages.${system}.disko or disko.packages.${system}.default;
     in
     {
       packages.${system} = {
@@ -135,7 +136,10 @@
       };
 
       apps.${system} = {
-        disko = disko.apps.${system}.default;
+        disko = {
+          type = "app";
+          program = "${diskoPackage}/bin/disko";
+        };
       };
 
       nixosConfigurations = lib.genAttrs hostNames mkNode;
