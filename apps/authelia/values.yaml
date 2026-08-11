@@ -5,6 +5,8 @@ longhorn:
 authelia:
   nameOverride: authelia
   pod:
+    kind: Deployment
+    replicas: 1
     extraVolumeMounts:
       - name: users-db
         mountPath: /config/users_database.yml
