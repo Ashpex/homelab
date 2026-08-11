@@ -44,6 +44,8 @@ in
 
       systemd.tmpfiles.rules = [
         "d ${cfg.longhorn.dataDir} 0755 root root -"
+        "L+ /usr/bin/iscsiadm - - - - ${pkgs.openiscsi}/bin/iscsiadm"
+        "L+ /usr/sbin/iscsiadm - - - - ${pkgs.openiscsi}/bin/iscsiadm"
       ];
     })
 
