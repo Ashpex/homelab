@@ -10,8 +10,16 @@ app-template:
   controllers:
     server:
       pod:
-        nodeSelector:
-          kubernetes.io/hostname: metal1
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: NotIn
+                      values:
+                        - nas
       containers:
         main:
           image:
