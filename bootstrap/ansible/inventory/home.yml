@@ -27,6 +27,7 @@ all:
     homelab_k8s_hdd_volume_root: /mnt/ssd0/k8s-volumes
     homelab_nfs_allowed_clients:
       - 192.168.1.110/32
+      - 192.168.1.111/32
     homelab_nfs_exports:
       - path: /mnt/ssd0
         options: rw,sync,no_subtree_check,crossmnt,no_root_squash
