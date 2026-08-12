@@ -9,6 +9,9 @@ app-template:
   fullnameOverride: calibre-web
   controllers:
     main:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: metal1
       containers:
         main:
           image:

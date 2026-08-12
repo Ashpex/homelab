@@ -35,6 +35,8 @@ app-template:
           - name: http
             containerPort: 3923
       pod:
+        nodeSelector:
+          kubernetes.io/hostname: metal1
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000

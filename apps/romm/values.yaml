@@ -11,6 +11,9 @@ app-template:
   fullnameOverride: romm
   controllers:
     main:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: metal1
       containers:
         main:
           image:
