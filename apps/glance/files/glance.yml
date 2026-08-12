@@ -43,6 +43,8 @@ pages:
                     url: https://kubernetes.default.svc/
                     check-url: https://kubernetes.default.svc/readyz
                     allow-insecure: true
+                    alt-status-codes:
+                      - 401
                     timeout: 5s
                     icon: si:kubernetes
                   - title: CoreDNS
@@ -73,6 +75,8 @@ pages:
                   - title: Metal1 Agent
                     url: http://glance-agent-metal1.glance.svc.cluster.local:27973
                     check-url: http://glance-agent-metal1.glance.svc.cluster.local:27973
+                    alt-status-codes:
+                      - 404
                     timeout: 5s
                     icon: si:nixos
 
