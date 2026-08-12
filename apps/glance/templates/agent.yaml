@@ -1,33 +1,36 @@
-{{- $nodes := list "metal0" "metal1" -}}
+{{- $nodes := list
+  (dict "name" "metal0" "hostname" "nas")
+  (dict "name" "metal1" "hostname" "metal1")
+-}}
 {{- range $node := $nodes }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: glance-agent-{{ $node }}
+  name: glance-agent-{{ $node.name }}
   namespace: {{ $.Release.Namespace }}
   labels:
     app.kubernetes.io/name: glance-agent
     app.kubernetes.io/instance: {{ $.Release.Name }}
     app.kubernetes.io/component: agent
-    homelab.node/name: {{ $node }}
+    homelab.node/name: {{ $node.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: glance-agent
       app.kubernetes.io/instance: {{ $.Release.Name }}
-      homelab.node/name: {{ $node }}
+      homelab.node/name: {{ $node.name }}
   template:
     metadata:
       labels:
         app.kubernetes.io/name: glance-agent
         app.kubernetes.io/instance: {{ $.Release.Name }}
         app.kubernetes.io/component: agent
-        homelab.node/name: {{ $node }}
+        homelab.node/name: {{ $node.name }}
     spec:
       nodeSelector:
-        kubernetes.io/hostname: {{ $node }}
+        kubernetes.io/hostname: {{ $node.hostname }}
       containers:
         - name: agent
           image: glanceapp/agent:latest
@@ -52,19 +55,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: glance-agent-{{ $node }}
+  name: glance-agent-{{ $node.name }}
   namespace: {{ $.Release.Namespace }}
   labels:
     app.kubernetes.io/name: glance-agent
     app.kubernetes.io/instance: {{ $.Release.Name }}
     app.kubernetes.io/component: agent
-    homelab.node/name: {{ $node }}
+    homelab.node/name: {{ $node.name }}
 spec:
   type: ClusterIP
   selector:
     app.kubernetes.io/name: glance-agent
     app.kubernetes.io/instance: {{ $.Release.Name }}
-    homelab.node/name: {{ $node }}
+    homelab.node/name: {{ $node.name }}
   ports:
     - name: http
       port: 27973
