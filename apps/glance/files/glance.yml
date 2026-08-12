@@ -34,21 +34,6 @@ pages:
             autofocus: true
 
           - type: monitor
-            cache: 30s
-            title: Storage
-            sites:
-              - title: Longhorn UI
-                url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
-                check-url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
-                timeout: 5s
-                icon: si:longhorn
-              - title: Longhorn Backend
-                url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
-                check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
-                timeout: 5s
-                icon: si:longhorn
-
-          - type: monitor
             cache: 1m
             title: Services
             sites:
@@ -109,27 +94,44 @@ pages:
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
 
-          - type: custom-api
-            cache: 30s
-            title: Kubernetes Nodes
-            url: https://kubernetes.default.svc/api/v1/nodes
-            allow-insecure: true
-            headers:
-              Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
-            template: |
-              <div class="flex flex-column gap-10">
-                {{ range .JSON.Array "items" }}
-                  {{ $ready := .String "status.conditions.#(type==\"Ready\").status" }}
-                  <div class="flex justify-between">
-                    <span>{{ .String "metadata.name" }}</span>
-                    {{ if eq $ready "True" }}
-                      <span class="color-positive">Ready</span>
-                    {{ else }}
-                      <span class="color-negative">{{ if $ready }}{{ $ready }}{{ else }}Unknown{{ end }}</span>
+          - type: split-column
+            widgets:
+              - type: custom-api
+                cache: 30s
+                title: Kubernetes Nodes
+                url: https://kubernetes.default.svc/api/v1/nodes
+                allow-insecure: true
+                headers:
+                  Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
+                template: |
+                  <div class="flex flex-column gap-10">
+                    {{ range .JSON.Array "items" }}
+                      {{ $ready := .String "status.conditions.#(type==\"Ready\").status" }}
+                      <div class="flex justify-between">
+                        <span>{{ .String "metadata.name" }}</span>
+                        {{ if eq $ready "True" }}
+                          <span class="color-positive">Ready</span>
+                        {{ else }}
+                          <span class="color-negative">{{ if $ready }}{{ $ready }}{{ else }}Unknown{{ end }}</span>
+                        {{ end }}
+                      </div>
                     {{ end }}
                   </div>
-                {{ end }}
-              </div>
+
+              - type: monitor
+                cache: 30s
+                title: Storage
+                sites:
+                  - title: Longhorn UI
+                    url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
+                    check-url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
+                    timeout: 5s
+                    icon: si:longhorn
+                  - title: Longhorn Backend
+                    url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
+                    check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
+                    timeout: 5s
+                    icon: si:longhorn
 
   - name: Home
     columns:
