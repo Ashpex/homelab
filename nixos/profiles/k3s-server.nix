@@ -10,6 +10,7 @@
     ];
     nodeLabels = [
       "homelab.node/role=server"
+      "homelab.node/nas=true"
       "homelab.storage/ssd=true"
       "node.longhorn.io/create-default-disk=true"
     ];
