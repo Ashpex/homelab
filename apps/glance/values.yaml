@@ -2,6 +2,9 @@ app-template:
   fullnameOverride: glance
   controllers:
     main:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: nas
       containers:
         main:
           image:

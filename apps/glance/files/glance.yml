@@ -23,10 +23,8 @@ pages:
             widgets:
               - type: server-stats
                 servers:
-                  - type: remote
+                  - type: local
                     name: metal0
-                    url: http://glance-agent-metal0.glance.svc.cluster.local:27973
-                    timeout: 5s
               - type: server-stats
                 servers:
                   - type: remote
