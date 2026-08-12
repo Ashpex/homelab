@@ -66,16 +66,6 @@ app-template:
       name: glance-config
       globalMounts:
         - path: /app/config
-    hdd:
-      enabled: true
-      type: hostPath
-      hostPath: "/mnt/ssd0"
-      hostPathType: Directory
-      advancedMounts:
-        main:
-          main:
-          - path: "/mnt/ssd0"
-            readOnly: true
     # main-timezone:
     #   enabled: true
     #   type: hostPath

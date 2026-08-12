@@ -21,18 +21,14 @@ pages:
             autofocus: true
           - type: server-stats
             servers:
-              - type: local
-                name: NAS 
-                # optionally override the sensor used to determine CPU temperature
-                # cpu-temp-sensor: thermal_zone0
-
-                # optionally hide swap
-                # hide-swap: true
-
-                # mountpoints:
-                #   "/boot/efi":
-                #     hide: true
-                #     name: EFI
+              - type: remote
+                name: metal0
+                url: http://192.168.1.110:27973
+                timeout: 5s
+              - type: remote
+                name: metal1
+                url: http://192.168.1.111:27973
+                timeout: 5s
 
           - type: monitor
             cache: 1m
@@ -95,32 +91,6 @@ pages:
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
 
-          - type: bookmarks
-            groups:
-              - title: General
-                links:
-                  - title: Gmail
-                    url: https://mail.google.com/mail/u/0/
-                  - title: Amazon
-                    url: https://www.amazon.com/
-                  - title: Github
-                    url: https://github.com/
-              - title: Entertainment
-                links:
-                  - title: YouTube
-                    url: https://www.youtube.com/
-                  - title: Prime Video
-                    url: https://www.primevideo.com/
-                  - title: Disney+
-                    url: https://www.disneyplus.com/
-              - title: Social
-                links:
-                  - title: Reddit
-                    url: https://www.reddit.com/
-                  - title: Twitter
-                    url: https://twitter.com/
-                  - title: Instagram
-                    url: https://www.instagram.com/
   - name: Home
     columns:
       - size: small
