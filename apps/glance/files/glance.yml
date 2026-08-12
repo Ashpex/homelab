@@ -23,11 +23,11 @@ pages:
             servers:
               - type: remote
                 name: metal0
-                url: http://192.168.1.110:27973
+                url: http://glance-agent-metal0.glance.svc.cluster.local:27973
                 timeout: 5s
               - type: remote
                 name: metal1
-                url: http://192.168.1.111:27973
+                url: http://glance-agent-metal1.glance.svc.cluster.local:27973
                 timeout: 5s
 
           - type: monitor
