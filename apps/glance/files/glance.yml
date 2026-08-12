@@ -32,6 +32,49 @@ pages:
                     url: http://glance-agent-metal1.glance.svc.cluster.local:27973
                     timeout: 5s
 
+          - type: split-column
+            widgets:
+              - type: monitor
+                cache: 30s
+                title: Kubernetes
+                sites:
+                  - title: API
+                    url: https://kubernetes.default.svc/
+                    check-url: https://kubernetes.default.svc/readyz
+                    allow-insecure: true
+                    timeout: 5s
+                    icon: si:kubernetes
+                  - title: CoreDNS
+                    url: http://kube-dns.kube-system.svc.cluster.local:9153/metrics
+                    check-url: http://kube-dns.kube-system.svc.cluster.local:9153/metrics
+                    timeout: 5s
+                    icon: si:coredns
+                  - title: Metrics Server
+                    url: https://metrics-server.kube-system.svc.cluster.local/
+                    check-url: https://metrics-server.kube-system.svc.cluster.local/livez
+                    allow-insecure: true
+                    timeout: 5s
+                    icon: si:kubernetes
+              - type: monitor
+                cache: 30s
+                title: Storage
+                sites:
+                  - title: Longhorn UI
+                    url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
+                    check-url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
+                    timeout: 5s
+                    icon: si:longhorn
+                  - title: Longhorn Backend
+                    url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
+                    check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
+                    timeout: 5s
+                    icon: si:longhorn
+                  - title: Metal1 Agent
+                    url: http://glance-agent-metal1.glance.svc.cluster.local:27973
+                    check-url: http://glance-agent-metal1.glance.svc.cluster.local:27973
+                    timeout: 5s
+                    icon: si:nixos
+
           - type: monitor
             cache: 1m
             title: Services
