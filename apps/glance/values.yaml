@@ -3,6 +3,7 @@ app-template:
   controllers:
     main:
       pod:
+        automountServiceAccountToken: true
         nodeSelector:
           kubernetes.io/hostname: nas
       containers:
@@ -35,6 +36,8 @@ app-template:
           env:
           - name: TZ
             value: Asia/Ho_Chi_Minh
+          - name: KUBE_TOKEN_FILE
+            value: /var/run/secrets/kubernetes.io/serviceaccount/token
           ports:
           - name: http
             containerPort: 8080
