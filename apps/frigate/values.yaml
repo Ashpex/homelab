@@ -39,6 +39,8 @@ app-template:
             containerPort: 8555
             protocol: UDP
       pod:
+        nodeSelector:
+          kubernetes.io/hostname: metal1
         securityContext: {}
   service:
     main:

@@ -9,6 +9,9 @@ app-template:
   fullnameOverride: immich
   controllers:
     server:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: metal1
       containers:
         main:
           image:
