@@ -10,6 +10,7 @@ all:
       homelab_required_mounts:
         - /mnt/ssd0
       k3s_node_labels:
+        - homelab.node/nas=true
         - homelab.storage/ssd=true
         - node.longhorn.io/create-default-disk=true
   vars:

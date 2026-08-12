@@ -18,10 +18,8 @@ app-template:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: kubernetes.io/hostname
-                      operator: NotIn
-                      values:
-                        - nas
+                    - key: homelab.node/nas
+                      operator: DoesNotExist
       containers:
         main:
           image:
