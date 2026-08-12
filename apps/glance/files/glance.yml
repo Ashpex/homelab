@@ -72,13 +72,6 @@ pages:
                     check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
                     timeout: 5s
                     icon: si:longhorn
-                  - title: Metal1 Agent
-                    url: http://glance-agent-metal1.glance.svc.cluster.local:27973
-                    check-url: http://glance-agent-metal1.glance.svc.cluster.local:27973
-                    alt-status-codes:
-                      - 404
-                    timeout: 5s
-                    icon: si:nixos
 
           - type: monitor
             cache: 1m
