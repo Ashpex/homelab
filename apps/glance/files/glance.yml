@@ -35,29 +35,27 @@ pages:
 
           - type: split-column
             widgets:
-              - type: monitor
+              - type: custom-api
                 cache: 30s
-                title: Kubernetes
-                sites:
-                  - title: API
-                    url: https://kubernetes.default.svc/
-                    check-url: https://kubernetes.default.svc/readyz
-                    allow-insecure: true
-                    alt-status-codes:
-                      - 401
-                    timeout: 5s
-                    icon: si:kubernetes
-                  - title: CoreDNS
-                    url: http://kube-dns.kube-system.svc.cluster.local:9153/metrics
-                    check-url: http://kube-dns.kube-system.svc.cluster.local:9153/metrics
-                    timeout: 5s
-                    icon: si:coredns
-                  - title: Metrics Server
-                    url: https://metrics-server.kube-system.svc.cluster.local/
-                    check-url: https://metrics-server.kube-system.svc.cluster.local/livez
-                    allow-insecure: true
-                    timeout: 5s
-                    icon: si:kubernetes
+                title: Kubernetes Nodes
+                url: https://kubernetes.default.svc/api/v1/nodes
+                allow-insecure: true
+                headers:
+                  Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
+                template: |
+                  <div class="flex flex-column gap-10">
+                    {{ range .JSON.Array "items" }}
+                      {{ $ready := .String "status.conditions.#(type==\"Ready\").status" }}
+                      <div class="flex justify-between">
+                        <span>{{ .String "metadata.name" }}</span>
+                        {{ if eq $ready "True" }}
+                          <span class="color-positive">Ready</span>
+                        {{ else }}
+                          <span class="color-negative">{{ if $ready }}{{ $ready }}{{ else }}Unknown{{ end }}</span>
+                        {{ end }}
+                      </div>
+                    {{ end }}
+                  </div>
               - type: monitor
                 cache: 30s
                 title: Storage
