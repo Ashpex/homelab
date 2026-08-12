@@ -19,16 +19,20 @@ pages:
         widgets:
           - type: search
             autofocus: true
-          - type: server-stats
-            servers:
-              - type: remote
-                name: metal0
-                url: http://glance-agent-metal0.glance.svc.cluster.local:27973
-                timeout: 5s
-              - type: remote
-                name: metal1
-                url: http://glance-agent-metal1.glance.svc.cluster.local:27973
-                timeout: 5s
+          - type: split-column
+            widgets:
+              - type: server-stats
+                servers:
+                  - type: remote
+                    name: metal0
+                    url: http://glance-agent-metal0.glance.svc.cluster.local:27973
+                    timeout: 5s
+              - type: server-stats
+                servers:
+                  - type: remote
+                    name: metal1
+                    url: http://glance-agent-metal1.glance.svc.cluster.local:27973
+                    timeout: 5s
 
           - type: monitor
             cache: 1m
