@@ -17,8 +17,6 @@ pages:
     columns:
       - size: full
         widgets:
-          - type: search
-            autofocus: true
           - type: split-column
             widgets:
               - type: server-stats
@@ -31,6 +29,9 @@ pages:
                     name: metal1
                     url: http://glance-agent-metal1.glance.svc.cluster.local:27973
                     timeout: 5s
+
+          - type: search
+            autofocus: true
 
           - type: split-column
             widgets:
