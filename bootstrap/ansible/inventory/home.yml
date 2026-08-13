@@ -32,7 +32,9 @@ all:
       - path: /mnt/ssd0
         options: rw,sync,no_subtree_check,crossmnt,no_root_squash
 
-    tailscale_ip: 100.96.51.117
+    k3s_tls_sans:
+      - 100.96.51.117
+      - 100.86.220.93
 
     k3s_disable_components:
       - traefik
