@@ -66,7 +66,7 @@ HTTP server, runs `disko`, runs `nixos-install`, and reboots.
 After the reboot, verify the node joined:
 
 ```sh
-kubectl --context homelab-nas wait node/metal1 --for=condition=Ready --timeout=10m
+kubectl --context homelab wait node/metal1 --for=condition=Ready --timeout=10m
 ```
 
 Then stop the local PXE services and remove temporary artifacts, including the
@@ -81,6 +81,10 @@ server while PXE is running. The token is fetched live from `metal0` and is
 not stored in Git. SOPS is still the better tool for long-lived repository
 secrets, but it does not remove the need for a bootstrap secret source unless
 the installer already has an age key.
+
+`homelab.node/nas=true` is a Kubernetes label for the node that owns the NAS
+storage role. It is not the Kubernetes node name; the current node name is
+`metal0`.
 
 ## Local Validation
 

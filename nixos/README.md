@@ -46,8 +46,12 @@ After the node is installed:
 
 ```sh
 make pxe-clean
-kubectl --context homelab-nas get nodes -o wide
+kubectl --context homelab get nodes -o wide
 ```
+
+The `homelab.node/nas=true` label means the node owns the NAS storage role. It
+does not make the Kubernetes node name `nas`; current nodes should use names
+like `metal0`, `metal1`, and so on.
 
 ## Manual Install
 
