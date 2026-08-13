@@ -37,6 +37,11 @@ pages:
                     name: metal1
                     url: http://glance-agent-metal1.glance.svc.cluster.local:27973
                     timeout: 5s
+                    hide-mountpoints-by-default: true
+                    mountpoints:
+                      "/etc/hosts":
+                        name: Root
+                        hide: false
 
           - type: search
             autofocus: true
