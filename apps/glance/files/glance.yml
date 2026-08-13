@@ -17,32 +17,6 @@ pages:
     columns:
       - size: full
         widgets:
-          - type: split-column
-            widgets:
-              - type: server-stats
-                servers:
-                  - type: local
-                    name: metal0
-                    hide-mountpoints-by-default: true
-                    mountpoints:
-                      "/":
-                        name: Root
-                        hide: false
-                      "/mnt/ssd0":
-                        name: SSD0
-                        hide: false
-              - type: server-stats
-                servers:
-                  - type: remote
-                    name: metal1
-                    url: http://glance-agent-metal1.glance.svc.cluster.local:27973
-                    timeout: 5s
-                    hide-mountpoints-by-default: true
-                    mountpoints:
-                      "/etc/hosts":
-                        name: Root
-                        hide: false
-
           - type: search
             autofocus: true
 
@@ -107,44 +81,69 @@ pages:
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
 
-          - type: split-column
-            widgets:
-              - type: custom-api
-                cache: 30s
-                title: Kubernetes Nodes
-                url: https://kubernetes.default.svc/api/v1/nodes
-                allow-insecure: true
-                headers:
-                  Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
-                template: |
-                  <div class="flex flex-column gap-10">
-                    {{ range .JSON.Array "items" }}
-                      {{ $ready := .String "status.conditions.#(type==\"Ready\").status" }}
-                      <div class="flex justify-between">
-                        <span>{{ .String "metadata.name" }}</span>
-                        {{ if eq $ready "True" }}
-                          <span class="color-positive">Ready</span>
-                        {{ else }}
-                          <span class="color-negative">{{ if $ready }}{{ $ready }}{{ else }}Unknown{{ end }}</span>
-                        {{ end }}
-                      </div>
+      - size: small
+        widgets:
+          - type: server-stats
+            servers:
+              - type: local
+                name: metal0
+                hide-mountpoints-by-default: true
+                mountpoints:
+                  "/":
+                    name: Root
+                    hide: false
+                  "/mnt/ssd0":
+                    name: SSD0
+                    hide: false
+
+          - type: server-stats
+            servers:
+              - type: remote
+                name: metal1
+                url: http://glance-agent-metal1.glance.svc.cluster.local:27973
+                timeout: 5s
+                hide-mountpoints-by-default: true
+                mountpoints:
+                  "/etc/hosts":
+                    name: Root
+                    hide: false
+
+          - type: custom-api
+            cache: 30s
+            title: Kubernetes Nodes
+            url: https://kubernetes.default.svc/api/v1/nodes
+            allow-insecure: true
+            headers:
+              Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
+            template: |
+              <div class="flex flex-column gap-10">
+                {{ range .JSON.Array "items" }}
+                  {{ $ready := .String "status.conditions.#(type==\"Ready\").status" }}
+                  <div class="flex justify-between">
+                    <span>{{ .String "metadata.name" }}</span>
+                    {{ if eq $ready "True" }}
+                      <span class="color-positive">Ready</span>
+                    {{ else }}
+                      <span class="color-negative">{{ if $ready }}{{ $ready }}{{ else }}Unknown{{ end }}</span>
                     {{ end }}
                   </div>
+                {{ end }}
+              </div>
 
-              - type: monitor
-                cache: 30s
-                title: Storage
-                sites:
-                  - title: Longhorn UI
-                    url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
-                    check-url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
-                    timeout: 5s
-                    icon: si:longhorn
-                  - title: Longhorn Backend
-                    url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
-                    check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
-                    timeout: 5s
-                    icon: si:longhorn
+          - type: monitor
+            cache: 30s
+            title: Storage
+            sites:
+              - title: Longhorn UI
+                url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
+                check-url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
+                timeout: 5s
+                icon: si:longhorn
+              - title: Longhorn Backend
+                url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
+                check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
+                timeout: 5s
+                icon: si:longhorn
 
   - name: Home
     columns:
