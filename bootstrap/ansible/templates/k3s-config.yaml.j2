@@ -1,6 +1,8 @@
 write-kubeconfig-mode: "0644"
 tls-san:
-  - "{{ tailscale_ip }}"
+{% for san in k3s_tls_sans %}
+  - "{{ san }}"
+{% endfor %}
 data-dir: "{{ k3s_data_dir }}"
 secrets-encryption: true
 disable:
