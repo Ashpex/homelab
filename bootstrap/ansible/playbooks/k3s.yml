@@ -39,6 +39,13 @@
       changed_when: false
       loop: "{{ homelab_required_mounts }}"
 
+    - name: Ensure local hostname resolves
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: "^127\\.0\\.1\\.1\\s+"
+        line: "127.0.1.1 {{ inventory_hostname }}"
+        mode: "0644"
+
     - name: Ensure local Kubernetes HDD volume root exists
       ansible.builtin.file:
         path: "{{ homelab_k8s_hdd_volume_root }}"
