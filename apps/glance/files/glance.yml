@@ -91,6 +91,10 @@ pages:
                     url: https://mail.google.com/
                   - title: OMG! Ubuntu
                     url: https://www.omgubuntu.co.uk/
+                  - title: Cloudflare
+                    url: https://dash.cloudflare.com/
+                  - title: Tailscale
+                    url: https://login.tailscale.com/admin/machines
 
       - size: small
         widgets:
