@@ -81,6 +81,17 @@ pages:
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
 
+          - type: bookmarks
+            groups:
+              - title: Quick Links
+                links:
+                  - title: GitHub
+                    url: https://github.com/Ashpex/homelab
+                  - title: Gmail
+                    url: https://mail.google.com/
+                  - title: OMG! Ubuntu
+                    url: https://www.omgubuntu.co.uk/
+
       - size: small
         widgets:
           - type: server-stats
