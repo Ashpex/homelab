@@ -23,6 +23,14 @@ pages:
                 servers:
                   - type: local
                     name: metal0
+                    hide-mountpoints-by-default: true
+                    mountpoints:
+                      "/":
+                        name: Root
+                        hide: false
+                      "/mnt/ssd0":
+                        name: SSD0
+                        hide: false
               - type: server-stats
                 servers:
                   - type: remote
