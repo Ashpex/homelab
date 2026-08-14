@@ -85,8 +85,12 @@ pages:
             groups:
               - title: Quick Links
                 links:
-                  - title: GitHub
+                  - title: GitHub Repo
                     url: https://github.com/Ashpex/homelab
+                  - title: Forgejo Repo
+                    url: https://git.ashpex.net/ashpex/homelab
+                  - title: Tangled Repo
+                    url: https://tangled.org/ashpex.net/homelab
                   - title: Gmail
                     url: https://mail.google.com/
                   - title: OMG! Ubuntu
