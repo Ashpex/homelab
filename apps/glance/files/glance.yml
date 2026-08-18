@@ -168,7 +168,8 @@ pages:
               Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
             template: |
               <div class="flex flex-column gap-10">
-                {{ range .JSON.Array "items" }}
+                {{ $items := .JSON.Array "items" }}
+                {{ range slice $items 0 1 }}
                   {{ $volume := .String "spec.volumeName" }}
                   {{ $lastBackupAt := .String "status.lastBackupAt" }}
                   <div class="flex justify-between">
