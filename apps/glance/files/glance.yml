@@ -158,11 +158,29 @@ pages:
                 check-url: http://longhorn-frontend.longhorn-system.svc.cluster.local/
                 timeout: 5s
                 icon: si:longhorn
-              - title: Longhorn Backend
-                url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
-                check-url: http://longhorn-backend.longhorn-system.svc.cluster.local:9500/v1
-                timeout: 5s
-                icon: si:longhorn
+
+          - type: custom-api
+            cache: 5m
+            title: Longhorn Backup
+            url: https://kubernetes.default.svc/apis/longhorn.io/v1beta2/namespaces/longhorn-system/backupvolumes
+            allow-insecure: true
+            headers:
+              Authorization: Bearer ${readFileFromEnv:KUBE_TOKEN_FILE}
+            template: |
+              <div class="flex flex-column gap-10">
+                {{ range .JSON.Array "items" }}
+                  {{ $volume := .String "spec.volumeName" }}
+                  {{ $lastBackupAt := .String "status.lastBackupAt" }}
+                  <div class="flex justify-between">
+                    <span>{{ $volume }}</span>
+                    {{ if $lastBackupAt }}
+                      <span>{{ $lastBackupAt }}</span>
+                    {{ else }}
+                      <span class="color-negative">Never</span>
+                    {{ end }}
+                  </div>
+                {{ end }}
+              </div>
 
   - name: Home
     columns:
