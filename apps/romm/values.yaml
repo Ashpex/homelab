@@ -158,6 +158,8 @@ app-template:
     main-resources:
       enabled: true
       type: persistentVolumeClaim
+      annotations:
+        helm.sh/resource-policy: keep
       storageClass: longhorn
       accessMode: ReadWriteOnce
       size: 5Gi
@@ -168,6 +170,8 @@ app-template:
     main-assets:
       enabled: true
       type: persistentVolumeClaim
+      annotations:
+        helm.sh/resource-policy: keep
       storageClass: longhorn
       accessMode: ReadWriteOnce
       size: 1Gi
@@ -178,6 +182,8 @@ app-template:
     mariadb-data:
       enabled: true
       type: persistentVolumeClaim
+      annotations:
+        helm.sh/resource-policy: keep
       storageClass: longhorn
       accessMode: ReadWriteOnce
       size: 2Gi
