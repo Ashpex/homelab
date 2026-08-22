@@ -17,6 +17,19 @@ app-template:
           env:
           - name: TZ
             value: Asia/Ho_Chi_Minh
+          - name: ACTUAL_OPENID_DISCOVERY_URL
+            value: https://auth.ashpex.net/.well-known/openid-configuration
+          - name: ACTUAL_OPENID_CLIENT_ID
+            value: actualbudget
+          - name: ACTUAL_OPENID_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: actualbudget-oidc
+                key: ACTUALBUDGET_CLIENT_SECRET
+          - name: ACTUAL_OPENID_SERVER_HOSTNAME
+            value: https://budget.ashpex.net
+          - name: ACTUAL_OPENID_ENFORCE
+            value: "true"
           ports:
           - name: http
             containerPort: 5006
