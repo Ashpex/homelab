@@ -13,7 +13,6 @@ resources:
   - immich-public-proxy/release.yaml
   - navidrome/release.yaml
   - transmission/release.yaml
-  - comentario/release.yaml
   - romm/release.yaml
   - actualbudget/release.yaml
   - calibre-web/release.yaml
