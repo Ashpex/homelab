@@ -14,7 +14,7 @@ spec:
         name: flux-system
         namespace: flux-system
       interval: 12h
-      reconcileStrategy: Revision
+      reconcileStrategy: ChartVersion
   maxHistory: 2
   install:
     createNamespace: true
