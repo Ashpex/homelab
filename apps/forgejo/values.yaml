@@ -36,9 +36,8 @@ forgejo:
         autoDiscoverUrl: https://auth.ashpex.net/.well-known/openid-configuration
   persistence:
     enabled: true
-    create: true
-    storageClass: longhorn
-    size: 2Gi
+    create: false
+    existingClaim: forgejo-data
   ingress:
     enabled: true
     className: traefik
