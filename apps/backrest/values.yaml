@@ -83,9 +83,11 @@ app-template:
           - path: "/cache"
     main-hdd1:
       enabled: true
-      type: hostPath
-      hostPath: "/mnt/ssd0"
-      hostPathType: Directory
+      type: custom
+      volumeSpec:
+        nfs:
+          server: "192.168.1.110"
+          path: /mnt/ssd0
       advancedMounts:
         main:
           main:
