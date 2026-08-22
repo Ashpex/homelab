@@ -80,6 +80,10 @@ pages:
                 url: https://backrest.ashpex.net/
                 check-url: http://backrest.backrest.svc.cluster.local:9898/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/backrest-light.svg
+              - title: Actual Budget
+                url: https://budget.ashpex.net/
+                check-url: http://actualbudget.actualbudget.svc.cluster.local:5006/
+                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/actual-budget.svg
 
           - type: bookmarks
             groups:
