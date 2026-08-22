@@ -195,6 +195,26 @@ authelia:
             grant_types:
               - authorization_code
             token_endpoint_auth_method: client_secret_basic
+          - client_id: 'actualbudget'
+            client_name: 'Actual Budget'
+            client_secret:
+              path: '/secrets/oidc-clients/ACTUALBUDGET_CLIENT_SECRET_HASH'
+            consent_mode: auto
+            public: false
+            authorization_policy: one_factor
+            require_pkce: false
+            pkce_challenge_method: ''
+            redirect_uris:
+              - https://budget.ashpex.net/openid/callback
+            scopes:
+              - openid
+              - email
+              - profile
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+            token_endpoint_auth_method: client_secret_basic
 
   persistence:
     enabled: true
