@@ -175,9 +175,7 @@ app-template:
     postgres-data:
       enabled: true
       type: persistentVolumeClaim
-      storageClass: longhorn
-      accessMode: ReadWriteOnce
-      size: 5Gi
+      existingClaim: immich-postgres
       advancedMounts:
         postgres:
           main:
