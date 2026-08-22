@@ -1,10 +1,3 @@
-nfs:
-  server: 192.168.1.110
-
-longhorn:
-  storageClassName: longhorn
-  configSize: 1Gi
-
 app-template:
   fullnameOverride: calibre-web
   controllers:
@@ -68,23 +61,31 @@ app-template:
     config:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: calibre-web-config
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 1Gi
       advancedMounts:
         main:
           main:
           - path: "/config"
     books:
       enabled: true
-      type: persistentVolumeClaim
-      existingClaim: calibre-web-books
+      type: custom
+      volumeSpec:
+        nfs:
+          server: "192.168.1.110"
+          path: /mnt/ssd0/media/library/books
       advancedMounts:
         main:
           main:
           - path: "/calibre-library"
     ingest:
       enabled: true
-      type: persistentVolumeClaim
-      existingClaim: calibre-web-ingest
+      type: custom
+      volumeSpec:
+        nfs:
+          server: "192.168.1.110"
+          path: /mnt/ssd0/media/library/books-ingest
       advancedMounts:
         main:
           main:

@@ -1,12 +1,3 @@
-nfs:
-  server: 192.168.1.110
-
-longhorn:
-  storageClassName: longhorn
-  resourcesSize: 5Gi
-  assetsSize: 1Gi
-  mariadbSize: 2Gi
-
 app-template:
   fullnameOverride: romm
   controllers:
@@ -155,8 +146,11 @@ app-template:
   persistence:
     main-library:
       enabled: true
-      type: persistentVolumeClaim
-      existingClaim: romm-library
+      type: custom
+      volumeSpec:
+        nfs:
+          server: "192.168.1.110"
+          path: /mnt/ssd0/media/roms
       advancedMounts:
         main:
           main:
@@ -164,7 +158,9 @@ app-template:
     main-resources:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: romm-resources
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 5Gi
       advancedMounts:
         main:
           main:
@@ -172,7 +168,9 @@ app-template:
     main-assets:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: romm-assets
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 1Gi
       advancedMounts:
         main:
           main:
@@ -180,7 +178,9 @@ app-template:
     mariadb-data:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: romm-mariadb-data
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 2Gi
       advancedMounts:
         mariadb:
           main:

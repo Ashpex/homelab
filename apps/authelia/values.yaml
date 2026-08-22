@@ -1,7 +1,3 @@
-longhorn:
-  storageClassName: longhorn
-  dataSize: 100Mi
-
 authelia:
   nameOverride: authelia
   pod:
@@ -202,4 +198,5 @@ authelia:
 
   persistence:
     enabled: true
-    existingClaim: authelia-data
+    storageClass: longhorn
+    size: 100Mi

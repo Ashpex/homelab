@@ -1,10 +1,3 @@
-nfs:
-  server: 192.168.1.110
-
-longhorn:
-  storageClassName: longhorn
-  postgresSize: 5Gi
-
 app-template:
   fullnameOverride: immich
   controllers:
@@ -150,8 +143,11 @@ app-template:
   persistence:
     server-upload:
       enabled: true
-      type: persistentVolumeClaim
-      existingClaim: immich-library
+      type: custom
+      volumeSpec:
+        nfs:
+          server: "192.168.1.110"
+          path: /mnt/ssd0/immich/library
       advancedMounts:
         server:
           main:
@@ -179,7 +175,9 @@ app-template:
     postgres-data:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: immich-postgres
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 5Gi
       advancedMounts:
         postgres:
           main:
