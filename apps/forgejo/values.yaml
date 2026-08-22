@@ -37,7 +37,7 @@ forgejo:
   persistence:
     enabled: true
     create: false
-    existingClaim: forgejo-data
+    claimName: forgejo-data
   ingress:
     enabled: true
     className: traefik
