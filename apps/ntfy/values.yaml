@@ -54,6 +54,8 @@ app-template:
     main-data:
       enabled: true
       type: persistentVolumeClaim
+      annotations:
+        helm.sh/resource-policy: keep
       storageClass: longhorn
       accessMode: ReadWriteOnce
       size: 100Mi
