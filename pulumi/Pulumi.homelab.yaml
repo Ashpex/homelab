@@ -14,8 +14,8 @@ config:
         - hub.ashpex.net
         - git.ashpex.net
         - auth.ashpex.net
-        - comments.ashpex.net
         - library.ashpex.net
+        - budget.ashpex.net
   cloudflare:apiToken:
     secure: AAABAKU5/lgikYU2E3vMwp7Z+pnmHdUTukQmKP5H6GldzkDmRuTCCB5wtZgNLIwFlEYIzFq+0Ln4hkmrVBF4V4Dct/YFHKOGsE3qeo2Wuc1VakgDwA==
   tailscale:apiKey:
