@@ -3,6 +3,8 @@ authelia:
   pod:
     kind: Deployment
     replicas: 1
+    strategy:
+      type: Recreate
     extraVolumeMounts:
       - name: users-db
         mountPath: /config/users_database.yml
