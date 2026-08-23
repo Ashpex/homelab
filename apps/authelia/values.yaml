@@ -59,10 +59,10 @@ authelia:
           algorithm: argon2
 
     access_control:
-      default_policy: one_factor
+      default_policy: two_factor
       rules:
         - domain: '*.ashpex.net'
-          policy: one_factor
+          policy: two_factor
 
     notifier:
       filesystem:
@@ -94,7 +94,7 @@ authelia:
               path: '/secrets/oidc-clients/FORGEJO_CLIENT_SECRET_HASH'
             consent_mode: auto
             public: false
-            authorization_policy: one_factor
+            authorization_policy: two_factor
             require_pkce: true
             pkce_challenge_method: S256
             redirect_uris:
@@ -115,7 +115,7 @@ authelia:
               path: '/secrets/oidc-clients/COMENTARIO_CLIENT_SECRET_HASH'
             consent_mode: auto
             public: false
-            authorization_policy: one_factor
+            authorization_policy: two_factor
             redirect_uris:
               - https://comments.ashpex.net/api/oauth/oidc:authelia/callback
             scopes:
@@ -133,7 +133,7 @@ authelia:
               path: '/secrets/oidc-clients/CALIBRE_WEB_CLIENT_SECRET_HASH'
             consent_mode: auto
             public: false
-            authorization_policy: one_factor
+            authorization_policy: two_factor
             require_pkce: false
             pkce_challenge_method: ''
             redirect_uris:
@@ -156,7 +156,7 @@ authelia:
               path: '/secrets/oidc-clients/IMMICH_CLIENT_SECRET_HASH'
             consent_mode: auto
             public: false
-            authorization_policy: one_factor
+            authorization_policy: two_factor
             require_pkce: false
             pkce_challenge_method: ''
             redirect_uris:
@@ -181,7 +181,7 @@ authelia:
             claims_policy: 'profile_in_id_token'
             consent_mode: auto
             public: false
-            authorization_policy: one_factor
+            authorization_policy: two_factor
             require_pkce: false
             pkce_challenge_method: ''
             redirect_uris:
@@ -201,7 +201,7 @@ authelia:
               path: '/secrets/oidc-clients/ACTUALBUDGET_CLIENT_SECRET_HASH'
             consent_mode: auto
             public: false
-            authorization_policy: one_factor
+            authorization_policy: two_factor
             require_pkce: false
             pkce_challenge_method: ''
             redirect_uris:
