@@ -5,6 +5,15 @@ authelia:
     replicas: 1
     strategy:
       type: Recreate
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values: ["metal1"]
     extraVolumeMounts:
       - name: users-db
         mountPath: /config/users_database.yml
