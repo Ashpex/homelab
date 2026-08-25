@@ -9,8 +9,9 @@ app-template:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: homelab.node/nas
-                      operator: DoesNotExist
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values: ["metal1"]
       containers:
         main:
           image:
@@ -79,6 +80,16 @@ app-template:
           - name: web
             containerPort: 8080
     mariadb:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values: ["metal1"]
       containers:
         main:
           image:

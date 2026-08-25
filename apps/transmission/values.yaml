@@ -9,8 +9,9 @@ app-template:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: homelab.node/nas
-                      operator: DoesNotExist
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values: ["metal1"]
       containers:
         main:
           image:
