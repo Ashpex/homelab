@@ -9,9 +9,8 @@ app-template:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: kubernetes.io/hostname
-                      operator: In
-                      values: ["metal1"]
+                    - key: homelab.node/nas
+                      operator: DoesNotExist
       containers:
         main:
           image:
@@ -87,9 +86,8 @@ app-template:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: kubernetes.io/hostname
-                      operator: In
-                      values: ["metal1"]
+                    - key: homelab.node/nas
+                      operator: DoesNotExist
       containers:
         main:
           image:

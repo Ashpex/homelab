@@ -11,9 +11,8 @@ authelia:
           - weight: 100
             preference:
               matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: In
-                  values: ["metal1"]
+                - key: homelab.node/nas
+                  operator: DoesNotExist
     extraVolumeMounts:
       - name: users-db
         mountPath: /config/users_database.yml
