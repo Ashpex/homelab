@@ -188,6 +188,8 @@ github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.18.0 h1:cWcLhL9mRWj38lJ1Hzld/5EwpI
 github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.18.0/go.mod h1:6v+y2y+ET4plu7qGNHQnTQHf+PhAZpTGVzPniy5JuCE=
 github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.19.0 h1:vX+Pv6/MeGGLa86tOhg8hLYY7fTGCHQDCjRJUjlcKhs=
 github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.19.0/go.mod h1:Qq1fSFjo6hS/kzREu5IdHOAle/ud9cZCZNVSfoPufuA=
+github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.20.0 h1:kVpX+svi2o8CYMQa2UC35XSwPBRi2uWCQSTfK1xj6sQ=
+github.com/pulumi/pulumi-cloudflare/sdk/v6 v6.20.0/go.mod h1:WQQwrHQVlI2Bw6A4ObarDjkWnMCKdls7KVOpUmKFDVI=
 github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.33.0 h1:fFP72Q6/GfyI7BII3hUS7vn45Eg16zKIIS3I3R9bNEY=
 github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.33.0/go.mod h1:sIZVlvi6oFQMEgTa+XkYfr/sAXRfrprPo3Ja6UYpGEU=
 github.com/pulumi/pulumi-tailscale/sdk v0.28.0 h1:nn7N0kRgr8Rmdk/Hr/bYgAkP2pVsZyT1hqABAX6sVYo=
