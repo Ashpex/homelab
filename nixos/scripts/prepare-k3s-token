@@ -5,27 +5,65 @@ usage() {
   cat >&2 <<'EOF'
 Usage:
   prepare-k3s-token [token-file]
-  ssh -t ashpex@metal0 'sudo cat /var/lib/rancher/k3s/server/node-token' | prepare-k3s-token
+  prepare-k3s-token --from-host ashpex@192.168.1.110
+  ssh -t ashpex@192.168.1.110 'sudo cat /var/lib/rancher/k3s/server/token' | prepare-k3s-token
 
 Writes:
   ${NIXIE_EXTRA_FILES:-$HOME/.config/homelab/nixie-extra-files}/etc/rancher/k3s/node-token
 EOF
 }
 
-if [[ $# -gt 1 ]]; then
+extra_files="${NIXIE_EXTRA_FILES:-$HOME/.config/homelab/nixie-extra-files}"
+from_host=""
+remote_token_path="/var/lib/rancher/k3s/server/token"
+token_file=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --from-host)
+      from_host="${2:-}"
+      shift 2
+      ;;
+    --remote-token-path)
+      remote_token_path="${2:-}"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --*)
+      echo "Unknown option: $1" >&2
+      usage
+      exit 2
+      ;;
+    *)
+      if [[ -n "$token_file" ]]; then
+        usage
+        exit 2
+      fi
+      token_file="$1"
+      shift
+      ;;
+  esac
+done
+
+if [[ -n "$from_host" && -n "$token_file" ]]; then
+  echo "--from-host cannot be used with a local token file" >&2
   usage
   exit 2
 fi
 
-extra_files="${NIXIE_EXTRA_FILES:-$HOME/.config/homelab/nixie-extra-files}"
 token_dir="$extra_files/etc/rancher/k3s"
 token_path="$token_dir/node-token"
 tmp="$(mktemp)"
 
 trap 'rm -f "$tmp"' EXIT
 
-if [[ $# -eq 1 ]]; then
-  cp "$1" "$tmp"
+if [[ -n "$from_host" ]]; then
+  ssh -t "$from_host" "sudo cat '$remote_token_path'" > "$tmp"
+elif [[ -n "$token_file" ]]; then
+  cp "$token_file" "$tmp"
 elif [[ -t 0 ]]; then
   usage
   exit 2
