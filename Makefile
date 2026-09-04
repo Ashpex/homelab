@@ -1,5 +1,5 @@
 NIXIE ?= github:Ashpex/nixie
-NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/ashpex
+NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/nixie
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_USER ?= ashpex
 NIXIE_EXTRA_ARGS ?=
