@@ -1,4 +1,4 @@
-NIXIE ?= github:Ashpex/nixie
+NIXIE ?= github:Ashpex/nixie/f628822c6fe39275c087aed3ecf2fedf0f16c69a
 NIXIE_EXTRA_FILES ?= $(HOME)/.config/homelab/nixie-extra-files
 NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/nixie
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
