@@ -45,6 +45,18 @@ in
       description = "k3s bundled components to disable on server nodes.";
     };
 
+    clusterInit = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Initialize the first k3s server with embedded etcd.";
+    };
+
+    secretsEncryption = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Enable k3s secrets encryption on server nodes.";
+    };
+
     disableHostFirewall = mkOption {
       type = types.bool;
       default = true;
@@ -61,6 +73,8 @@ in
       extraFlags =
         [ "--data-dir=${cfg.dataDir}" ]
         ++ optionals (cfg.serverAddr != null) [ "--server=${cfg.serverAddr}" ]
+        ++ optionals (cfg.role == "server" && cfg.clusterInit) [ "--cluster-init" ]
+        ++ optionals (cfg.role == "server" && cfg.secretsEncryption) [ "--secrets-encryption" ]
         ++ map (label: "--node-label=${label}") cfg.nodeLabels
         ++ map (component: "--disable=${component}") cfg.disableComponents;
     };

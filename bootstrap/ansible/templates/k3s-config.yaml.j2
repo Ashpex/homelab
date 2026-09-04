@@ -4,6 +4,7 @@ tls-san:
   - "{{ san }}"
 {% endfor %}
 data-dir: "{{ k3s_data_dir }}"
+cluster-init: {{ k3s_cluster_init | bool | lower }}
 secrets-encryption: true
 disable:
 {% for component in k3s_disable_components %}

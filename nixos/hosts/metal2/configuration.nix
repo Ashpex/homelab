@@ -6,5 +6,5 @@
     ./hardware-configuration.nix
   ];
 
-  networking.hostName = "metal1";
+  networking.hostName = "metal2";
 }

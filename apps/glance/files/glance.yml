@@ -130,6 +130,15 @@ pages:
                   "/etc/hosts":
                     name: Root
                     hide: false
+              - type: remote
+                name: metal2
+                url: http://glance-agent-metal2.glance.svc.cluster.local:27973
+                timeout: 5s
+                hide-mountpoints-by-default: true
+                mountpoints:
+                  "/etc/hosts":
+                    name: Root
+                    hide: false
 
           - type: custom-api
             cache: 30s

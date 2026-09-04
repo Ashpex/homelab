@@ -4,16 +4,19 @@ Reproducible NixOS configs for homelab Kubernetes nodes.
 
 ## Layout
 
-- `flake.nix`: builds host configs and the PXE netboot installer.
+- `flake.nix`: builds host configs and the Nixie netboot installer.
 - `hosts/<name>`: per-machine config, disk layout, and hardware config.
 - `profiles/`: reusable k3s roles.
 - `modules/`: shared OS, Kubernetes, and storage settings.
-- `scripts/install-node.sh`: installer script used by PXE and manual installs.
+- `installer.nix`: temporary NixOS installer used by Nixie.
+- `nixie-hosts.json`: Nixie host inventory keyed by flake output name.
+- `scripts/install-node.sh`: legacy installer script used by the old PXE flow and manual installs.
 
 ## Hosts
 
 - `metal0`: NixOS k3s server/control-plane config.
-- `metal1`: NixOS k3s worker.
+- `metal1`: NixOS k3s control-plane node.
+- `metal2`: NixOS k3s control-plane node.
 
 Before installing a host, check its disk name with:
 
@@ -24,7 +27,7 @@ lsblk
 Then update `hosts/<name>/disk.nix` if needed. The current example uses
 `/dev/nvme0n1`.
 
-## PXE Install
+## Nixie Install
 
 Run this from the Linux machine on the same LAN:
 
@@ -32,15 +35,34 @@ Run this from the Linux machine on the same LAN:
 make pxe-nixos
 ```
 
-Then PXE boot the target machine and pick the host, for example `metal1`.
+This uses Nixie from `/Users/vybui/projects/nixie` to run an ephemeral PXE
+server, boot the custom `installer` output, and install the host output that
+matches the target machine's MAC address in `nixie-hosts.json`.
 
-The PXE installer will:
+The Nixie installer will:
 
-1. download this repo snapshot and the k3s node token,
-2. run `disko`,
-3. install NixOS,
-4. reboot,
-5. join the k3s cluster.
+1. build the custom installer output,
+2. serve it over PXE,
+3. wake configured machines with Wake-on-LAN,
+4. run `nixos-anywhere`,
+5. reboot into the installed NixOS system,
+6. update `nixie-hosts.json` with final identity data.
+
+The SSH key defaults to:
+
+```sh
+~/.ssh/ashpex
+```
+
+Nixie uses that key as `root` in the temporary installer and as `ashpex` after
+the installed system reboots. Override the key or deployment user if needed:
+
+```sh
+make pxe-nixos \
+  NIXIE_INSTALL_SSH_KEY=~/.ssh/other-install-key \
+  NIXIE_DEPLOYMENT_SSH_KEY=~/.ssh/other-deployment-key \
+  NIXIE_DEPLOYMENT_SSH_USER=other-user
+```
 
 After the node is installed:
 
@@ -51,7 +73,7 @@ kubectl --context homelab get nodes -o wide
 
 The `homelab.node/nas=true` label means the node owns the NAS storage role. It
 does not make the Kubernetes node name `nas`; current nodes should use names
-like `metal0`, `metal1`, and so on.
+like `metal0`, `metal1`, `metal2`, and so on.
 
 ## Manual Install
 
