@@ -25,7 +25,7 @@ pxe-nixos:
 
 nixie-install:
 	sudo nix run $(NIXIE) -- \
-		--installer ./nixos#nixosConfigurations.installer \
+		--installer ./nixie-installer#nixosConfigurations.installer \
 		--flake ./nixos \
 		--hosts ./nixos/nixie-hosts.json \
 		--install-ssh-key $(NIXIE_INSTALL_SSH_KEY) \

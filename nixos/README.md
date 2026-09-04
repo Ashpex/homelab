@@ -4,13 +4,12 @@ Reproducible NixOS configs for homelab Kubernetes nodes.
 
 ## Layout
 
-- `flake.nix`: builds host configs and the Nixie netboot installer.
+- `flake.nix`: builds installed host configs.
 - `hosts/<name>`: per-machine config, disk layout, and hardware config.
 - `profiles/`: reusable k3s roles.
 - `modules/`: shared OS, Kubernetes, and storage settings.
-- `installer.nix`: temporary NixOS installer used by Nixie.
+- `installer.nix`: temporary NixOS installer module used by `../nixie-installer`.
 - `nixie-hosts.json`: Nixie host inventory keyed by flake output name.
-- `scripts/install-node.sh`: legacy installer script used by the old PXE flow and manual installs.
 
 ## Hosts
 
@@ -95,7 +94,7 @@ This destroys existing data on the disk configured in `hosts/<name>/disk.nix`.
 
 ## Rebuild
 
-After install, the repo snapshot lives at `/opt/homelab` on the node.
+After install, the repo checkout lives at `/opt/homelab` on the node.
 
 ```sh
 sudo nixos-rebuild switch --flake /opt/homelab/nixos#metal1

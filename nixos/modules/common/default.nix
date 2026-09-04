@@ -69,6 +69,39 @@
     "d /opt/homelab 0775 root wheel - -"
   ];
 
+  systemd.services.homelab-repo-sync = {
+    description = "Sync homelab repository checkout";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    path = with pkgs; [
+      coreutils
+      git
+    ];
+    script = ''
+      set -euo pipefail
+
+      repo_url="https://github.com/Ashpex/homelab.git"
+      repo_dir="/opt/homelab"
+
+      if [ -d "$repo_dir/.git" ]; then
+        git -C "$repo_dir" fetch --prune origin
+        git -C "$repo_dir" reset --hard origin/master
+      else
+        if [ -e "$repo_dir" ]; then
+          mv "$repo_dir" "/opt/homelab.snapshot.$(date +%s)"
+        fi
+        git clone "$repo_url" "$repo_dir"
+      fi
+
+      chgrp -R wheel "$repo_dir"
+      chmod -R g+rwX "$repo_dir"
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+    };
+  };
+
   boot.kernel.sysctl = {
     "fs.inotify.max_user_watches" = 1048576;
     "fs.inotify.max_user_instances" = 8192;
