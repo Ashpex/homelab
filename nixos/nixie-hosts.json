@@ -1,7 +1,8 @@
 {
   "metal1": {
     "mac_address": "8c:16:45:be:4f:6a",
-    "ip": "192.168.1.111"
+    "ip": "192.168.1.111",
+    "machine_id_hash": "5f9a5c078293e2ce18392e261b37be82c33f77dda344c9dd7322ee080811ad0a"
   },
   "metal2": {
     "mac_address": "98:fa:9b:55:d6:21",
