@@ -1,5 +1,6 @@
 {{- $nodes := list
   (dict "name" "metal1" "hostname" "metal1")
+  (dict "name" "metal2" "hostname" "metal2")
 -}}
 {{- range $node := $nodes }}
 ---

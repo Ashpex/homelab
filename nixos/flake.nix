@@ -7,9 +7,13 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixie = {
+      url = "path:../../nixie";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, disko }:
+  outputs = { self, nixpkgs, disko, nixie }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
@@ -117,6 +121,13 @@
           })
         ];
       };
+      installerSystem = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./installer.nix
+          nixie.nixosModules.nixie-agent
+        ];
+      };
       diskoPackage = disko.packages.${system}.disko or disko.packages.${system}.default;
     in
     {
@@ -142,6 +153,8 @@
         };
       };
 
-      nixosConfigurations = lib.genAttrs hostNames mkNode;
+      nixosConfigurations = (lib.genAttrs hostNames mkNode) // {
+        installer = installerSystem;
+      };
     };
 }

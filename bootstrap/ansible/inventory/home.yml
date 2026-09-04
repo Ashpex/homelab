@@ -21,6 +21,7 @@ all:
     k3s_config_file: /etc/rancher/k3s/config.yaml
     k3s_data_dir: /var/lib/rancher/k3s
     k3s_kubeconfig_file: /etc/rancher/k3s/k3s.yaml
+    k3s_cluster_init: true
 
     homelab_hdd_mount: /mnt/ssd0
     homelab_ssd_mount: /mnt/ssd
@@ -28,6 +29,7 @@ all:
     homelab_nfs_allowed_clients:
       - 192.168.1.110/32
       - 192.168.1.111/32
+      - 192.168.1.112/32
     homelab_nfs_exports:
       - path: /mnt/ssd0
         options: rw,sync,no_subtree_check,crossmnt,no_root_squash
@@ -45,4 +47,8 @@ all:
         metal1:
           ansible_host: 192.168.1.111
           pxe_mac: "8c:16:45:be:4f:6a"
-          pxe_role: worker
+          pxe_role: control-plane
+        metal2:
+          ansible_host: 192.168.1.112
+          pxe_mac: "98:fa:9b:55:d6:21"
+          pxe_role: control-plane
