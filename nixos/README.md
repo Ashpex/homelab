@@ -75,22 +75,16 @@ like `metal0`, `metal1`, `metal2`, and so on.
 
 ## Rebuild
 
-After install, keep the repo checkout at `/home/ashpex/homelab` on the node.
-If the checkout is missing, clone it with:
+After install, rebuild NixOS nodes through Ansible from the repo root:
 
 ```sh
-nixos/scripts/sync-repo.sh
+make nixos-rebuild host=metal1
 ```
 
-If `/opt/homelab` is still a legacy copied snapshot, replace it with a Git
-checkout with:
+Omit `host=...` to rebuild every host in the `nixos_nodes` inventory group:
 
 ```sh
-nixos/scripts/sync-repo.sh
-```
-
-```sh
-sudo nixos-rebuild switch --flake /home/ashpex/homelab/nixos#metal1
+make nixos-rebuild
 ```
 
 To add another node, copy `hosts/metal1` to a new host directory and adjust:
