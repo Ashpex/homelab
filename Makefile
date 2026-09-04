@@ -4,6 +4,7 @@ NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/nixie
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_USER ?= ashpex
 NIXIE_NIXOS_ANYWHERE ?= $(shell command -v nixos-anywhere)
+NIXIE_SSH_AGENT_SOCKET ?= $(SSH_AUTH_SOCK)
 NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
 
@@ -50,6 +51,7 @@ nixie-install:
 		--install-ssh-key $(NIXIE_INSTALL_SSH_KEY) \
 		--deployment-ssh-user $(NIXIE_DEPLOYMENT_SSH_USER) \
 		--deployment-ssh-key $(NIXIE_DEPLOYMENT_SSH_KEY) \
+		$(if $(NIXIE_SSH_AGENT_SOCKET),--ssh-agent-socket $(NIXIE_SSH_AGENT_SOCKET),) \
 		$(NIXIE_EXTRA_ARGS)
 
 pxe-clean:
