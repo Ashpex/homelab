@@ -4,7 +4,6 @@ NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/nixie
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_USER ?= ashpex
 NIXIE_K3S_TOKEN_HOST ?= ashpex@192.168.1.110
-NIXIE_K3S_TOKEN_PATH ?= /var/lib/rancher/k3s/server/token
 NIXIE_NIXOS_ANYWHERE ?= $(shell command -v nixos-anywhere)
 NIXIE_SSH_AGENT_SOCKET ?= $(SSH_AUTH_SOCK)
 NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
@@ -40,7 +39,11 @@ pxe-nixos:
 
 nixie-install:
 	test -n "$(NIXIE_NIXOS_ANYWHERE)"
-	NIXIE_EXTRA_FILES="$(NIXIE_EXTRA_FILES)" nixos/scripts/prepare-k3s-token --from-host "$(NIXIE_K3S_TOKEN_HOST)" --remote-token-path "$(NIXIE_K3S_TOKEN_PATH)"
+	if [ -n "$(NIXIE_K3S_TOKEN_HOST)" ]; then \
+		NIXIE_EXTRA_FILES="$(NIXIE_EXTRA_FILES)" nixos/scripts/prepare-k3s-token --from-host "$(NIXIE_K3S_TOKEN_HOST)"; \
+	else \
+		test -s "$(NIXIE_EXTRA_FILES)/etc/rancher/k3s/node-token"; \
+	fi
 	mkdir -p $(NIXIE_WRAPPER_BIN)
 	ln -sf $(CURDIR)/nixos/scripts/nixos-anywhere-wrapper.sh $(NIXIE_WRAPPER_BIN)/nixos-anywhere
 	sudo --preserve-env=SSH_AUTH_SOCK,NIXIE_EXTRA_FILES,NIXIE_NIXOS_ANYWHERE env \
