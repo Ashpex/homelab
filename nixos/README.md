@@ -94,7 +94,13 @@ This destroys existing data on the disk configured in `hosts/<name>/disk.nix`.
 
 ## Rebuild
 
-After install, the repo checkout lives at `/opt/homelab` on the node.
+After install, keep the repo checkout at `/opt/homelab` on the node.
+If `/opt/homelab` is still a legacy copied snapshot, convert it to a Git
+checkout with:
+
+```sh
+sudo /opt/homelab/nixos/scripts/sync-repo.sh
+```
 
 ```sh
 sudo nixos-rebuild switch --flake /opt/homelab/nixos#metal1
