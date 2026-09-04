@@ -66,31 +66,12 @@ make pxe-nixos \
 After the node is installed:
 
 ```sh
-make pxe-clean
 kubectl --context homelab get nodes -o wide
 ```
 
 The `homelab.node/nas=true` label means the node owns the NAS storage role. It
 does not make the Kubernetes node name `nas`; current nodes should use names
 like `metal0`, `metal1`, `metal2`, and so on.
-
-## Manual Install
-
-From a NixOS installer shell:
-
-```sh
-./nixos/scripts/install-node.sh \
-  --host metal1 \
-  --token-file /path/to/node-token
-```
-
-The token comes from the existing k3s server:
-
-```sh
-sudo cat /var/lib/rancher/k3s/server/node-token
-```
-
-This destroys existing data on the disk configured in `hosts/<name>/disk.nix`.
 
 ## Rebuild
 
