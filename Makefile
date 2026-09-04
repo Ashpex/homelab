@@ -8,6 +8,7 @@ NIXIE_NIXOS_ANYWHERE ?= $(shell command -v nixos-anywhere)
 NIXIE_SSH_AGENT_SOCKET ?= $(SSH_AUTH_SOCK)
 NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
+HOST ?= $(host)
 
 .PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install pxe-clean flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
@@ -29,7 +30,7 @@ bootstrap-k3s:
 	$(MAKE) -C bootstrap bootstrap-k3s
 
 nixos-rebuild:
-	$(MAKE) -C bootstrap nixos-rebuild
+	$(MAKE) -C bootstrap nixos-rebuild HOST="$(HOST)"
 
 nixos-clean:
 	$(MAKE) -C bootstrap nixos-clean

@@ -3,6 +3,7 @@ ANSIBLE_REMOTE_TEMP ?= /tmp
 HELM_CONFIG_HOME ?= /tmp/homelab-helm-config
 HELM_CACHE_HOME ?= /tmp/homelab-helm-cache
 HELM_DATA_HOME ?= /tmp/homelab-helm-data
+HOST ?= $(host)
 
 export HELM_CONFIG_HOME
 export HELM_CACHE_HOME
@@ -29,7 +30,7 @@ bootstrap-k3s:
 
 nixos-rebuild:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
-	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/nixos-rebuild.yml --ask-become-pass
+	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/nixos-rebuild.yml $(if $(HOST),--limit $(HOST),) --ask-become-pass
 
 nixos-clean:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)

@@ -16,18 +16,7 @@
         rsync_opts:
           - "--exclude=.git"
 
-    - name: Ensure homelab repo directory exists
-      ansible.builtin.file:
-        path: "{{ homelab_remote_repo }}"
-        state: directory
-        mode: "0755"
-
     - name: Rebuild NixOS host
-      ansible.builtin.command:
-        argv:
-          - nixos-rebuild
-          - switch
-          - --flake
-          - "{{ homelab_remote_repo }}/nixos#{{ inventory_hostname }}"
+      ansible.builtin.raw: "nixos-rebuild switch --flake {{ homelab_remote_repo }}/nixos#{{ inventory_hostname }}"
       become: true
       changed_when: true
