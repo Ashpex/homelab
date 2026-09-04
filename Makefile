@@ -2,6 +2,7 @@ NIXIE ?= github:Ashpex/nixie
 NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_USER ?= ashpex
+NIXIE_EXTRA_ARGS ?=
 
 .PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install pxe-clean flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
@@ -32,13 +33,14 @@ pxe-nixos:
 	$(MAKE) nixie-install
 
 nixie-install:
-	sudo nix run $(NIXIE) -- \
+	sudo --preserve-env=SSH_AUTH_SOCK nix run $(NIXIE) -- \
 		--installer ./nixie-installer#nixosConfigurations.installer \
 		--flake ./nixos \
 		--hosts ./nixos/nixie-hosts.json \
 		--install-ssh-key $(NIXIE_INSTALL_SSH_KEY) \
 		--deployment-ssh-user $(NIXIE_DEPLOYMENT_SSH_USER) \
-		--deployment-ssh-key $(NIXIE_DEPLOYMENT_SSH_KEY)
+		--deployment-ssh-key $(NIXIE_DEPLOYMENT_SSH_KEY) \
+		$(NIXIE_EXTRA_ARGS)
 
 pxe-clean:
 	$(MAKE) -C bootstrap pxe-clean
