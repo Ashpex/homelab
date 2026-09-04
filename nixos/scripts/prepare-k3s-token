@@ -61,7 +61,10 @@ tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
 if [[ -n "$from_host" ]]; then
-  ssh -t "$from_host" "sudo cat '$remote_token_path'" > "$tmp"
+  remote_tmp="/tmp/k3s-server-token"
+  ssh -tt "$from_host" "sudo cp '$remote_token_path' '$remote_tmp' && sudo chown \$(id -un):\$(id -gn) '$remote_tmp' && chmod 600 '$remote_tmp'"
+  scp "$from_host:$remote_tmp" "$tmp"
+  ssh "$from_host" "rm -f '$remote_tmp'"
 elif [[ -n "$token_file" ]]; then
   cp "$token_file" "$tmp"
 elif [[ -t 0 ]]; then
