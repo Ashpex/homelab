@@ -10,7 +10,7 @@ NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
 HOST ?= $(host)
 
-.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install pxe-clean flux-bootstrap docker-services validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
@@ -19,7 +19,6 @@ help:
 	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
 	@echo "  pxe-nixos         Install NixOS nodes with Nixie"
 	@echo "  nixie-install     Install NixOS nodes with Nixie"
-	@echo "  pxe-clean         Stop local PXE server and remove temporary artifacts"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
 	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
@@ -60,9 +59,6 @@ nixie-install:
 		--deployment-ssh-key $(NIXIE_DEPLOYMENT_SSH_KEY) \
 		$(if $(NIXIE_SSH_AGENT_SOCKET),--ssh-agent-socket $(NIXIE_SSH_AGENT_SOCKET),) \
 		$(NIXIE_EXTRA_ARGS)
-
-pxe-clean:
-	$(MAKE) -C bootstrap pxe-clean
 
 docker-services:
 	$(MAKE) -C bootstrap docker-services
