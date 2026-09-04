@@ -1,0 +1,33 @@
+---
+- name: Sync and rebuild NixOS nodes
+  hosts: nixos_nodes
+  gather_facts: false
+
+  vars:
+    homelab_repo_root: "{{ playbook_dir }}/../../.."
+    homelab_remote_repo: "/home/{{ ansible_user | default('ashpex') }}/homelab"
+
+  tasks:
+    - name: Sync local homelab repo to remote checkout
+      ansible.posix.synchronize:
+        src: "{{ homelab_repo_root }}/"
+        dest: "{{ homelab_remote_repo }}/"
+        delete: true
+        rsync_opts:
+          - "--exclude=.git"
+
+    - name: Ensure homelab repo directory exists
+      ansible.builtin.file:
+        path: "{{ homelab_remote_repo }}"
+        state: directory
+        mode: "0755"
+
+    - name: Rebuild NixOS host
+      ansible.builtin.command:
+        argv:
+          - nixos-rebuild
+          - switch
+          - --flake
+          - "{{ homelab_remote_repo }}/nixos#{{ inventory_hostname }}"
+      become: true
+      changed_when: true

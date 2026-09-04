@@ -65,10 +65,6 @@
     wget
   ];
 
-  systemd.tmpfiles.rules = [
-    "d /opt/homelab 0775 root wheel - -"
-  ];
-
   boot.kernel.sysctl = {
     "fs.inotify.max_user_watches" = 1048576;
     "fs.inotify.max_user_instances" = 8192;

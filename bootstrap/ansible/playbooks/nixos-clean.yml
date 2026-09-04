@@ -1,0 +1,13 @@
+---
+- name: Clean NixOS node rebuild artifacts
+  hosts: nixos_nodes
+  gather_facts: false
+
+  vars:
+    homelab_remote_repo: "/home/{{ ansible_user | default('ashpex') }}/homelab"
+
+  tasks:
+    - name: Remove synced homelab repo
+      ansible.builtin.file:
+        path: "{{ homelab_remote_repo }}"
+        state: absent

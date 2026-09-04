@@ -94,16 +94,22 @@ This destroys existing data on the disk configured in `hosts/<name>/disk.nix`.
 
 ## Rebuild
 
-After install, keep the repo checkout at `/opt/homelab` on the node.
-If `/opt/homelab` is still a legacy copied snapshot, convert it to a Git
+After install, keep the repo checkout at `/home/ashpex/homelab` on the node.
+If the checkout is missing, clone it with:
+
+```sh
+nixos/scripts/sync-repo.sh
+```
+
+If `/opt/homelab` is still a legacy copied snapshot, replace it with a Git
 checkout with:
 
 ```sh
-sudo /opt/homelab/nixos/scripts/sync-repo.sh
+nixos/scripts/sync-repo.sh
 ```
 
 ```sh
-sudo nixos-rebuild switch --flake /opt/homelab/nixos#metal1
+sudo nixos-rebuild switch --flake /home/ashpex/homelab/nixos#metal1
 ```
 
 To add another node, copy `hosts/metal1` to a new host directory and adjust:
