@@ -7,4 +7,6 @@
   ];
 
   networking.hostName = "metal1";
+
+  homelab.kubernetes.nodeIP = "192.168.1.111";
 }
