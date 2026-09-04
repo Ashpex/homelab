@@ -3,11 +3,13 @@ NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_USER ?= ashpex
 
-.PHONY: help bootstrap-k3s pxe-nixos nixie-install pxe-clean flux-bootstrap docker-services validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install pxe-clean flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
+	@echo "  nixos-rebuild     Sync repo and rebuild existing NixOS nodes"
+	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
 	@echo "  pxe-nixos         Install NixOS nodes with Nixie"
 	@echo "  nixie-install     Install NixOS nodes with Nixie"
 	@echo "  pxe-clean         Stop local PXE server and remove temporary artifacts"
@@ -19,6 +21,12 @@ help:
 
 bootstrap-k3s:
 	$(MAKE) -C bootstrap bootstrap-k3s
+
+nixos-rebuild:
+	$(MAKE) -C bootstrap nixos-rebuild
+
+nixos-clean:
+	$(MAKE) -C bootstrap nixos-clean
 
 pxe-nixos:
 	$(MAKE) nixie-install
