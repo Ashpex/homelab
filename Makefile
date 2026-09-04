@@ -1,7 +1,10 @@
 NIXIE ?= github:Ashpex/nixie
+NIXIE_EXTRA_FILES ?= $(HOME)/.config/homelab/nixie-extra-files
 NIXIE_INSTALL_SSH_KEY ?= $(HOME)/.ssh/nixie
 NIXIE_DEPLOYMENT_SSH_KEY ?= $(HOME)/.ssh/ashpex
 NIXIE_DEPLOYMENT_SSH_USER ?= ashpex
+NIXIE_NIXOS_ANYWHERE ?= $(shell command -v nixos-anywhere)
+NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
 
 .PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install pxe-clean flux-bootstrap docker-services validate-host validate-cluster pulumi-test
@@ -33,7 +36,14 @@ pxe-nixos:
 	$(MAKE) nixie-install
 
 nixie-install:
-	sudo --preserve-env=SSH_AUTH_SOCK nix run $(NIXIE) -- \
+	test -n "$(NIXIE_NIXOS_ANYWHERE)"
+	mkdir -p $(NIXIE_WRAPPER_BIN)
+	ln -sf $(CURDIR)/nixos/scripts/nixos-anywhere-wrapper.sh $(NIXIE_WRAPPER_BIN)/nixos-anywhere
+	sudo --preserve-env=SSH_AUTH_SOCK,NIXIE_EXTRA_FILES,NIXIE_NIXOS_ANYWHERE env \
+		PATH="$(NIXIE_WRAPPER_BIN):$(PATH)" \
+		NIXIE_EXTRA_FILES="$(NIXIE_EXTRA_FILES)" \
+		NIXIE_NIXOS_ANYWHERE="$(NIXIE_NIXOS_ANYWHERE)" \
+		nix run $(NIXIE) -- \
 		--installer ./nixie-installer#nixosConfigurations.installer \
 		--flake ./nixos \
 		--hosts ./nixos/nixie-hosts.json \
