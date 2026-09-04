@@ -34,7 +34,7 @@ Run this from the Linux machine on the same LAN:
 make pxe-nixos
 ```
 
-This uses Nixie from `/Users/vybui/projects/nixie` to run an ephemeral PXE
+This uses Nixie from `github:Ashpex/nixie` to run an ephemeral PXE
 server, boot the custom `installer` output, and install the host output that
 matches the target machine's MAC address in `nixie-hosts.json`.
 
