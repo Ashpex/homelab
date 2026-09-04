@@ -118,9 +118,6 @@ pages:
                   "/mnt/ssd0":
                     name: SSD0
                     hide: false
-
-          - type: server-stats
-            servers:
               - type: remote
                 name: metal1
                 url: http://glance-agent-metal1.glance.svc.cluster.local:27973
