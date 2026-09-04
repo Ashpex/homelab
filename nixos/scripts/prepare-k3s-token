@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  prepare-k3s-token [token-file]
+  ssh -t ashpex@metal0 'sudo cat /var/lib/rancher/k3s/server/node-token' | prepare-k3s-token
+
+Writes:
+  ${NIXIE_EXTRA_FILES:-$HOME/.config/homelab/nixie-extra-files}/etc/rancher/k3s/node-token
+EOF
+}
+
+if [[ $# -gt 1 ]]; then
+  usage
+  exit 2
+fi
+
+extra_files="${NIXIE_EXTRA_FILES:-$HOME/.config/homelab/nixie-extra-files}"
+token_dir="$extra_files/etc/rancher/k3s"
+token_path="$token_dir/node-token"
+tmp="$(mktemp)"
+
+trap 'rm -f "$tmp"' EXIT
+
+if [[ $# -eq 1 ]]; then
+  cp "$1" "$tmp"
+elif [[ -t 0 ]]; then
+  usage
+  exit 2
+else
+  cat > "$tmp"
+fi
+
+if [[ ! -s "$tmp" ]]; then
+  echo "K3s node token is empty" >&2
+  exit 1
+fi
+
+mkdir -p "$token_dir"
+install -m 0600 "$tmp" "$token_path"
+
+echo "Wrote $token_path"
