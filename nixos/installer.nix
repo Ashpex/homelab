@@ -14,7 +14,7 @@
   installer.cloneConfig = false;
 
   users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKmkmdTLGl2RgiYVQ1qVtWR5njuvDMaeZeEMxu5QHBzC mail@ashpex.net"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPpUBisH5pPpGoD5loD4pGUYUJJGcyhnFEq20cI3Ghm/ nixie@homelab"
   ];
 
   system.stateVersion = "25.05";
