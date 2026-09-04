@@ -63,6 +63,15 @@ app-template:
           - name: redis
             containerPort: 6379
     postgres:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: homelab.node/nas
+                      operator: DoesNotExist
       containers:
         main:
           image:
