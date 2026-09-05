@@ -5,14 +5,15 @@ authelia:
     replicas: 1
     strategy:
       type: Recreate
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: homelab.node/nas
-                  operator: DoesNotExist
+    selectors:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: homelab.node/nas
+                    operator: DoesNotExist
     extraVolumeMounts:
       - name: users-db
         mountPath: /config/users_database.yml
