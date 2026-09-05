@@ -14,6 +14,7 @@
         dest: "{{ homelab_remote_repo }}/"
         delete: true
         rsync_opts:
+          - "--delete-excluded"
           - "--exclude=.git"
 
     - name: Rebuild NixOS host
