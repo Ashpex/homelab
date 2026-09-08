@@ -33,7 +33,15 @@
     };
   };
 
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "server";
+    extraUpFlags = [
+      "--advertise-routes=192.168.1.1/32,192.168.1.100/32"
+      "--accept-dns=false"
+      "--ssh"
+    ];
+  };
 
   users.users.ashpex = {
     isNormalUser = true;
