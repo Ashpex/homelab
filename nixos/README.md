@@ -31,7 +31,7 @@ Then update `hosts/<name>/disk.nix` if needed. The current example uses
 Run this from the Linux machine on the same LAN:
 
 ```sh
-make pxe-nixos
+make nixie
 ```
 
 This uses Nixie from `github:Ashpex/nixie` to run an ephemeral PXE
@@ -58,7 +58,7 @@ system reboots, Nixie uses `~/.ssh/ashpex` for the `ashpex` deployment user.
 Override the keys or deployment user if needed:
 
 ```sh
-make pxe-nixos \
+make nixie \
   NIXIE_INSTALL_SSH_KEY=~/.ssh/other-install-key \
   NIXIE_DEPLOYMENT_SSH_KEY=~/.ssh/other-deployment-key \
   NIXIE_DEPLOYMENT_SSH_USER=other-user

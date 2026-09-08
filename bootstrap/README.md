@@ -3,7 +3,7 @@
 ## Layers
 
 - `ansible/`: host bootstrap for K3s, storage assumptions, and NixOS rebuilds.
-- `nixie-installer/`: temporary NixOS installer flake used by `make pxe-nixos`.
+- `nixie-installer/`: temporary NixOS installer flake used by `make nixie`.
 - `../flux`: Flux source object applied by Ansible.
 - `../platform`: platform Helm charts and HelmRelease objects.
 - `../apps`: app Helm charts and HelmRelease objects.
@@ -39,7 +39,7 @@ storage role. It is not the Kubernetes node name; the current node name is
 Run Nixie from the repo root:
 
 ```sh
-make pxe-nixos
+make nixie
 ```
 
 That target uses `bootstrap/nixie-installer` for the temporary PXE system and

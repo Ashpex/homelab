@@ -33,7 +33,7 @@ make flux-bootstrap
 Install NixOS nodes from the repo root with Nixie:
 
 ```sh
-make pxe-nixos
+make nixie
 ```
 
 The temporary PXE installer flake lives in `bootstrap/nixie-installer`; host
