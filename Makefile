@@ -18,7 +18,6 @@ help:
 	@echo "  nixos-rebuild     Sync repo and rebuild existing NixOS nodes"
 	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
 	@echo "  pxe-nixos         Install NixOS nodes with Nixie"
-	@echo "  nixie-install     Install NixOS nodes with Nixie"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
 	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
@@ -51,7 +50,7 @@ nixie-install:
 		NIXIE_EXTRA_FILES="$(NIXIE_EXTRA_FILES)" \
 		NIXIE_NIXOS_ANYWHERE="$(NIXIE_NIXOS_ANYWHERE)" \
 		nix run $(NIXIE) -- \
-		--installer ./nixie-installer#nixosConfigurations.installer \
+		--installer ./bootstrap/nixie-installer#nixosConfigurations.installer \
 		--flake ./nixos \
 		--hosts ./nixos/nixie-hosts.json \
 		--install-ssh-key $(NIXIE_INSTALL_SSH_KEY) \

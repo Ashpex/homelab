@@ -17,7 +17,7 @@
       nixosConfigurations.installer = nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
-          ../nixos/installer.nix
+          ../../nixos/installer.nix
           nixie.nixosModules.nixie-agent
         ];
       };
