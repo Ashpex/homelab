@@ -28,10 +28,10 @@ make bootstrap-k3s
 make flux-bootstrap
 ```
 
-See `bootstrap/README.md` for host bootstrap, Nixie installs, and NixOS
+See [bootstrap/README.md](bootstrap/README.md) for host bootstrap, Nixie installs, and NixOS
 rebuild commands.
 
-See `nixos/README.md` for NixOS host layout and per-node conventions.
+See [nixos/README.md](nixos/README.md) for NixOS host layout and per-node conventions.
 
 ## Validation
 
