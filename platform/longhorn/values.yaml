@@ -10,7 +10,7 @@ longhorn:
     reclaimPolicy: Retain
   defaultSettings:
     createDefaultDiskLabeledNodes: true
-    defaultDataPath: /mnt/ssd0/longhorn
+    defaultDataPath: /var/lib/longhorn
     defaultReplicaCount: '{"v1":"1","v2":"1"}'
     upgradeChecker: false
     backupTarget: s3://longhorn-pvc@us-east-005/
