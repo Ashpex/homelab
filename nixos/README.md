@@ -35,7 +35,7 @@ make pxe-nixos
 ```
 
 This uses Nixie from `github:Ashpex/nixie` to run an ephemeral PXE
-server, boot the custom `installer` output, and install the host output that
+server, boot the custom `bootstrap/nixie-installer` output, and install the host output that
 matches the target machine's MAC address in `nixie-hosts.json`.
 
 The Nixie installer will:
@@ -47,14 +47,15 @@ The Nixie installer will:
 5. reboot into the installed NixOS system,
 6. update `nixie-hosts.json` with final identity data.
 
-The SSH key defaults to:
+The installer SSH key defaults to:
 
 ```sh
-~/.ssh/ashpex
+~/.ssh/nixie
 ```
 
-Nixie uses that key as `root` in the temporary installer and as `ashpex` after
-the installed system reboots. Override the key or deployment user if needed:
+Nixie uses that key as `root` in the temporary installer. After the installed
+system reboots, Nixie uses `~/.ssh/ashpex` for the `ashpex` deployment user.
+Override the keys or deployment user if needed:
 
 ```sh
 make pxe-nixos \
