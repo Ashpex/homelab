@@ -56,10 +56,6 @@ pages:
                 url: https://notify.ashpex.net/
                 check-url: http://ntfy.ntfy.svc.cluster.local:80/
                 icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/ntfy.svg
-
-              - title: Cockpit
-                url: http://server.ashpex.net:9090/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/svg/cockpit-light.svg
               - title: Authelia
                 url: https://auth.ashpex.net/
                 check-url: http://authelia.authelia.svc.cluster.local/
