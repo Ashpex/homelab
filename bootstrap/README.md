@@ -51,6 +51,28 @@ Existing NixOS nodes are rebuilt through Ansible:
 make nixos-rebuild host=metal2
 ```
 
+## Kubernetes VIP
+
+kube-vip advertises `192.168.1.100` for the Kubernetes API and Traefik app
+ingress. The platform chart lives in `../platform/kube-vip` and is applied by
+Flux. K3s ServiceLB is disabled so kube-vip owns `LoadBalancer` Services.
+
+Rollout order:
+
+1. Run `make bootstrap-k3s` so `metal0` includes `192.168.1.100` in the K3s
+   API certificate SANs.
+2. Run `make nixos-rebuild host=metal1` and `make nixos-rebuild host=metal2`
+   so the NixOS control-plane nodes include the same SAN.
+3. Commit and push the platform change, then reconcile Flux.
+4. Verify the VIP and Traefik service:
+
+```sh
+kubectl --context homelab -n kube-system get pods -l app.kubernetes.io/name=kube-vip -o wide
+kubectl --context homelab -n traefik get svc traefik
+curl -k https://192.168.1.100:6443/readyz
+curl -k https://192.168.1.100/
+```
+
 ## Local Validation
 
 ```sh

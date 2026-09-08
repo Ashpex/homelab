@@ -1,0 +1,13 @@
+image:
+  repository: ghcr.io/kube-vip/kube-vip
+  tag: v1.2.2
+
+vip:
+  address: 192.168.1.100
+  port: 6443
+  subnet: "32"
+
+leaderElection:
+  leaseDuration: "5"
+  renewDeadline: "3"
+  retryPeriod: "1"

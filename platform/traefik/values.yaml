@@ -38,5 +38,6 @@ traefik:
   service:
     spec:
       type: LoadBalancer
+      loadBalancerIP: 192.168.1.100
   log:
     level: INFO

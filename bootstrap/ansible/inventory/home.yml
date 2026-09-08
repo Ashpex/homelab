@@ -35,11 +35,13 @@ all:
         options: rw,sync,no_subtree_check,crossmnt,no_root_squash
 
     k3s_tls_sans:
+      - 192.168.1.100
       - 100.96.51.117
       - 100.86.220.93
 
     k3s_disable_components:
       - traefik
+      - servicelb
 
   children:
     nixos_nodes:

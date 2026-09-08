@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -13,7 +13,12 @@
     auto-optimise-store = true;
   };
 
-  networking.useDHCP = true;
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 30d";
+  };
+
+  networking.useDHCP = lib.mkDefault true;
 
   boot.loader = {
     systemd-boot.enable = true;
