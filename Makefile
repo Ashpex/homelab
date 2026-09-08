@@ -10,14 +10,14 @@ NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
 HOST ?= $(host)
 
-.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos flux-bootstrap docker-services validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean nixie flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
 	@echo "  nixos-rebuild     Sync repo and rebuild existing NixOS nodes"
 	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
-	@echo "  pxe-nixos         Install NixOS nodes with Nixie"
+	@echo "  nixie             Install NixOS nodes with Nixie"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
 	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
@@ -33,7 +33,7 @@ nixos-rebuild:
 nixos-clean:
 	$(MAKE) -C bootstrap nixos-clean
 
-pxe-nixos:
+nixie:
 	test -n "$(NIXIE_NIXOS_ANYWHERE)"
 	if [ -n "$(NIXIE_K3S_TOKEN_HOST)" ]; then \
 		NIXIE_EXTRA_FILES="$(NIXIE_EXTRA_FILES)" nixos/scripts/prepare-k3s-token --from-host "$(NIXIE_K3S_TOKEN_HOST)"; \
