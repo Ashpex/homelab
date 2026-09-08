@@ -10,7 +10,7 @@ NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
 HOST ?= $(host)
 
-.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos nixie-install flux-bootstrap docker-services validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean pxe-nixos flux-bootstrap docker-services validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
@@ -34,9 +34,6 @@ nixos-clean:
 	$(MAKE) -C bootstrap nixos-clean
 
 pxe-nixos:
-	$(MAKE) nixie-install
-
-nixie-install:
 	test -n "$(NIXIE_NIXOS_ANYWHERE)"
 	if [ -n "$(NIXIE_K3S_TOKEN_HOST)" ]; then \
 		NIXIE_EXTRA_FILES="$(NIXIE_EXTRA_FILES)" nixos/scripts/prepare-k3s-token --from-host "$(NIXIE_K3S_TOKEN_HOST)"; \
