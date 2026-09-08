@@ -28,22 +28,10 @@ make bootstrap-k3s
 make flux-bootstrap
 ```
 
-## NixOS Nodes
+See `bootstrap/README.md` for host bootstrap, Nixie installs, and NixOS
+rebuild commands.
 
-Install NixOS nodes from the repo root with Nixie:
-
-```sh
-make nixie
-```
-
-The temporary PXE installer flake lives in `bootstrap/nixie-installer`; host
-definitions and the Nixie MAC inventory live in `nixos/`.
-
-Rebuild an existing NixOS node with:
-
-```sh
-make nixos-rebuild host=metal2
-```
+See `nixos/README.md` for NixOS host layout and per-node conventions.
 
 ## Validation
 
