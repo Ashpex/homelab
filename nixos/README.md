@@ -8,7 +8,7 @@ Reproducible NixOS configs for homelab Kubernetes nodes.
 - `hosts/<name>`: per-machine config, disk layout, and hardware config.
 - `profiles/`: reusable k3s roles.
 - `modules/`: shared OS, Kubernetes, and storage settings.
-- `installer.nix`: temporary NixOS installer module used by `../nixie-installer`.
+- `installer.nix`: temporary NixOS installer module used by `../bootstrap/nixie-installer`.
 - `nixie-hosts.json`: Nixie host inventory keyed by flake output name.
 
 ## Hosts
