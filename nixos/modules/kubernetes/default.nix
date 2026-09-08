@@ -35,6 +35,12 @@ in
       description = "Node IP address advertised by k3s.";
     };
 
+    tlsSANs = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Additional subject alternative names for the k3s API certificate.";
+    };
+
     advertiseAddress = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -109,6 +115,7 @@ in
         ++ optionals (cfg.serverAddr != null) [ "--server=${cfg.serverAddr}" ]
         ++ optionals (cfg.nodeIP != null) [ "--node-ip=${cfg.nodeIP}" ]
         ++ optionals (cfg.role == "server" && advertiseAddress != null) [ "--advertise-address=${advertiseAddress}" ]
+        ++ optionals (cfg.role == "server") (map (san: "--tls-san=${san}") cfg.tlsSANs)
         ++ optionals (cfg.role == "server" && cfg.clusterInit) [ "--cluster-init" ]
         ++ optionals (cfg.role == "server" && cfg.secretsEncryption) [ "--secrets-encryption" ]
         ++ map (label: "--node-label=${label}") cfg.nodeLabels

@@ -17,6 +17,16 @@ Reproducible NixOS configs for homelab Kubernetes nodes.
 - `metal1`: NixOS k3s control-plane node.
 - `metal2`: NixOS k3s control-plane node.
 
+## LAN Addresses
+
+NixOS nodes use static LAN addresses configured in each host file:
+
+- `metal1`: `192.168.1.111/24`
+- `metal2`: `192.168.1.112/24`
+
+The default gateway is `192.168.1.1`. Keep these addresses outside the router's
+DHCP pool.
+
 Before installing a host, check its disk name with:
 
 ```sh
@@ -35,8 +45,9 @@ make nixie
 ```
 
 This uses Nixie from `github:Ashpex/nixie` to run an ephemeral PXE
-server, boot the custom `bootstrap/nixie-installer` output, and install the host output that
-matches the target machine's MAC address in `nixie-hosts.json`.
+server, boot the custom `bootstrap/nixie-installer` output, and install the
+host output that matches the target machine's MAC address in
+`nixie-hosts.json`.
 
 The Nixie installer will:
 
@@ -94,3 +105,6 @@ To add another node, copy `hosts/metal1` to a new host directory and adjust:
 - disk device in `disk.nix`
 - k3s labels or role profile
 - inventory entry in `bootstrap/ansible/inventory/home.yml`
+
+Control-plane nodes include `192.168.1.100` as a K3s API certificate SAN for
+the kube-vip API address.

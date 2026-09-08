@@ -64,11 +64,13 @@ validate-cluster:
 	helm dependency build ../platform/traefik
 	helm dependency build ../platform/longhorn
 	helm lint ../platform/external-secrets
+	helm lint ../platform/kube-vip
 	helm lint ../platform/traefik
 	helm lint ../platform/local-storage
 	helm lint ../platform/longhorn
 	helm lint ../platform/global-secrets
 	helm template external-secrets ../platform/external-secrets --namespace external-secret >/tmp/homelab-external-secrets-rendered.yaml
+	helm template kube-vip ../platform/kube-vip --namespace kube-system >/tmp/homelab-kube-vip-rendered.yaml
 	helm template traefik ../platform/traefik --namespace traefik >/tmp/homelab-traefik-rendered.yaml
 	helm template local-storage ../platform/local-storage --namespace flux-system >/tmp/homelab-local-storage-rendered.yaml
 	helm template longhorn ../platform/longhorn --namespace longhorn-system >/tmp/homelab-longhorn-rendered.yaml

@@ -7,8 +7,12 @@
     serverAddr = "https://192.168.1.110:6443";
     tokenFile = "/etc/rancher/k3s/node-token";
     secretsEncryption = true;
+    tlsSANs = [
+      "192.168.1.100"
+    ];
     disableComponents = [
       "traefik"
+      "servicelb"
     ];
     nodeLabels = [
       "homelab.node/role=server"
