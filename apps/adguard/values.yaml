@@ -2,6 +2,9 @@ app-template:
   fullnameOverride: adguard
   controllers:
     main:
+      pod:
+        nodeSelector:
+          kubernetes.io/hostname: metal0
       containers:
         main:
           image:
