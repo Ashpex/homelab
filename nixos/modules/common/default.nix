@@ -37,7 +37,7 @@
     enable = true;
     useRoutingFeatures = "server";
     extraUpFlags = [
-      "--advertise-routes=192.168.1.1/32,192.168.1.100/32"
+      "--advertise-routes=192.168.1.1/32,192.168.1.100/32,192.168.1.101/32"
       "--accept-dns=false"
       "--ssh"
     ];
