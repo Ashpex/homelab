@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/kube-vip/kube-vip
-  tag: v1.2.2
+  tag: v1.2.3
 
 vip:
   address: 192.168.1.100
