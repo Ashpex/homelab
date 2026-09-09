@@ -9,7 +9,7 @@ export HELM_CONFIG_HOME
 export HELM_CACHE_HOME
 export HELM_DATA_HOME
 
-.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean flux-bootstrap docker-services validate-host validate-cluster clean-helm-artifacts
+.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean flux-bootstrap validate-host validate-cluster clean-helm-artifacts
 
 help:
 	@echo "IaC targets"
@@ -17,7 +17,6 @@ help:
 	@echo "  nixos-rebuild     Sync repo and rebuild existing NixOS nodes"
 	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply HelmReleases"
-	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible host bootstrap syntax"
 	@echo "  validate-cluster  Render Flux release manifests locally"
 	@echo "  clean-helm-artifacts  Remove generated Helm dependency files"
@@ -33,10 +32,6 @@ nixos-rebuild:
 nixos-clean:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
 	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/nixos-clean.yml --ask-become-pass
-
-docker-services:
-	mkdir -p $(ANSIBLE_LOCAL_TEMP)
-	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/docker-services.yml --ask-become-pass
 
 flux-bootstrap:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
