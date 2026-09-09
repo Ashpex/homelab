@@ -10,7 +10,7 @@ NIXIE_WRAPPER_BIN ?= $(CURDIR)/.tmp/nixie-bin
 NIXIE_EXTRA_ARGS ?=
 HOST ?= $(host)
 
-.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean nixie flux-bootstrap docker-services validate-host validate-cluster pulumi-test
+.PHONY: help bootstrap-k3s nixos-rebuild nixos-clean nixie flux-bootstrap validate-host validate-cluster pulumi-test
 
 help:
 	@echo "Homelab IaC"
@@ -19,7 +19,6 @@ help:
 	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
 	@echo "  nixie             Install NixOS nodes with Nixie"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
-	@echo "  docker-services   Deploy Docker services (AdGuard) on NAS"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
 	@echo "  validate-cluster  Render Flux release manifests locally"
 	@echo "  pulumi-test       Compile the Pulumi Go project"
@@ -55,9 +54,6 @@ nixie:
 		--deployment-ssh-key $(NIXIE_DEPLOYMENT_SSH_KEY) \
 		$(if $(NIXIE_SSH_AGENT_SOCKET),--ssh-agent-socket $(NIXIE_SSH_AGENT_SOCKET),) \
 		$(NIXIE_EXTRA_ARGS)
-
-docker-services:
-	$(MAKE) -C bootstrap docker-services
 
 flux-bootstrap:
 	$(MAKE) -C bootstrap flux-bootstrap
