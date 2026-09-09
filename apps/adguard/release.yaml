@@ -4,7 +4,6 @@ metadata:
   name: adguard
   namespace: flux-system
 spec:
-  suspend: true
   targetNamespace: adguard
   interval: 30m
   dependsOn:
