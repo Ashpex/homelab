@@ -42,7 +42,8 @@ pages:
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/calibre-web.svg
 
               - title: AdGuard Home
-                url: http://server.ashpex.net:8081/ 
+                url: https://adguard.ashpex.net/
+                check-url: http://adguard.adguard.svc.cluster.local/
                 icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/adguard-home.svg
               - title: Frigate
                 url: https://nvr.ashpex.net/
@@ -234,7 +235,7 @@ pages:
                 name: AMD
           - type: dns-stats
             service: adguard
-            url: http://server.ashpex.net:8081/
+            url: http://adguard.adguard.svc.cluster.local/
             username: ashpex
             password: REMOVED
   - name: Homelab
