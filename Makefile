@@ -16,7 +16,7 @@ help:
 	@echo "Homelab IaC"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
 	@echo "  nixos-rebuild     Sync repo and rebuild existing NixOS nodes"
-	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
+	@echo "  nixos-clean       Prune NixOS generations and remove rebuild artifacts"
 	@echo "  nixie             Install NixOS nodes with Nixie"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply releases"
 	@echo "  validate-host     Check Ansible bootstrap syntax"
@@ -30,7 +30,7 @@ nixos-rebuild:
 	$(MAKE) -C bootstrap nixos-rebuild HOST="$(HOST)"
 
 nixos-clean:
-	$(MAKE) -C bootstrap nixos-clean
+	$(MAKE) -C bootstrap nixos-clean HOST="$(HOST)"
 
 nixie:
 	test -n "$(NIXIE_NIXOS_ANYWHERE)"

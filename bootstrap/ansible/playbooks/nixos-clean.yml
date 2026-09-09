@@ -1,5 +1,5 @@
 ---
-- name: Clean NixOS node rebuild artifacts
+- name: Clean NixOS system generations and rebuild artifacts
   hosts: nixos_nodes
   gather_facts: false
 
@@ -7,7 +7,21 @@
     homelab_remote_repo: "/home/{{ ansible_user | default('ashpex') }}/homelab"
 
   tasks:
+    - name: Keep current NixOS system generation and two previous generations
+      ansible.builtin.raw: nix-env --profile /nix/var/nix/profiles/system --delete-generations +2
+      become: true
+      changed_when: true
+
+    - name: Collect unreferenced Nix store paths
+      ansible.builtin.raw: nix-collect-garbage -d
+      become: true
+      changed_when: true
+
+    - name: Regenerate NixOS boot entries
+      ansible.builtin.raw: /run/current-system/bin/switch-to-configuration boot
+      become: true
+      changed_when: true
+
     - name: Remove synced homelab repo
-      ansible.builtin.file:
-        path: "{{ homelab_remote_repo }}"
-        state: absent
+      ansible.builtin.raw: "rm -rf {{ homelab_remote_repo | quote }}"
+      changed_when: true

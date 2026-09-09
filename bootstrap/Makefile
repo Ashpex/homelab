@@ -15,7 +15,7 @@ help:
 	@echo "IaC targets"
 	@echo "  bootstrap-k3s     Configure Ubuntu host and install K3s (server/NAS)"
 	@echo "  nixos-rebuild     Sync repo and rebuild existing NixOS nodes"
-	@echo "  nixos-clean       Remove temporary NixOS rebuild artifacts"
+	@echo "  nixos-clean       Prune NixOS generations and remove rebuild artifacts"
 	@echo "  flux-bootstrap    Install Flux source/helm controllers and apply HelmReleases"
 	@echo "  validate-host     Check Ansible host bootstrap syntax"
 	@echo "  validate-cluster  Render Flux release manifests locally"
@@ -31,7 +31,7 @@ nixos-rebuild:
 
 nixos-clean:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
-	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/nixos-clean.yml --ask-become-pass
+	ANSIBLE_LOCAL_TEMP=$(ANSIBLE_LOCAL_TEMP) ANSIBLE_REMOTE_TEMP=$(ANSIBLE_REMOTE_TEMP) ansible-playbook -i ansible/inventory/home.yml ansible/playbooks/nixos-clean.yml $(if $(HOST),--limit $(HOST),) --ask-become-pass
 
 flux-bootstrap:
 	mkdir -p $(ANSIBLE_LOCAL_TEMP)
