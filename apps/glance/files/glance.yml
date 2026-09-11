@@ -166,6 +166,12 @@ pages:
                 timeout: 5s
                 icon: si:longhorn
 
+          - type: dns-stats
+            service: adguard
+            url: http://adguard.adguard.svc.cluster.local/
+            username: ${ADGUARD_USERNAME}
+            password: ${ADGUARD_PASSWORD}
+
   - name: Home
     columns:
       - size: small
@@ -233,11 +239,6 @@ pages:
                 name: Google
               - symbol: AMD
                 name: AMD
-          - type: dns-stats
-            service: adguard
-            url: http://adguard.adguard.svc.cluster.local/
-            username: ashpex
-            password: REMOVED
   - name: Homelab
     columns:
 
