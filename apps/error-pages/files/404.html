@@ -29,7 +29,11 @@
     .content {
       position: relative;
       z-index: 1;
-      padding: 0 0 0 12vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding: 0 2rem;
     }
 
     .glyph {
@@ -37,7 +41,7 @@
       opacity: 0.7;
     }
 
-    .lines { font-size: 0.9rem; line-height: 2; }
+    .lines { font-size: 0.9rem; line-height: 2; text-align: left; }
 
     .line { opacity: 0; white-space: nowrap; }
     .line.dim  { color: #2d5a2d; }
