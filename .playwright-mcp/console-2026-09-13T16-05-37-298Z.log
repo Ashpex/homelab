@@ -1,1 +1,3 @@
 [     585ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://mindfront.engineering/404?via=404sdesign:0
+[  484166ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://test.ashpex.net/:0
+[  484186ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://test.ashpex.net/favicon.ico:0
