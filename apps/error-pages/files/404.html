@@ -40,6 +40,7 @@
     .line.dim  { color: #2d5a2d; }
     .line.main { color: #00ff41; }
     .line.blue { color: #00ff41; }
+    .line.resp { color: #2d5a2d; opacity: 1; }
     .line.link a {
       color: #00ff41;
       text-decoration: none;
@@ -47,19 +48,29 @@
     }
     .line.link a:hover { border-bottom-color: #00ff41; }
 
-    .cursor {
-      display: inline-block;
-      width: 8px;
-      height: 1em;
-      background: #00ff41;
-      vertical-align: text-bottom;
-      animation: blink 1s step-end infinite;
+    .prompt-line {
+      display: flex;
+      align-items: center;
       opacity: 0;
+      font-size: 0.9rem;
+      line-height: 2;
+    }
+    .prompt-line.visible { opacity: 1; }
+    .prompt-sym { margin-right: 4px; }
+    .prompt-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #00ff41;
+      font-family: inherit;
+      font-size: inherit;
+      caret-color: #00ff41;
+      width: 300px;
     }
 
-    @keyframes blink { 50% { opacity: 0; } 0%, 100% { opacity: 1; } }
-
     .visible { opacity: 1; }
+
+    @keyframes blink { 50% { opacity: 0; } 0%, 100% { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -88,7 +99,11 @@
       <div class="line dim"  data-delay="1500">[ ... ] this page doesn't exist or you don't have permission to view it</div>
       <div class="line blue" data-delay="2200">[ &bull; ] where do you want to go?</div>
       <div class="line link" data-delay="2900">&gt; <a href="https://ashpex.net">~/home</a></div>
-      <div class="line blue" data-delay="3400" id="cursor-line">&gt; <span class="cursor" id="cur"></span></div>
+    </div>
+
+    <div class="prompt-line" id="prompt">
+      <span class="prompt-sym">&gt;</span>
+      <input class="prompt-input" id="input" type="text" autocomplete="off" spellcheck="false" autofocus />
     </div>
   </div>
 
@@ -120,7 +135,7 @@
         if (d.a < 0.1 || d.a > 1) d.s *= -1;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(61,155,233,${d.a * 0.5})`;
+        ctx.fillStyle = `rgba(0,255,65,${d.a * 0.3})`;
         ctx.fill();
       });
       requestAnimationFrame(draw);
@@ -135,7 +150,56 @@
     document.querySelectorAll('.line[data-delay]').forEach(el => {
       setTimeout(() => el.classList.add('visible'), +el.dataset.delay);
     });
-    setTimeout(() => document.getElementById('cur').classList.add('visible'), 3400);
+    const prompt = document.getElementById('prompt');
+    setTimeout(() => {
+      prompt.classList.add('visible');
+      document.getElementById('input').focus();
+    }, 3400);
+
+    // commands
+    const commands = {
+      help:   '[ available ] clear, date, help, whoami, home',
+      whoami: 'unknown — access denied',
+      date:   () => new Date().toString(),
+      home:   () => { window.location.href = 'https://ashpex.net'; return 'redirecting...'; },
+      clear:  '__clear__',
+    };
+
+    const linesEl = document.getElementById('lines');
+    const input   = document.getElementById('input');
+
+    function addLine(text, cls = 'resp') {
+      const d = document.createElement('div');
+      d.className = `line ${cls}`;
+      d.style.opacity = '1';
+      d.textContent = text;
+      linesEl.appendChild(d);
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const raw  = input.value.trim();
+      const cmd  = raw.split(' ')[0].toLowerCase();
+      const args = raw.slice(cmd.length).trim();
+      input.value = '';
+
+      if (!raw) return;
+
+      addLine('> ' + raw, 'main');
+
+      const handler = commands[cmd];
+      if (!handler) {
+        addLine(`command not found: ${cmd}`);
+      } else if (handler === '__clear__') {
+        linesEl.innerHTML = '';
+      } else {
+        const out = typeof handler === 'function' ? handler(args) : handler;
+        if (out) addLine(out);
+      }
+    });
+
+    // keep input focused on click anywhere
+    document.addEventListener('click', () => input.focus());
   </script>
 </body>
 </html>
