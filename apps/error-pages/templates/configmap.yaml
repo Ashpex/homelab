@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: error-pages-html
+  namespace: {{ .Release.Namespace }}
+data:
+  404.html: |
+{{ .Files.Get "files/404.html" | indent 4 }}

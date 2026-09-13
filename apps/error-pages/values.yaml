@@ -1,0 +1,30 @@
+app-template:
+  fullnameOverride: error-pages
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: nginx
+            tag: alpine
+          ports:
+          - name: http
+            containerPort: 80
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 80
+          protocol: HTTP
+  persistence:
+    html:
+      enabled: true
+      type: configMap
+      name: error-pages-html
+      globalMounts:
+        - path: /usr/share/nginx/html

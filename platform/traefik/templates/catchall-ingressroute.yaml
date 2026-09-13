@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: catch-all
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostRegexp(`.+`)
+      kind: Rule
+      priority: 1
+      middlewares:
+        - name: error-pages
+          namespace: traefik
+      services:
+        - name: error-pages
+          namespace: traefik
+          port: 80
