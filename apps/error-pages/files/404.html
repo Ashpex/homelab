@@ -14,10 +14,10 @@
       font-weight: bold;
       background: #050f05;
       color: #00ff41;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
       display: flex;
       align-items: center;
+      justify-content: center;
     }
 
     canvas {
@@ -31,19 +31,28 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      width: 100%;
-      padding: 0 2rem;
+      align-items: flex-start;
+      width: min(560px, 100% - 3rem);
+      padding: 2rem 0;
     }
 
     .glyph {
       margin-bottom: 36px;
       opacity: 0.7;
+      width: clamp(48px, 10vw, 72px);
+      height: auto;
+      display: block;
     }
 
-    .lines { font-size: 0.9rem; line-height: 2; text-align: left; }
+    .lines {
+      font-size: clamp(0.72rem, 2.5vw, 0.9rem);
+      line-height: 2;
+      width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
 
-    .line { opacity: 0; white-space: nowrap; }
+    .line { opacity: 0; }
     .line.dim  { color: #2d5a2d; }
     .line.main { color: #00ff41; }
     .line.blue { color: #00ff41; }
@@ -59,11 +68,12 @@
       display: flex;
       align-items: center;
       opacity: 0;
-      font-size: 0.9rem;
+      font-size: clamp(0.72rem, 2.5vw, 0.9rem);
       line-height: 2;
+      width: 100%;
     }
     .prompt-line.visible { opacity: 1; }
-    .prompt-sym { margin-right: 4px; }
+    .prompt-sym { margin-right: 4px; flex-shrink: 0; }
     .prompt-input {
       background: transparent;
       border: none;
@@ -72,7 +82,8 @@
       font-family: inherit;
       font-size: inherit;
       caret-color: #00ff41;
-      width: 300px;
+      width: 100%;
+      min-width: 0;
     }
 
     .visible { opacity: 1; }
@@ -158,9 +169,10 @@
       setTimeout(() => el.classList.add('visible'), +el.dataset.delay);
     });
     const prompt = document.getElementById('prompt');
+    const isTouchDevice = window.matchMedia('(hover: none)').matches;
     setTimeout(() => {
       prompt.classList.add('visible');
-      document.getElementById('input').focus();
+      if (!isTouchDevice) document.getElementById('input').focus();
     }, 3400);
 
     // commands
@@ -205,8 +217,8 @@
       }
     });
 
-    // keep input focused on click anywhere
-    document.addEventListener('click', () => input.focus());
+    // keep input focused on click anywhere (desktop only)
+    if (!isTouchDevice) document.addEventListener('click', () => input.focus());
   </script>
 </body>
 </html>
