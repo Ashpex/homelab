@@ -214,16 +214,17 @@ pages:
 
       - size: small
         widgets:
+          - type: weather
+            location: Ho Chi Minh City, Vietnam
+
           - type: rss
             title: ~/ashpex
             limit: 5
             cache: 1h
-            style: horizontal-cards
+            style: detailed-list
+            thumbnail-height: 80
             feeds:
               - url: https://ashpex.net/index.xml
-
-          - type: weather
-            location: Ho Chi Minh City, Vietnam
 
   - name: Homelab
     columns:
@@ -399,7 +400,6 @@ pages:
             style: grid-cards
             collapse-after-rows: 3
             channels:
-              - UCNvzD7Z-g64bPXxGzaQaa4g # gameranx
               - UCZ7AeeVbyslLM_8-nVy2B8Q # Skill Up
               - UCHDxYLv8iovIbhrfl16CNyg # GameLinked
               - UC9PBzalIcEQCsiIkq36PyUA # Digital Foundry
