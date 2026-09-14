@@ -221,8 +221,7 @@ pages:
             title: ~/ashpex
             limit: 5
             cache: 1h
-            style: detailed-list
-            thumbnail-height: 80
+            style: vertical-list
             feeds:
               - url: https://ashpex.net/index.xml
 
