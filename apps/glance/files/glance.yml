@@ -250,22 +250,18 @@ pages:
               - UCVy16RS5eEDh8anP8j94G2A # DbTech
       - size: small
         widgets:
-          - type: rss
-            title: RSS feed 
-            style: vertical-list 
-            feeds:
-              - url: https://noted.lol/rss/ 
-                title: noted.lol
           - type: releases
             show-source-icon: true
             repositories:
             - navidrome/navidrome
             - glanceapp/glance
             - immich-app/immich
-            - advplyr/audiobookshelf
             - AdguardTeam/AdGuardHome
-
             - restic/restic
+            - rommapp/romm
+            - blakeblackshear/frigate
+            - binwiederhier/ntfy
+            - actualbudget/actual
 
 
 
