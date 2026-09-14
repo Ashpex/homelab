@@ -397,7 +397,7 @@ pages:
 
           - type: videos
             style: grid-cards
-            collapse-after-rows: 3
+            collapse-after-rows: 2
             channels:
               - UCZ7AeeVbyslLM_8-nVy2B8Q # Skill Up
               - UCHDxYLv8iovIbhrfl16CNyg # GameLinked
