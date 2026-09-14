@@ -196,12 +196,27 @@ pages:
 
       - size: full
         widgets:
+          - type: group
+            widgets:
+              - type: reddit
+                show-thumbnails: true
+                show-flairs: true
+                subreddit: homelab
+              - type: reddit
+                show-thumbnails: true
+                show-flairs: true
+                subreddit: selfhosted
+
           - type: hacker-news
 
           - type: videos
+            collapse-after-rows: 2
             channels:
               - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
               - UCi8C7TNs2ohrc6hnRQ5Sn2w # Kai Lentit
+              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
+              - UCjSEJkpGbcZhvo0lr-44X_w # techhut
+              - UCVS6ejD9NLZvjsvhcbiDzjw # Crosstalk Solutions
 
           - type: lobsters
             sort-by: hot
@@ -217,45 +232,6 @@ pages:
           - type: weather
             location: Ho Chi Minh City, Vietnam
 
-          - type: rss
-            title: ~/ashpex
-            limit: 5
-            cache: 1h
-            style: vertical-list
-            feeds:
-              - url: https://ashpex.net/index.xml
-
-  - name: Homelab
-    columns:
-
-      - size: full
-        widgets:
-          - type: group
-            widgets:
-              - type: reddit
-                show-thumbnails: true
-                show-flairs: true
-                subreddit: selfhosted 
-              - type: reddit
-                subreddit: homelab 
-                show-thumbnails: true
-                show-flairs: true
-
-          - type: videos
-            style: grid-cards
-            collapse-after-rows: 3
-            channels:
-              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
-              - UCv6J_jJa8GJqFwQNgNrMuww # ServeTheHome
-              - UCOk-gHyjcWZNj3Br4oxwh0A # Techno Tim
-              - UCZNhwA1B5YqiY1nLzmM0ZRg # Christian Lempa
-              - UCp3yVOm6A55nx65STpm3tXQ # Craft Computing
-              - UCsnGwSIHyoYN0kiINAGUKxg # wolfgang
-              - UCjSEJkpGbcZhvo0lr-44X_w # techhut
-              - UCVS6ejD9NLZvjsvhcbiDzjw # crosstalk
-              - UCVy16RS5eEDh8anP8j94G2A # DbTech
-      - size: small
-        widgets:
           - type: releases
             show-source-icon: true
             repositories:
@@ -268,7 +244,6 @@ pages:
             - blakeblackshear/frigate
             - binwiederhier/ntfy
             - actualbudget/actual
-
 
 
   - name: Gaming
@@ -376,7 +351,7 @@ pages:
                   <div style="min-width: 0;">
                     <a class="size-h4 color-highlight block text-truncate" href="{{ $urlPrefix }}{{ .Int "id" }}/">{{ .String "name" }}</a>
                     <ul class="list-horizontal-text">
-                      <li>{{ .Int "final_price" | toFloat | mul 0.01 | printf "₫%.0f" }}</li>
+                      <li>{{ .Int "final_price" | toFloat | mul 0.00001 | printf "₫%.0f,000" }}</li>
                       {{ $discount := .Int "discount_percent" }}
                       <li{{ if ge $discount 40 }} class="color-positive"{{ end }}>{{ $discount }}% off</li>
                     </ul>
