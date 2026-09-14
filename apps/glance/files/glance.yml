@@ -365,13 +365,16 @@ pages:
                 {{ if findMatch "/steam/apps/" $header }}
                   {{ $urlPrefix = "https://store.steampowered.com/app/" }}
                 {{ end }}
-                <li>
-                  <a class="size-h4 color-highlight block text-truncate" href="{{ $urlPrefix }}{{ .Int "id" }}/">{{ .String "name" }}</a>
-                  <ul class="list-horizontal-text">
-                    <li>{{ .Int "final_price" | toFloat | mul 0.01 | printf "$%.2f" }}</li>
-                    {{ $discount := .Int "discount_percent" }}
-                    <li{{ if ge $discount 40 }} class="color-positive"{{ end }}>{{ $discount }}% off</li>
-                  </ul>
+                <li style="display: flex; align-items: center; gap: 0.75rem;">
+                  <img src="{{ .String "small_capsule_image" }}" alt="{{ .String "name" }}" style="width: 60px; border-radius: var(--border-radius); flex-shrink: 0;">
+                  <div style="min-width: 0;">
+                    <a class="size-h4 color-highlight block text-truncate" href="{{ $urlPrefix }}{{ .Int "id" }}/">{{ .String "name" }}</a>
+                    <ul class="list-horizontal-text">
+                      <li>{{ .Int "final_price" | toFloat | mul 0.01 | printf "$%.2f" }}</li>
+                      {{ $discount := .Int "discount_percent" }}
+                      <li{{ if ge $discount 40 }} class="color-positive"{{ end }}>{{ $discount }}% off</li>
+                    </ul>
+                  </div>
                 </li>
               {{ end }}
               </ul>
