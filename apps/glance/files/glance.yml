@@ -195,9 +195,6 @@ pages:
               - url: https://ishadeed.com/feed.xml
                 title: Ahmad Shadeed
 
-          - type: twitch-channels
-            channels:
-              - asmongold
 
       - size: full
         widgets:
@@ -222,20 +219,6 @@ pages:
           - type: weather
             location: Ho Chi Minh City, Vietnam
 
-          - type: markets
-            markets:
-              - symbol: BTC-USD
-                name: Bitcoin
-              - symbol: NVDA
-                name: NVIDIA
-              - symbol: AAPL
-                name: Apple
-              - symbol: MSFT
-                name: Microsoft
-              - symbol: GOOGL
-                name: Google
-              - symbol: AMD
-                name: AMD
   - name: Homelab
     columns:
 
@@ -281,8 +264,7 @@ pages:
             - immich-app/immich
             - advplyr/audiobookshelf
             - AdguardTeam/AdGuardHome
-            - portainer/portainer
-            - haiwen/seafile
+
             - restic/restic
 
 
@@ -400,9 +382,3 @@ pages:
               - UCHDxYLv8iovIbhrfl16CNyg # GameLinked
               - UC9PBzalIcEQCsiIkq36PyUA # Digital Foundry
 
-      - size: small
-        widgets:
-          - type: reddit
-            subreddit: gamingnews
-            limit: 7
-            style: vertical-cards
