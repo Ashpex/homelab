@@ -180,14 +180,6 @@ pages:
           - type: calendar
 
           - type: rss
-            title: ~/ashpex
-            limit: 5
-            cache: 1h
-            style: detailed-list
-            feeds:
-              - url: https://ashpex.net/index.xml
-
-          - type: rss
             limit: 10
             collapse-after: 3
             cache: 1h
@@ -222,6 +214,14 @@ pages:
 
       - size: small
         widgets:
+          - type: rss
+            title: ~/ashpex
+            limit: 5
+            cache: 1h
+            style: horizontal-cards
+            feeds:
+              - url: https://ashpex.net/index.xml
+
           - type: weather
             location: Ho Chi Minh City, Vietnam
 
