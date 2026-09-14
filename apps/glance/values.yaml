@@ -48,6 +48,11 @@ app-template:
               secretKeyRef:
                 name: glance-adguard
                 key: password
+          - name: STEAM_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: glance-steam
+                key: api-key
           ports:
           - name: http
             containerPort: 8080

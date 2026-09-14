@@ -293,6 +293,10 @@ pages:
                       {{ if eq $status 5 }}<span class="color-primary">Looking to trade</span>{{ end }}
                       {{ if eq $status 6 }}<span class="color-primary">Looking to play</span>{{ end }}
                     </p>
+                    {{ $game := $player.String "gameextrainfo" }}
+                    {{ if $game }}
+                    <p>Playing: <span class="color-positive"><a href="https://store.steampowered.com/app/{{ $player.String "gameid" }}" target="_blank" class="color-positive">{{ $game }}</a></span></p>
+                    {{ end }}
                     <p>Last Logoff: <span class="color-subdue" data-dynamic-relative-time="{{ $player.Int "lastlogoff" }}"></span></p>
                     <p>Account Created: <span class="color-subdue" data-dynamic-relative-time="{{ $player.Int "timecreated" }}"></span></p>
                     <p>Country: <span class="color-subdue">{{ $player.String "loccountrycode" }}</span></p>
@@ -370,6 +374,29 @@ pages:
 
       - size: small
         widgets:
+          - type: custom-api
+            title: Steam Specials
+            cache: 12h
+            url: https://store.steampowered.com/api/featuredcategories?cc=vn
+            template: |
+              <ul class="list list-gap-10 collapsible-container" data-collapse-after="5">
+              {{ range .JSON.Array "specials.items" }}
+                {{ $header := .String "header_image" }}
+                {{ $urlPrefix := "https://store.steampowered.com/sub/" }}
+                {{ if findMatch "/steam/apps/" $header }}
+                  {{ $urlPrefix = "https://store.steampowered.com/app/" }}
+                {{ end }}
+                <li>
+                  <a class="size-h4 color-highlight block text-truncate" href="{{ $urlPrefix }}{{ .Int "id" }}/">{{ .String "name" }}</a>
+                  <ul class="list-horizontal-text">
+                    <li>{{ .Int "final_price" | toFloat | mul 0.01 | printf "₫%.0f" }}</li>
+                    {{ $discount := .Int "discount_percent" }}
+                    <li{{ if ge $discount 40 }} class="color-positive"{{ end }}>{{ $discount }}% off</li>
+                  </ul>
+                </li>
+              {{ end }}
+              </ul>
+
           - type: twitch-top-games
             limit: 20
             collapse-after: 13
