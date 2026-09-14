@@ -197,20 +197,11 @@ pages:
 
           - type: twitch-channels
             channels:
-              - theprimeagen
-              - cohhcarnage
-              - christitustech
-              - blurbs
               - asmongold
-              - jembawls
 
       - size: full
         widgets:
           - type: hacker-news
-
-          - type: videos
-            channels:
-              - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
 
           - type: lobsters
             sort-by: hot
@@ -220,6 +211,11 @@ pages:
               - linux
               - android
               - privacy
+
+          - type: videos
+            channels:
+              - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
+              - UCi8C7TNs2ohrc6hnRQ5Sn2w # Kai Lentit
 
       - size: small
         widgets:
@@ -298,7 +294,7 @@ pages:
           - type: custom-api
             title: Steam User
             cache: 1h
-            url: https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=B90CCD69B6AD653FFE98DA9B562A0919&steamids=76561198382644086
+            url: https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${STEAM_API_KEY}&steamids=76561198382644086
             template: |
               <div class="steam-user-stats" style="display: flex; align-items: flex-start;">
                 {{ $players := .JSON.Array "response.players" }}
@@ -331,7 +327,7 @@ pages:
           - type: custom-api
             title: Recently Played Games
             cache: 1h
-            url: http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=B90CCD69B6AD653FFE98DA9B562A0919&steamid=76561198382644086&format=json
+            url: http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${STEAM_API_KEY}&steamid=76561198382644086&format=json
             template: |
               <div>
                 {{ if eq .Response.StatusCode 200 }}
