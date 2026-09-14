@@ -349,16 +349,6 @@ pages:
                 {{ end }}
               </div>
 
-          - type: twitch-top-games
-            limit: 20
-            collapse-after: 13
-            exclude:
-              - just-chatting
-              - pools-hot-tubs-and-beaches
-              - music
-              - art
-              - asmr
-
       - size: full
         widgets:
           - type: group
@@ -378,3 +368,14 @@ pages:
               - UCHDxYLv8iovIbhrfl16CNyg # GameLinked
               - UC9PBzalIcEQCsiIkq36PyUA # Digital Foundry
 
+      - size: small
+        widgets:
+          - type: twitch-top-games
+            limit: 20
+            collapse-after: 13
+            exclude:
+              - just-chatting
+              - pools-hot-tubs-and-beaches
+              - music
+              - art
+              - asmr
