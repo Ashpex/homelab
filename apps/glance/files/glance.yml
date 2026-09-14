@@ -180,14 +180,20 @@ pages:
           - type: calendar
 
           - type: rss
+            title: ~/ashpex
+            limit: 5
+            cache: 1h
+            style: detailed-list
+            feeds:
+              - url: https://ashpex.net/index.xml
+
+          - type: rss
             limit: 10
             collapse-after: 3
             cache: 1h
             feeds:
               - url: https://feeds.arstechnica.com/arstechnica/index
                 title: arstechnica
-              - url: https://ashpex.net/index.xml
-                title: ~/ashpex
               - url: https://www.joshwcomeau.com/rss.xml
                 title: Josh Comeau
               - url: https://samwho.dev/rss.xml
@@ -200,6 +206,11 @@ pages:
         widgets:
           - type: hacker-news
 
+          - type: videos
+            channels:
+              - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
+              - UCi8C7TNs2ohrc6hnRQ5Sn2w # Kai Lentit
+
           - type: lobsters
             sort-by: hot
             tags:
@@ -208,11 +219,6 @@ pages:
               - linux
               - android
               - privacy
-
-          - type: videos
-            channels:
-              - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
-              - UCi8C7TNs2ohrc6hnRQ5Sn2w # Kai Lentit
 
       - size: small
         widgets:
