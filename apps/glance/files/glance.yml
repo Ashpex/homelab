@@ -222,7 +222,6 @@ pages:
           - type: videos
             collapse-after-rows: 2
             channels:
-              - UCXuqSBlHAE6Xw-yeJA0Tunw # LinusTechtTips
               - UCi8C7TNs2ohrc6hnRQ5Sn2w # Kai Lentit
               - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
               - UCjSEJkpGbcZhvo0lr-44X_w # techhut
@@ -230,8 +229,7 @@ pages:
 
       - size: small
         widgets:
-          - type: weather
-            location: Ho Chi Minh City, Vietnam
+          - type: calendar
 
           - type: releases
             show-source-icon: true
