@@ -172,6 +172,7 @@ pages:
             username: ${ADGUARD_USERNAME}
             password: ${ADGUARD_PASSWORD}
 
+
   - name: Home
     columns:
       - size: small
@@ -294,6 +295,86 @@ pages:
     columns:
       - size: small
         widgets:
+          - type: custom-api
+            title: Steam User
+            cache: 1h
+            url: https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=B90CCD69B6AD653FFE98DA9B562A0919&steamids=76561198382644086
+            template: |
+              <div class="steam-user-stats" style="display: flex; align-items: flex-start;">
+                {{ $players := .JSON.Array "response.players" }}
+                {{ if gt (len $players) 0 }}
+                  {{ $player := index $players 0 }}
+                  <div style="flex-shrink: 0; margin-right: 1em; display: flex; flex-direction: column; align-items: center;">
+                    <a href="{{ $player.String "profileurl" }}"><img src="{{ $player.String "avatarmedium" }}" alt="Avatar" style="border-radius: var(--border-radius);"></a>
+                  </div>
+                  <div>
+                    <h2 class="size-h3 color-primary">{{ $player.String "personaname" }}</h2>
+                    <p>Status:
+                      {{ $status := $player.Int "personastate" }}
+                      {{ if eq $status 0 }}<span class="color-negative">Offline</span>{{ end }}
+                      {{ if eq $status 1 }}<span class="color-positive">Online</span>{{ end }}
+                      {{ if eq $status 2 }}<span class="color-highlight">Busy</span>{{ end }}
+                      {{ if eq $status 3 }}<span class="color-subdue">Away</span>{{ end }}
+                      {{ if eq $status 4 }}<span class="color-subdue">Snooze</span>{{ end }}
+                      {{ if eq $status 5 }}<span class="color-primary">Looking to trade</span>{{ end }}
+                      {{ if eq $status 6 }}<span class="color-primary">Looking to play</span>{{ end }}
+                    </p>
+                    <p>Last Logoff: <span class="color-subdue" data-dynamic-relative-time="{{ $player.Int "lastlogoff" }}"></span></p>
+                    <p>Account Created: <span class="color-subdue" data-dynamic-relative-time="{{ $player.Int "timecreated" }}"></span></p>
+                    <p>Country: <span class="color-subdue">{{ $player.String "loccountrycode" }}</span></p>
+                  </div>
+                {{ else }}
+                  <p class="color-negative">No player data found.</p>
+                {{ end }}
+              </div>
+
+          - type: custom-api
+            title: Recently Played Games
+            cache: 1h
+            url: http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=B90CCD69B6AD653FFE98DA9B562A0919&steamid=76561198382644086&format=json
+            template: |
+              <div>
+                {{ if eq .Response.StatusCode 200 }}
+                  {{ $games := .JSON.Array "response.games" }}
+                  {{ if gt (len $games) 0 }}
+                    <ul class="list list-gap-10 collapsible-container" data-collapse-after="5">
+                      {{ range $games }}
+                        <li style="display: flex; align-items: center;">
+                          <a href="https://store.steampowered.com/app/{{ .Int "appid" }}" target="_blank">
+                            <img
+                              src="http://media.steampowered.com/steamcommunity/public/images/apps/{{ .Int "appid" }}/{{ .String "img_icon_url" }}.jpg"
+                              alt="{{ .String "name" }}"
+                              style="width: 32px; border-radius: var(--border-radius); margin-right: 10px;">
+                          </a>
+                          <div>
+                            <a
+                              href="https://store.steampowered.com/app/{{ .Int "appid" }}"
+                              class="size-base color-primary"
+                              target="_blank"
+                            >
+                              {{ .String "name" }}
+                            </a>
+                            <br>
+                            <span class="size-h5 color-subdue">
+                              Last 2 weeks:
+                              {{ if gt (toFloat (.Int "playtime_2weeks")) 60.0 }}
+                                {{ printf "%.2f hrs" (div (toFloat (.Int "playtime_2weeks")) 60.0) }}
+                              {{ else }}
+                                {{ .Int "playtime_2weeks" }} mins
+                              {{ end }}
+                            </span>
+                          </div>
+                        </li>
+                      {{ end }}
+                    </ul>
+                  {{ else }}
+                    <p class="color-negative">No recently played games found.</p>
+                  {{ end }}
+                {{ else }}
+                  <p class="color-negative">An unexpected error occurred. Please try again later.</p>
+                {{ end }}
+              </div>
+
           - type: twitch-top-games
             limit: 20
             collapse-after: 13
