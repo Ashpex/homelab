@@ -207,7 +207,17 @@ pages:
                 show-flairs: true
                 subreddit: selfhosted
 
-          - type: hacker-news
+          - type: group
+            widgets:
+              - type: hacker-news
+              - type: lobsters
+                sort-by: hot
+                tags:
+                  - go
+                  - security
+                  - linux
+                  - android
+                  - privacy
 
           - type: videos
             collapse-after-rows: 2
@@ -217,15 +227,6 @@ pages:
               - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
               - UCjSEJkpGbcZhvo0lr-44X_w # techhut
               - UCVS6ejD9NLZvjsvhcbiDzjw # Crosstalk Solutions
-
-          - type: lobsters
-            sort-by: hot
-            tags:
-              - go
-              - security
-              - linux
-              - android
-              - privacy
 
       - size: small
         widgets:
