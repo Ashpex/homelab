@@ -177,8 +177,6 @@ pages:
     columns:
       - size: small
         widgets:
-          - type: calendar
-
           - type: rss
             limit: 10
             collapse-after: 3
@@ -192,6 +190,19 @@ pages:
               - url: https://awesomekling.github.io/feed.xml
               - url: https://ishadeed.com/feed.xml
                 title: Ahmad Shadeed
+
+          - type: releases
+            show-source-icon: true
+            repositories:
+            - navidrome/navidrome
+            - glanceapp/glance
+            - immich-app/immich
+            - AdguardTeam/AdGuardHome
+            - restic/restic
+            - rommapp/romm
+            - blakeblackshear/frigate
+            - binwiederhier/ntfy
+            - actualbudget/actual
 
 
       - size: full
@@ -229,6 +240,9 @@ pages:
 
       - size: small
         widgets:
+          - type: weather
+            location: Ho Chi Minh City, Vietnam
+
           - type: calendar
 
           - type: releases
