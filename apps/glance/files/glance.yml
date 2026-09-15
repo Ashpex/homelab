@@ -209,17 +209,6 @@ pages:
         widgets:
           - type: group
             widgets:
-              - type: reddit
-                show-thumbnails: true
-                show-flairs: true
-                subreddit: homelab
-              - type: reddit
-                show-thumbnails: true
-                show-flairs: true
-                subreddit: selfhosted
-
-          - type: group
-            widgets:
               - type: hacker-news
               - type: lobsters
                 sort-by: hot
@@ -237,6 +226,17 @@ pages:
               - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
               - UCjSEJkpGbcZhvo0lr-44X_w # techhut
               - UCVS6ejD9NLZvjsvhcbiDzjw # Crosstalk Solutions
+
+          - type: group
+            widgets:
+              - type: reddit
+                show-thumbnails: true
+                show-flairs: true
+                subreddit: homelab
+              - type: reddit
+                show-thumbnails: true
+                show-flairs: true
+                subreddit: selfhosted
 
       - size: small
         widgets:
