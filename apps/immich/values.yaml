@@ -184,7 +184,7 @@ app-template:
     postgres-data:
       enabled: true
       type: persistentVolumeClaim
-      existingClaim: immich-postgres
+      existingClaim: immich-postgres-v16
       advancedMounts:
         postgres:
           main:
