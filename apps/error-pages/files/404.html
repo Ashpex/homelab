@@ -6,33 +6,15 @@
   <title>404 Not Found</title>
   <style>
     :root {
-      color-scheme: light dark;
       --bg: #e7eee4;
       --fg: #14241d;
       --muted: #5c6f65;
       --line: #c9d7cc;
       --accent: #2f7d66;
-      --cat: #6f8f72;
-      --cat-dark: #21382c;
-      --cat-cream: #d7e4d5;
-      --eye: #2f7d66;
-      --glass: #8abfaf;
+      --cat: #8dad76;
+      --cat-dark: #14241d;
+      --cat-cream: #dce8d7;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #111b16;
-        --fg: #e5f0e7;
-        --muted: #9db0a3;
-        --line: #24352b;
-        --accent: #8bc9ae;
-        --cat: #5f7d65;
-        --cat-dark: #dcecdf;
-        --cat-cream: #1f3127;
-        --eye: #8bc9ae;
-        --glass: #6cae9b;
-      }
     }
 
     body {
@@ -55,15 +37,14 @@
     }
 
     .cat {
-      width: min(15rem, 64vw);
+      width: min(24rem, 82vw);
       height: auto;
-      margin: 0 auto 0.75rem;
+      margin: 0 auto 0.25rem;
       display: block;
       overflow: visible;
     }
 
-    .cat-line,
-    .glass-line {
+    .cat-line {
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -74,21 +55,13 @@
       stroke-width: 4;
     }
 
-    .glass-line {
-      stroke: var(--fg);
-      stroke-width: 5;
-    }
-
     .cat-fur { fill: var(--cat); }
-    .cat-face { fill: var(--cat-cream); }
+    .cat-inner { fill: var(--cat-cream); }
     .cat-dark { fill: var(--cat-dark); }
     .cat-accent { fill: var(--accent); }
-    .glass-lens { fill: color-mix(in srgb, var(--glass) 35%, transparent); }
 
     .cat-eye {
-      fill: var(--eye);
-      stroke: var(--cat-dark);
-      stroke-width: 2;
+      fill: var(--cat-dark);
     }
 
     .cat-float {
@@ -96,19 +69,14 @@
       transform-origin: 100px 100px;
     }
 
-    .cat-tail {
-      animation: tail 2.4s ease-in-out infinite;
-      transform-origin: 71px 125px;
-    }
-
     .cat-ear-left {
       animation: left-ear 4s ease-in-out infinite;
-      transform-origin: 76px 46px;
+      transform-origin: 67px 44px;
     }
 
     .cat-ear-right {
       animation: right-ear 4s ease-in-out infinite;
-      transform-origin: 124px 46px;
+      transform-origin: 153px 44px;
     }
 
     .cat-eye {
@@ -163,24 +131,18 @@
       95% { transform: scaleY(0.12); }
     }
 
-    @keyframes tail {
-      0%, 100% { transform: rotate(-5deg); }
-      50% { transform: rotate(9deg); }
-    }
-
     @keyframes left-ear {
       0%, 88%, 100% { transform: rotate(0); }
-      92% { transform: rotate(-8deg); }
+      92% { transform: rotate(-5deg); }
     }
 
     @keyframes right-ear {
       0%, 88%, 100% { transform: rotate(0); }
-      92% { transform: rotate(8deg); }
+      92% { transform: rotate(5deg); }
     }
 
     @media (prefers-reduced-motion: reduce) {
       .cat-float,
-      .cat-tail,
       .cat-ear-left,
       .cat-ear-right,
       .cat-eye {
@@ -191,25 +153,23 @@
 </head>
 <body>
   <main>
-    <svg class="cat" viewBox="0 0 220 190" role="img" aria-label="Animated cat detective">
+    <svg class="cat" viewBox="0 0 220 145" role="img" aria-label="Animated peeking cat">
       <g class="cat-float">
-        <path class="cat-line cat-tail" d="M72 125c-31 6-44-23-27-42 13-14 34-8 31 12" />
-        <path class="cat-fur" d="M70 78c0-35 24-58 53-58s53 23 53 58v18c0 36-24 58-53 58s-53-22-53-58z" />
-        <path class="cat-fur cat-ear-left" d="M74 69 84 25l30 33z" />
-        <path class="cat-fur cat-ear-right" d="M132 58 163 25l9 44z" />
-        <path class="cat-face" d="M87 93c0-22 16-36 36-36s36 14 36 36v8c0 23-16 38-36 38s-36-15-36-38z" />
-        <path class="cat-dark" d="M93 45c15-18 44-20 60 0 4 5 5 12 2 18-20-12-44-13-65-2-2-6-1-11 3-16z" />
-        <circle class="cat-eye" cx="108" cy="96" r="8" />
-        <circle class="cat-eye" cx="139" cy="96" r="8" />
-        <circle fill="#fff" cx="105" cy="93" r="2.5" />
-        <circle fill="#fff" cx="136" cy="93" r="2.5" />
-        <path class="cat-accent" d="M119 114c0-4 9-4 9 0 0 4-3 7-4.5 7S119 118 119 114z" />
-        <path class="cat-line" d="M124 121v8M96 114h15M94 126h16M152 114h-15M154 126h-16" />
-        <path class="cat-fur" d="M81 145c2-15 14-24 28-21l-5 37H84c-3-5-4-10-3-16z" />
-        <path class="cat-fur" d="M143 124c14-3 26 6 28 21 1 6 0 11-3 16h-20z" />
-        <path class="glass-lens" d="M151 105a18 18 0 1 0 36 0 18 18 0 1 0-36 0" />
-        <path class="glass-line" d="M151 105a18 18 0 1 0 36 0 18 18 0 1 0-36 0M158 119l-23 26" />
+        <path class="cat-fur cat-ear-left" d="M36 103C39 72 45 25 62 18c13-5 35 33 48 53" />
+        <path class="cat-fur cat-ear-right" d="M184 103c-3-31-9-78-26-85-13-5-35 33-48 53" />
+        <path class="cat-line cat-ear-left" d="M36 103C39 72 45 25 62 18c13-5 35 33 48 53" />
+        <path class="cat-line cat-ear-right" d="M184 103c-3-31-9-78-26-85-13-5-35 33-48 53" />
+        <path class="cat-inner" d="M58 82c4-21 8-37 15-41 7 3 17 18 25 32z" />
+        <path class="cat-inner" d="M162 82c-4-21-8-37-15-41-7 3-17 18-25 32z" />
+        <path class="cat-fur" d="M35 132V98c0-43 28-72 75-72s75 29 75 72v34z" />
+        <path class="cat-line" d="M35 132V98c0-43 28-72 75-72s75 29 75 72v34" />
+        <path class="cat-line" d="M94 50v8M104 48v10M114 48v10M124 50v8M99 70v9M109 68v10M119 70v9" />
+        <circle class="cat-eye" cx="81" cy="101" r="11" />
+        <circle class="cat-eye" cx="139" cy="101" r="11" />
+        <path class="cat-line" d="M109 105c2 14 17 14 20 0M109 105c-2 14-17 14-20 0" />
+        <path class="cat-line" d="M28 94l-22-4M29 109 6 113M192 94l22-4M191 109l23 4" />
       </g>
+      <path class="cat-line" d="M3 133h214" />
     </svg>
     <h1>404</h1>
     <p>The page you are trying to reach either does not exist, has been removed or you are not authorized to view it.</p>
