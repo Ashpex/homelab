@@ -14,6 +14,9 @@
       --cat: #d99a5f;
       --cat-dark: #14241d;
       --cat-cream: #f1cfad;
+      --box: #b98b5c;
+      --box-dark: #8b6540;
+      --box-light: #d5ad7c;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -59,6 +62,15 @@
     .cat-inner { fill: var(--cat-cream); }
     .cat-dark { fill: var(--cat-dark); }
     .cat-accent { fill: var(--accent); }
+    .box-fill { fill: var(--box); }
+    .box-light { fill: var(--box-light); }
+    .box-line {
+      fill: none;
+      stroke: var(--cat-dark);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .cat-eye {
       fill: var(--cat-dark);
@@ -153,7 +165,7 @@
 </head>
 <body>
   <main>
-    <svg class="cat" viewBox="0 0 220 145" role="img" aria-label="Animated peeking cat">
+    <svg class="cat" viewBox="0 0 220 172" role="img" aria-label="Animated cat in a cardboard box">
       <g class="cat-float">
         <path class="cat-fur cat-ear-left" d="M36 103C39 72 45 25 62 18c13-5 35 33 48 53" />
         <path class="cat-fur cat-ear-right" d="M184 103c-3-31-9-78-26-85-13-5-35 33-48 53" />
@@ -169,7 +181,10 @@
         <path class="cat-line" d="M110 117c2 12 16 12 20 0M110 117c-2 12-16 12-20 0" />
         <path class="cat-line" d="M28 94l-22-4M29 109 6 113M192 94l22-4M191 109l23 4" />
       </g>
-      <path class="cat-line" d="M3 133h214" />
+      <path class="box-light" d="M20 127h180l-18 22H38z" />
+      <path class="box-fill" d="M38 147h144v20H38z" />
+      <path class="box-light" d="M20 127 5 146h33l18-19zM200 127l15 19h-33l-18-19z" />
+      <path class="box-line" d="M20 127h180M38 147h144M38 147v20M182 147v20M38 167h144M20 127 5 146h33l18-19M200 127l15 19h-33l-18-19" />
     </svg>
     <h1>404</h1>
     <p>The page you are trying to reach either does not exist, has been removed or you are not authorized to view it.</p>
