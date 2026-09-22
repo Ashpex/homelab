@@ -15,7 +15,7 @@ app-template:
         main:
           image:
             repository: rommapp/romm
-            tag: latest
+            tag: 5.3.0
           probes:
             liveness:
               enabled: false
@@ -153,6 +153,15 @@ app-template:
             identifier: main
             port: web
   persistence:
+    main-config:
+      enabled: true
+      type: configMap
+      name: romm-config
+      advancedMounts:
+        main:
+          main:
+          - path: "/romm/config/config.yml"
+            subPath: config.yml
     main-library:
       enabled: true
       type: custom
