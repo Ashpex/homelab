@@ -13,6 +13,7 @@ forgejo:
         ROOT_URL: https://git.ashpex.net/
         HTTP_PORT: 3000
         DISABLE_SSH: false
+        SSH_PORT: 2222
         LANDING_PAGE: /ashpex
       database:
         DB_TYPE: sqlite3

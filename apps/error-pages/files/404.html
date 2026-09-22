@@ -1,224 +1,223 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 Not Found</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f5f0;
+      --fg: #1f2523;
+      --muted: #6d746f;
+      --line: #d9d3c7;
+      --accent: #246b5b;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111816;
+        --fg: #eef4ef;
+        --muted: #a1aaa4;
+        --line: #2a3732;
+        --accent: #8bd7bf;
+      }
+    }
 
     body {
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-weight: bold;
-      background: #050f05;
-      color: #00ff41;
       min-height: 100vh;
-      display: flex;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        var(--bg);
+      background-size: 48px 48px;
+      color: var(--fg);
+    }
+
+    main {
+      text-align: center;
+      padding: 2rem;
+      width: min(520px, calc(100% - 3rem));
+    }
+
+    .cat {
+      position: relative;
+      width: 9rem;
+      height: 7rem;
+      margin: 0 auto 1.5rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .cat::before,
+    .cat::after {
+      content: "";
+      position: absolute;
+      top: 0.2rem;
+      width: 3rem;
+      height: 3rem;
+      background: var(--fg);
+      transform: rotate(45deg);
+      border-radius: 0.35rem;
+    }
+
+    .cat::before {
+      left: 1.2rem;
+      animation: left-ear 4s ease-in-out infinite;
+    }
+
+    .cat::after {
+      right: 1.2rem;
+      animation: right-ear 4s ease-in-out infinite;
+    }
+
+    .tail {
+      position: absolute;
+      right: -1.4rem;
+      bottom: 0.7rem;
+      width: 3.4rem;
+      height: 3.4rem;
+      border: 0.45rem solid var(--fg);
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      transform-origin: 0.7rem 2.7rem;
+      animation: tail 2.4s ease-in-out infinite;
+    }
+
+    .face {
+      position: absolute;
+      inset: 1rem 0 0;
+      border: 3px solid var(--fg);
+      border-radius: 48% 48% 42% 42%;
+      background: var(--bg);
+    }
+
+    .eye {
+      position: absolute;
+      top: 2.7rem;
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 999px;
+      background: var(--accent);
+      animation: blink 4.5s infinite;
+    }
+
+    .eye.left { left: 3rem; }
+    .eye.right { right: 3rem; }
+
+    .nose {
+      position: absolute;
+      top: 4rem;
+      left: 50%;
+      width: 0.6rem;
+      height: 0.45rem;
+      border-radius: 999px;
+      background: var(--fg);
+      transform: translateX(-50%);
+    }
+
+    .whisker {
+      position: absolute;
+      top: 4.35rem;
+      width: 2.1rem;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .whisker.left { left: 1.2rem; transform: rotate(8deg); }
+    .whisker.right { right: 1.2rem; transform: rotate(-8deg); }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(5rem, 22vw, 11rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 1.25rem auto 0;
+      max-width: 28rem;
+      font-size: clamp(1rem, 2.5vw, 1.125rem);
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    a {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    canvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      width: min(560px, 100% - 3rem);
-      padding: 2rem 0;
-    }
-
-    .glyph {
-      margin-bottom: 36px;
-      opacity: 0.7;
-      width: clamp(48px, 10vw, 72px);
-      height: auto;
-      display: block;
-    }
-
-    .lines {
-      font-size: clamp(0.72rem, 2.5vw, 0.9rem);
-      line-height: 2;
-      width: 100%;
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-
-    .line { opacity: 0; }
-    .line.dim  { color: #2d5a2d; }
-    .line.main { color: #00ff41; }
-    .line.blue { color: #00ff41; }
-    .line.resp { color: #2d5a2d; opacity: 1; }
-    .line.link a {
-      color: #00ff41;
+      min-height: 2.75rem;
+      margin-top: 2rem;
+      padding: 0 1.15rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
       text-decoration: none;
-      border-bottom: 1px solid #0a3a0a;
-    }
-    .line.link a:hover { border-bottom-color: #00ff41; }
-
-    .prompt-line {
-      display: flex;
-      align-items: center;
-      opacity: 0;
-      font-size: clamp(0.72rem, 2.5vw, 0.9rem);
-      line-height: 2;
-      width: 100%;
-    }
-    .prompt-line.visible { opacity: 1; }
-    .prompt-sym { margin-right: 4px; flex-shrink: 0; }
-    .prompt-input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #00ff41;
-      font-family: inherit;
-      font-size: inherit;
-      caret-color: #00ff41;
-      width: 100%;
-      min-width: 0;
+      background: color-mix(in srgb, var(--bg) 88%, white);
     }
 
-    .visible { opacity: 1; }
+    a:focus-visible,
+    a:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
-    @keyframes blink { 50% { opacity: 0; } 0%, 100% { opacity: 1; } }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-0.35rem); }
+    }
+
+    @keyframes blink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.12); }
+    }
+
+    @keyframes tail {
+      0%, 100% { transform: rotate(-8deg); }
+      50% { transform: rotate(10deg); }
+    }
+
+    @keyframes left-ear {
+      0%, 88%, 100% { transform: rotate(45deg); }
+      92% { transform: rotate(35deg); }
+    }
+
+    @keyframes right-ear {
+      0%, 88%, 100% { transform: rotate(45deg); }
+      92% { transform: rotate(55deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cat,
+      .cat::before,
+      .cat::after,
+      .tail,
+      .eye {
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <canvas id="c"></canvas>
-
-  <div class="content">
-    <svg class="glyph" width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="1" y="1" width="70" height="70" stroke="#0a3a0a" stroke-width="1"/>
-      <rect x="10" y="10" width="52" height="52" stroke="#0a3a0a" stroke-width="0.5"/>
-      <line x1="1" y1="1" x2="10" y2="10" stroke="#00ff41" stroke-width="0.5"/>
-      <line x1="71" y1="1" x2="62" y2="10" stroke="#00ff41" stroke-width="0.5"/>
-      <line x1="1" y1="71" x2="10" y2="62" stroke="#00ff41" stroke-width="0.5"/>
-      <line x1="71" y1="71" x2="62" y2="62" stroke="#00ff41" stroke-width="0.5"/>
-      <circle cx="36" cy="36" r="8" stroke="#00ff41" stroke-width="1" fill="none"/>
-      <circle cx="36" cy="36" r="2" fill="#00ff41"/>
-      <line x1="36" y1="10" x2="36" y2="28" stroke="#0a3a0a" stroke-width="0.5"/>
-      <line x1="36" y1="44" x2="36" y2="62" stroke="#0a3a0a" stroke-width="0.5"/>
-      <line x1="10" y1="36" x2="28" y2="36" stroke="#0a3a0a" stroke-width="0.5"/>
-      <line x1="44" y1="36" x2="62" y2="36" stroke="#0a3a0a" stroke-width="0.5"/>
-    </svg>
-
-    <div class="lines" id="lines">
-      <div class="line main" data-delay="0">&gt; ROUTE NOT FOUND</div>
-      <div class="line dim"  data-delay="400">&gt; scanning /404...</div>
-      <div class="line main" data-delay="900">&gt; 0 results</div>
-      <div class="line dim"  data-delay="1500">[ ... ] this page doesn't exist or you don't have permission to view it</div>
-      <div class="line blue" data-delay="2200">[ &bull; ] where do you want to go?</div>
-      <div class="line link" data-delay="2900">&gt; <a href="https://ashpex.net">~/home</a></div>
+  <main>
+    <div class="cat" aria-hidden="true">
+      <span class="tail"></span>
+      <div class="face">
+        <span class="eye left"></span>
+        <span class="eye right"></span>
+        <span class="nose"></span>
+        <span class="whisker left"></span>
+        <span class="whisker right"></span>
+      </div>
     </div>
-
-    <div class="prompt-line" id="prompt">
-      <span class="prompt-sym">&gt;</span>
-      <input class="prompt-input" id="input" type="text" autocomplete="off" spellcheck="false" autofocus />
-    </div>
-  </div>
-
-  <script>
-    // particles
-    const canvas = document.getElementById('c');
-    const ctx = canvas.getContext('2d');
-    let W, H, dots = [];
-
-    function resize() {
-      W = canvas.width  = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-
-    function initDots() {
-      dots = Array.from({length: 80}, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.5 + 0.3,
-        a: Math.random(),
-        s: (Math.random() - 0.5) * 0.002
-      }));
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      dots.forEach(d => {
-        d.a += d.s;
-        if (d.a < 0.1 || d.a > 1) d.s *= -1;
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,255,65,${d.a * 0.3})`;
-        ctx.fill();
-      });
-      requestAnimationFrame(draw);
-    }
-
-    resize();
-    initDots();
-    draw();
-    window.addEventListener('resize', () => { resize(); initDots(); });
-
-    // typewriter reveal
-    document.querySelectorAll('.line[data-delay]').forEach(el => {
-      setTimeout(() => el.classList.add('visible'), +el.dataset.delay);
-    });
-    const prompt = document.getElementById('prompt');
-    const isTouchDevice = window.matchMedia('(hover: none)').matches;
-    setTimeout(() => {
-      prompt.classList.add('visible');
-      if (!isTouchDevice) document.getElementById('input').focus();
-    }, 3400);
-
-    // commands
-    const commands = {
-      help:   '[ available ] clear, date, help, whoami, home',
-      whoami: 'unknown — access denied',
-      date:   () => new Date().toString(),
-      home:   () => { window.location.href = 'https://ashpex.net'; return 'redirecting...'; },
-      clear:  '__clear__',
-    };
-
-    const linesEl = document.getElementById('lines');
-    const input   = document.getElementById('input');
-
-    function addLine(text, cls = 'resp') {
-      const d = document.createElement('div');
-      d.className = `line ${cls}`;
-      d.style.opacity = '1';
-      d.textContent = text;
-      linesEl.appendChild(d);
-    }
-
-    input.addEventListener('keydown', e => {
-      if (e.key !== 'Enter') return;
-      const raw  = input.value.trim();
-      const cmd  = raw.split(' ')[0].toLowerCase();
-      const args = raw.slice(cmd.length).trim();
-      input.value = '';
-
-      if (!raw) return;
-
-      addLine('> ' + raw, 'main');
-
-      const handler = commands[cmd];
-      if (!handler) {
-        addLine(`command not found: ${cmd}`);
-      } else if (handler === '__clear__') {
-        linesEl.innerHTML = '';
-      } else {
-        const out = typeof handler === 'function' ? handler(args) : handler;
-        if (out) addLine(out);
-      }
-    });
-
-    // keep input focused on click anywhere (desktop only)
-    if (!isTouchDevice) document.addEventListener('click', () => input.focus());
-  </script>
+    <h1>404</h1>
+    <p>The page you are trying to reach either does not exist, has been removed or you are not authorized to view it.</p>
+    <a href="https://ashpex.net">Go home</a>
+  </main>
 </body>
 </html>
