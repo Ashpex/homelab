@@ -45,91 +45,59 @@
     }
 
     .cat {
-      position: relative;
-      width: 9rem;
-      height: 7rem;
+      width: min(13rem, 58vw);
+      height: auto;
       margin: 0 auto 1.5rem;
+      display: block;
+      overflow: visible;
+    }
+
+    .cat-body {
+      fill: var(--bg);
+      stroke: var(--fg);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .cat-line {
+      fill: none;
+      stroke: var(--fg);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .cat-eye,
+    .cat-nose {
+      fill: var(--accent);
+    }
+
+    .cat-float {
       animation: float 3s ease-in-out infinite;
+      transform-origin: 100px 100px;
     }
 
-    .cat::before,
-    .cat::after {
-      content: "";
-      position: absolute;
-      top: 0.2rem;
-      width: 3rem;
-      height: 3rem;
-      background: var(--fg);
-      transform: rotate(45deg);
-      border-radius: 0.35rem;
-    }
-
-    .cat::before {
-      left: 1.2rem;
-      animation: left-ear 4s ease-in-out infinite;
-    }
-
-    .cat::after {
-      right: 1.2rem;
-      animation: right-ear 4s ease-in-out infinite;
-    }
-
-    .tail {
-      position: absolute;
-      right: -1.4rem;
-      bottom: 0.7rem;
-      width: 3.4rem;
-      height: 3.4rem;
-      border: 0.45rem solid var(--fg);
-      border-left-color: transparent;
-      border-bottom-color: transparent;
-      border-radius: 50%;
-      transform-origin: 0.7rem 2.7rem;
+    .cat-tail {
       animation: tail 2.4s ease-in-out infinite;
+      transform-origin: 148px 123px;
     }
 
-    .face {
-      position: absolute;
-      inset: 1rem 0 0;
-      border: 3px solid var(--fg);
-      border-radius: 48% 48% 42% 42%;
-      background: var(--bg);
+    .cat-left-ear {
+      animation: left-ear 4s ease-in-out infinite;
+      transform-origin: 67px 57px;
     }
 
-    .eye {
-      position: absolute;
-      top: 2.7rem;
-      width: 0.7rem;
-      height: 0.7rem;
-      border-radius: 999px;
-      background: var(--accent);
+    .cat-right-ear {
+      animation: right-ear 4s ease-in-out infinite;
+      transform-origin: 133px 57px;
+    }
+
+    .cat-eye {
       animation: blink 4.5s infinite;
+      transform-box: fill-box;
+      transform-origin: center;
     }
-
-    .eye.left { left: 3rem; }
-    .eye.right { right: 3rem; }
-
-    .nose {
-      position: absolute;
-      top: 4rem;
-      left: 50%;
-      width: 0.6rem;
-      height: 0.45rem;
-      border-radius: 999px;
-      background: var(--fg);
-      transform: translateX(-50%);
-    }
-
-    .whisker {
-      position: absolute;
-      top: 4.35rem;
-      width: 2.1rem;
-      height: 2px;
-      background: var(--line);
-    }
-
-    .whisker.left { left: 1.2rem; transform: rotate(8deg); }
-    .whisker.right { right: 1.2rem; transform: rotate(-8deg); }
 
     h1 {
       margin: 0;
@@ -169,7 +137,7 @@
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-0.35rem); }
+      50% { transform: translateY(-6px); }
     }
 
     @keyframes blink {
@@ -178,26 +146,26 @@
     }
 
     @keyframes tail {
-      0%, 100% { transform: rotate(-8deg); }
-      50% { transform: rotate(10deg); }
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(9deg); }
     }
 
     @keyframes left-ear {
-      0%, 88%, 100% { transform: rotate(45deg); }
-      92% { transform: rotate(35deg); }
+      0%, 88%, 100% { transform: rotate(0); }
+      92% { transform: rotate(-8deg); }
     }
 
     @keyframes right-ear {
-      0%, 88%, 100% { transform: rotate(45deg); }
-      92% { transform: rotate(55deg); }
+      0%, 88%, 100% { transform: rotate(0); }
+      92% { transform: rotate(8deg); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .cat,
-      .cat::before,
-      .cat::after,
-      .tail,
-      .eye {
+      .cat-float,
+      .cat-tail,
+      .cat-left-ear,
+      .cat-right-ear,
+      .cat-eye {
         animation: none;
       }
     }
@@ -205,16 +173,19 @@
 </head>
 <body>
   <main>
-    <div class="cat" aria-hidden="true">
-      <span class="tail"></span>
-      <div class="face">
-        <span class="eye left"></span>
-        <span class="eye right"></span>
-        <span class="nose"></span>
-        <span class="whisker left"></span>
-        <span class="whisker right"></span>
-      </div>
-    </div>
+    <svg class="cat" viewBox="0 0 200 160" role="img" aria-label="Animated cat">
+      <g class="cat-float">
+        <path class="cat-line cat-tail" d="M145 118c31-6 35-44 9-51-17-4-26 9-21 21" />
+        <path class="cat-body cat-left-ear" d="M59 64 72 32l22 27" />
+        <path class="cat-body cat-right-ear" d="M106 59 128 32l13 32" />
+        <path class="cat-body" d="M52 73c0-28 21-47 48-47s48 19 48 47v19c0 29-21 48-48 48s-48-19-48-48z" />
+        <circle class="cat-eye" cx="82" cy="84" r="6" />
+        <circle class="cat-eye" cx="118" cy="84" r="6" />
+        <path class="cat-nose" d="M95 102c0-3 10-3 10 0 0 4-3 7-5 7s-5-3-5-7z" />
+        <path class="cat-line" d="M100 109v8" />
+        <path class="cat-line" d="M66 103h20M64 115h22M134 103h-20M136 115h-22" />
+      </g>
+    </svg>
     <h1>404</h1>
     <p>The page you are trying to reach either does not exist, has been removed or you are not authorized to view it.</p>
     <a href="https://ashpex.net">Go home</a>
