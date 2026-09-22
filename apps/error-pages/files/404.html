@@ -7,21 +7,31 @@
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #f7f5f0;
-      --fg: #1f2523;
-      --muted: #6d746f;
-      --line: #d9d3c7;
-      --accent: #246b5b;
+      --bg: #e7eee4;
+      --fg: #14241d;
+      --muted: #5c6f65;
+      --line: #c9d7cc;
+      --accent: #2f7d66;
+      --cat: #6f8f72;
+      --cat-dark: #21382c;
+      --cat-cream: #d7e4d5;
+      --eye: #2f7d66;
+      --glass: #8abfaf;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #111816;
-        --fg: #eef4ef;
-        --muted: #a1aaa4;
-        --line: #2a3732;
-        --accent: #8bd7bf;
+        --bg: #111b16;
+        --fg: #e5f0e7;
+        --muted: #9db0a3;
+        --line: #24352b;
+        --accent: #8bc9ae;
+        --cat: #5f7d65;
+        --cat-dark: #dcecdf;
+        --cat-cream: #1f3127;
+        --eye: #8bc9ae;
+        --glass: #6cae9b;
       }
     }
 
@@ -40,37 +50,45 @@
 
     main {
       text-align: center;
-      padding: 2rem;
-      width: min(520px, calc(100% - 3rem));
+      padding: 2rem 1.5rem;
+      width: min(620px, calc(100% - 3rem));
     }
 
     .cat {
-      width: min(13rem, 58vw);
+      width: min(15rem, 64vw);
       height: auto;
-      margin: 0 auto 1.5rem;
+      margin: 0 auto 0.75rem;
       display: block;
       overflow: visible;
     }
 
-    .cat-body {
-      fill: var(--bg);
-      stroke: var(--fg);
-      stroke-width: 5;
+    .cat-line,
+    .glass-line {
+      fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
 
     .cat-line {
-      fill: none;
-      stroke: var(--fg);
-      stroke-width: 5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      stroke: var(--cat-dark);
+      stroke-width: 4;
     }
 
-    .cat-eye,
-    .cat-nose {
-      fill: var(--accent);
+    .glass-line {
+      stroke: var(--fg);
+      stroke-width: 5;
+    }
+
+    .cat-fur { fill: var(--cat); }
+    .cat-face { fill: var(--cat-cream); }
+    .cat-dark { fill: var(--cat-dark); }
+    .cat-accent { fill: var(--accent); }
+    .glass-lens { fill: color-mix(in srgb, var(--glass) 35%, transparent); }
+
+    .cat-eye {
+      fill: var(--eye);
+      stroke: var(--cat-dark);
+      stroke-width: 2;
     }
 
     .cat-float {
@@ -80,17 +98,17 @@
 
     .cat-tail {
       animation: tail 2.4s ease-in-out infinite;
-      transform-origin: 148px 123px;
+      transform-origin: 71px 125px;
     }
 
-    .cat-left-ear {
+    .cat-ear-left {
       animation: left-ear 4s ease-in-out infinite;
-      transform-origin: 67px 57px;
+      transform-origin: 76px 46px;
     }
 
-    .cat-right-ear {
+    .cat-ear-right {
       animation: right-ear 4s ease-in-out infinite;
-      transform-origin: 133px 57px;
+      transform-origin: 124px 46px;
     }
 
     .cat-eye {
@@ -100,17 +118,17 @@
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(5rem, 22vw, 11rem);
+      margin: 0.25rem 0 0;
+      font-size: clamp(4.75rem, 16vw, 8.5rem);
       line-height: 1;
       font-weight: 800;
       letter-spacing: 0;
     }
 
     p {
-      margin: 1.25rem auto 0;
-      max-width: 28rem;
-      font-size: clamp(1rem, 2.5vw, 1.125rem);
+      margin: 1rem auto 0;
+      max-width: 34rem;
+      font-size: clamp(1rem, 2vw, 1.1rem);
       line-height: 1.6;
       color: var(--muted);
     }
@@ -120,13 +138,13 @@
       align-items: center;
       justify-content: center;
       min-height: 2.75rem;
-      margin-top: 2rem;
+      margin-top: 1.75rem;
       padding: 0 1.15rem;
       border: 1px solid var(--line);
       border-radius: 8px;
       color: var(--fg);
       text-decoration: none;
-      background: color-mix(in srgb, var(--bg) 88%, white);
+      background: color-mix(in srgb, var(--bg) 86%, white);
     }
 
     a:focus-visible,
@@ -163,8 +181,8 @@
     @media (prefers-reduced-motion: reduce) {
       .cat-float,
       .cat-tail,
-      .cat-left-ear,
-      .cat-right-ear,
+      .cat-ear-left,
+      .cat-ear-right,
       .cat-eye {
         animation: none;
       }
@@ -173,17 +191,24 @@
 </head>
 <body>
   <main>
-    <svg class="cat" viewBox="0 0 200 160" role="img" aria-label="Animated cat">
+    <svg class="cat" viewBox="0 0 220 190" role="img" aria-label="Animated cat detective">
       <g class="cat-float">
-        <path class="cat-line cat-tail" d="M145 118c31-6 35-44 9-51-17-4-26 9-21 21" />
-        <path class="cat-body cat-left-ear" d="M59 64 72 32l22 27" />
-        <path class="cat-body cat-right-ear" d="M106 59 128 32l13 32" />
-        <path class="cat-body" d="M52 73c0-28 21-47 48-47s48 19 48 47v19c0 29-21 48-48 48s-48-19-48-48z" />
-        <circle class="cat-eye" cx="82" cy="84" r="6" />
-        <circle class="cat-eye" cx="118" cy="84" r="6" />
-        <path class="cat-nose" d="M95 102c0-3 10-3 10 0 0 4-3 7-5 7s-5-3-5-7z" />
-        <path class="cat-line" d="M100 109v8" />
-        <path class="cat-line" d="M66 103h20M64 115h22M134 103h-20M136 115h-22" />
+        <path class="cat-line cat-tail" d="M72 125c-31 6-44-23-27-42 13-14 34-8 31 12" />
+        <path class="cat-fur" d="M70 78c0-35 24-58 53-58s53 23 53 58v18c0 36-24 58-53 58s-53-22-53-58z" />
+        <path class="cat-fur cat-ear-left" d="M74 69 84 25l30 33z" />
+        <path class="cat-fur cat-ear-right" d="M132 58 163 25l9 44z" />
+        <path class="cat-face" d="M87 93c0-22 16-36 36-36s36 14 36 36v8c0 23-16 38-36 38s-36-15-36-38z" />
+        <path class="cat-dark" d="M93 45c15-18 44-20 60 0 4 5 5 12 2 18-20-12-44-13-65-2-2-6-1-11 3-16z" />
+        <circle class="cat-eye" cx="108" cy="96" r="8" />
+        <circle class="cat-eye" cx="139" cy="96" r="8" />
+        <circle fill="#fff" cx="105" cy="93" r="2.5" />
+        <circle fill="#fff" cx="136" cy="93" r="2.5" />
+        <path class="cat-accent" d="M119 114c0-4 9-4 9 0 0 4-3 7-4.5 7S119 118 119 114z" />
+        <path class="cat-line" d="M124 121v8M96 114h15M94 126h16M152 114h-15M154 126h-16" />
+        <path class="cat-fur" d="M81 145c2-15 14-24 28-21l-5 37H84c-3-5-4-10-3-16z" />
+        <path class="cat-fur" d="M143 124c14-3 26 6 28 21 1 6 0 11-3 16h-20z" />
+        <path class="glass-lens" d="M151 105a18 18 0 1 0 36 0 18 18 0 1 0-36 0" />
+        <path class="glass-line" d="M151 105a18 18 0 1 0 36 0 18 18 0 1 0-36 0M158 119l-23 26" />
       </g>
     </svg>
     <h1>404</h1>
