@@ -15,7 +15,7 @@ app-template:
         main:
           image:
             repository: garethgeorge/backrest
-            tag: latest
+            tag: v1.14.1
           probes:
             liveness:
               enabled: false

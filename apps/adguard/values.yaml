@@ -9,7 +9,7 @@ app-template:
         main:
           image:
             repository: adguard/adguardhome
-            tag: latest
+            tag: v0.107.79
           probes:
             liveness:
               enabled: true

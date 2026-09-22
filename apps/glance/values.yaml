@@ -10,7 +10,7 @@ app-template:
         main:
           image:
             repository: glanceapp/glance
-            tag: latest
+            tag: v0.8.6
             pullPolicy: Always
           probes:
             liveness:

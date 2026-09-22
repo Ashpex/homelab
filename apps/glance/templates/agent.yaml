@@ -33,7 +33,7 @@ spec:
         kubernetes.io/hostname: {{ $node.hostname }}
       containers:
         - name: agent
-          image: glanceapp/agent:latest
+          image: glanceapp/agent:v0.1.0
           imagePullPolicy: Always
           env:
             - name: TZ

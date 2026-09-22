@@ -6,7 +6,7 @@ app-template:
         main:
           image:
             repository: alangrainger/immich-public-proxy
-            tag: latest
+            tag: 3.4.0
           probes:
             liveness:
               enabled: false

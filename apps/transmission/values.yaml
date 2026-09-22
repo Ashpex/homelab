@@ -15,7 +15,7 @@ app-template:
         main:
           image:
             repository: lscr.io/linuxserver/transmission
-            tag: latest
+            tag: 4.1.3-r0-ls362
           probes:
             liveness:
               enabled: false

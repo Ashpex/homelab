@@ -15,7 +15,7 @@ app-template:
         main:
           image:
             repository: binwiederhier/ntfy
-            tag: latest
+            tag: v2.28.0
           args:
           - serve
           probes:
