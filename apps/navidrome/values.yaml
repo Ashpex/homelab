@@ -18,7 +18,7 @@ app-template:
         main:
           image:
             repository: deluan/navidrome
-            tag: 0.64.1
+            tag: 0.64.2
           probes:
             liveness:
               enabled: false
