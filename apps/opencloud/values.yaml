@@ -158,7 +158,7 @@ app-template:
         helm.sh/resource-policy: keep
       storageClass: longhorn
       accessMode: ReadWriteOnce
-      size: 20Gi
+      size: 5Gi
       advancedMounts:
         main:
           init-dirs:
