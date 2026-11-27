@@ -226,6 +226,102 @@ authelia:
             grant_types:
               - authorization_code
             token_endpoint_auth_method: client_secret_basic
+          - client_id: 'opencloud'
+            client_name: 'OpenCloud'
+            public: true
+            consent_mode: auto
+            authorization_policy: two_factor
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+              - https://cloud.ashpex.net/
+              - https://cloud.ashpex.net/oidc-callback.html
+              - https://cloud.ashpex.net/oidc-silent-redirect.html
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+              - offline_access
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+              - refresh_token
+            access_token_signed_response_alg: RS256
+            userinfo_signed_response_alg: none
+            token_endpoint_auth_method: none
+          - client_id: 'opencloud-android'
+            client_name: 'OpenCloud'
+            public: true
+            consent_mode: auto
+            authorization_policy: two_factor
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+              - oc://android.opencloud.eu
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+              - offline_access
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+              - refresh_token
+            access_token_signed_response_alg: RS256
+            userinfo_signed_response_alg: none
+            token_endpoint_auth_method: none
+          - client_id: 'opencloud-ios'
+            client_name: 'OpenCloud'
+            public: true
+            consent_mode: auto
+            authorization_policy: two_factor
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+              - oc://ios.opencloud.eu
+              - oc.ios://ios.opencloud.eu
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+              - offline_access
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+              - refresh_token
+            access_token_signed_response_alg: RS256
+            userinfo_signed_response_alg: none
+            token_endpoint_auth_method: none
+          - client_id: 'opencloud-desktop'
+            client_name: 'OpenCloud'
+            public: true
+            consent_mode: auto
+            authorization_policy: two_factor
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+              - http://127.0.0.1
+              - http://localhost
+            scopes:
+              - openid
+              - email
+              - profile
+              - groups
+              - offline_access
+            response_types:
+              - code
+            grant_types:
+              - authorization_code
+              - refresh_token
+            access_token_signed_response_alg: RS256
+            userinfo_signed_response_alg: none
+            token_endpoint_auth_method: none
 
   persistence:
     enabled: true

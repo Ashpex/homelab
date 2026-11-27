@@ -1,0 +1,149 @@
+app-template:
+  fullnameOverride: opencloud
+  controllers:
+    main:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: homelab.node/nas
+                      operator: DoesNotExist
+      containers:
+        main:
+          image:
+            repository: opencloudeu/opencloud-rolling
+            tag: 9.2.0
+          command:
+          - /bin/sh
+          - -c
+          - opencloud init || true; opencloud server
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+          - name: TZ
+            value: Asia/Ho_Chi_Minh
+          - name: OC_URL
+            value: https://cloud.ashpex.net
+          - name: OC_INSECURE
+            value: "true"
+          - name: PROXY_TLS
+            value: "false"
+          - name: PROXY_HTTP_ADDR
+            value: 0.0.0.0:9200
+          - name: OC_EXCLUDE_RUN_SERVICES
+            value: idp
+          - name: OC_OIDC_ISSUER
+            value: https://auth.ashpex.net
+          - name: PROXY_OIDC_ACCESS_TOKEN_VERIFY_METHOD
+            value: jwt
+          - name: PROXY_OIDC_REWRITE_WELLKNOWN
+            value: "true"
+          - name: PROXY_AUTOPROVISION_ACCOUNTS
+            value: "true"
+          - name: PROXY_AUTOPROVISION_CLAIM_USERNAME
+            value: preferred_username
+          - name: PROXY_AUTOPROVISION_CLAIM_EMAIL
+            value: email
+          - name: PROXY_AUTOPROVISION_CLAIM_DISPLAYNAME
+            value: name
+          - name: PROXY_AUTOPROVISION_CLAIM_GROUPS
+            value: groups
+          - name: PROXY_USER_OIDC_CLAIM
+            value: preferred_username
+          - name: PROXY_USER_CS3_CLAIM
+            value: username
+          - name: PROXY_ROLE_ASSIGNMENT_DRIVER
+            value: oidc
+          - name: PROXY_ROLE_ASSIGNMENT_OIDC_CLAIM
+            value: groups
+          - name: GRAPH_ASSIGN_DEFAULT_USER_ROLE
+            value: "false"
+          - name: PROXY_CSP_CONFIG_FILE_LOCATION
+            value: /etc/opencloud/csp.yaml
+          - name: WEBFINGER_WEB_OIDC_CLIENT_ID
+            value: opencloud
+          - name: WEBFINGER_ANDROID_OIDC_CLIENT_ID
+            value: opencloud-android
+          - name: WEBFINGER_IOS_OIDC_CLIENT_ID
+            value: opencloud-ios
+          - name: WEBFINGER_DESKTOP_OIDC_CLIENT_ID
+            value: opencloud-desktop
+          - name: WEBFINGER_WEB_OIDC_CLIENT_SCOPES
+            value: "openid profile email groups offline_access"
+          - name: WEBFINGER_ANDROID_OIDC_CLIENT_SCOPES
+            value: "openid profile email groups offline_access"
+          - name: WEBFINGER_IOS_OIDC_CLIENT_SCOPES
+            value: "openid profile email groups offline_access"
+          - name: WEBFINGER_DESKTOP_OIDC_CLIENT_SCOPES
+            value: "openid profile email groups offline_access"
+          - name: START_ADDITIONAL_SERVICES
+            value: notifications
+          ports:
+          - name: http
+            containerPort: 9200
+  service:
+    main:
+      enabled: true
+      controller: main
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 9200
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      className: traefik
+      annotations: {}
+      hosts:
+      - host: cloud.ashpex.net
+        paths:
+        - path: "/"
+          pathType: Prefix
+          service:
+            identifier: main
+            port: http
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      annotations:
+        helm.sh/resource-policy: keep
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 100Mi
+      advancedMounts:
+        main:
+          main:
+          - path: "/etc/opencloud"
+    csp:
+      enabled: true
+      type: configMap
+      name: opencloud-csp
+      advancedMounts:
+        main:
+          main:
+          - path: "/etc/opencloud/csp.yaml"
+            subPath: csp.yaml
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      annotations:
+        helm.sh/resource-policy: keep
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 20Gi
+      advancedMounts:
+        main:
+          main:
+          - path: "/var/lib/opencloud"

@@ -13,3 +13,4 @@ data:
         email_verified: true
         groups:
           - admins
+          - opencloudAdmin
