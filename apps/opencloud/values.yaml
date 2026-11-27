@@ -46,8 +46,6 @@ app-template:
             value: Asia/Ho_Chi_Minh
           - name: OC_URL
             value: https://cloud.ashpex.net
-          - name: OC_INSECURE
-            value: "true"
           - name: PROXY_TLS
             value: "false"
           - name: PROXY_HTTP_ADDR
