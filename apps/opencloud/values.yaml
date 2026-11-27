@@ -33,7 +33,7 @@ app-template:
           command:
           - /bin/sh
           - -c
-          - opencloud init || true; opencloud server
+          - test -f /etc/opencloud/opencloud.yaml || opencloud init --insecure=false; opencloud server
           probes:
             liveness:
               enabled: false
