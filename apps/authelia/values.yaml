@@ -87,6 +87,14 @@ authelia:
           - key_id: default
             key:
               path: '/secrets/oidc-jwks/key.pem'
+        cors:
+          endpoints:
+            - authorization
+            - token
+            - revocation
+            - introspection
+            - userinfo
+          allowed_origins_from_client_redirect_uris: true
         lifespans:
           access_token: 1h
           authorize_code: 1m
