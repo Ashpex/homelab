@@ -44,8 +44,6 @@ app-template:
           env:
           - name: TZ
             value: Asia/Ho_Chi_Minh
-          - name: OC_LOG_LEVEL
-            value: debug
           - name: OC_URL
             value: https://cloud.ashpex.net
           - name: OC_INSECURE
