@@ -16,6 +16,15 @@ app-template:
                   matchExpressions:
                     - key: homelab.node/nas
                       operator: DoesNotExist
+      initContainers:
+        init-dirs:
+          image:
+            repository: busybox
+            tag: 1.37.0
+          command:
+          - mkdir
+          - -p
+          - /var/lib/opencloud/storage/users
       containers:
         main:
           image:
@@ -89,6 +98,8 @@ app-template:
             value: "openid profile email groups offline_access"
           - name: WEBFINGER_DESKTOP_OIDC_CLIENT_SCOPES
             value: "openid profile email groups offline_access"
+          - name: STORAGE_USERS_ID_CACHE_STORE
+            value: nats-js-kv
           - name: START_ADDITIONAL_SERVICES
             value: notifications
           ports:
@@ -150,5 +161,18 @@ app-template:
       size: 20Gi
       advancedMounts:
         main:
+          init-dirs:
+          - path: "/var/lib/opencloud"
           main:
           - path: "/var/lib/opencloud"
+    users:
+      enabled: true
+      type: custom
+      volumeSpec:
+        nfs:
+          server: "192.168.1.110"
+          path: /mnt/ssd0/opencloud
+      advancedMounts:
+        main:
+          main:
+          - path: "/var/lib/opencloud/storage/users"
