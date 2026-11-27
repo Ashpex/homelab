@@ -43,7 +43,7 @@ pages:
               - title: OpenCloud
                 url: https://cloud.ashpex.net/
                 check-url: http://opencloud.opencloud.svc.cluster.local:9200/
-                icon: https://cdn.jsdelivr.net/gh/walkxcode/../../selfhst/icons/svg/opencloud.svg
+                icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/opencloud.svg
 
               - title: AdGuard Home
                 url: https://adguard.ashpex.net/
